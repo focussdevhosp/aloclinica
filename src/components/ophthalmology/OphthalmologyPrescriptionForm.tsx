@@ -6,7 +6,7 @@ import { z } from "zod";
 import { ophthalmologyService } from "@/lib/services/ophthalmology-service";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { DashboardLayout } from "@/components/dashboards/DashboardLayout";
+import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { getDoctorNav } from "@/components/doctor/doctorNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
