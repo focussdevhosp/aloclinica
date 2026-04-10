@@ -66,6 +66,12 @@ const LaudistaExamRequest = lazy(() => import("@/components/doctor/ExamRequestFo
 const LaudistaReportEditor = lazy(() => import("@/components/doctor/ExamReportEditor"));
 const RenewalQueue = lazy(() => import("@/components/doctor/RenewalQueue"));
 const VideoRoom = lazy(() => import("@/components/consultation/VideoRoom"));
+
+// ── Ophthalmology ──
+const OphthalmologyExamQueue = lazy(() => import("@/components/ophthalmology/OphthalmologyExamQueue"));
+const OphthalmologyExamForm = lazy(() => import("@/components/ophthalmology/OphthalmologyExamForm"));
+const OphthalmologyExamDetail = lazy(() => import("@/components/ophthalmology/OphthalmologyExamDetail"));
+const OphthalmologyPrescriptionForm = lazy(() => import("@/components/ophthalmology/OphthalmologyPrescriptionForm"));
 const PrescriptionForm = lazy(() => import("@/components/consultation/PrescriptionForm"));
 const RateConsultationPage = lazy(() => import("@/components/patient/RateConsultationPage"));
 const PreConsultationPage = lazy(() => import("@/components/patient/PreConsultationPage"));
@@ -273,7 +279,12 @@ const Dashboard = () => {
       <Route path="doctor/exam-request" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><ExamRequestForm /></ContextGuard></RoleGuard>} />
       <Route path="doctor/simple-prescription" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><SimplePrescription /></ContextGuard></RoleGuard>} />
       <Route path="doctor/wallet" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><DoctorWallet /></ContextGuard></RoleGuard>} />
-      
+
+      {/* Ophthalmology */}
+      <Route path="ophthalmology/queue" element={<RoleGuard allowed={["doctor"]} roles={roles}><OphthalmologyExamQueue /></RoleGuard>} />
+      <Route path="ophthalmology/new-exam" element={<RoleGuard allowed={["doctor"]} roles={roles}><OphthalmologyExamForm /></RoleGuard>} />
+      <Route path="ophthalmology/exam/:examId" element={<RoleGuard allowed={["doctor"]} roles={roles}><OphthalmologyExamDetail /></RoleGuard>} />
+      <Route path="ophthalmology/prescription/:examId" element={<RoleGuard allowed={["doctor"]} roles={roles}><OphthalmologyPrescriptionForm /></RoleGuard>} />
 
       {/* Consultation */}
       <Route path="consultation/:appointmentId" element={<RoleGuard allowed={["doctor", "patient"]} roles={roles}><VideoRoom /></RoleGuard>} />
