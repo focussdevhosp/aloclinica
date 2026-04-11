@@ -42,16 +42,15 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const userId = claimsData.claims.sub as string;
+    const userId = user.id;
     const body = await req.json();
     const { document_image, selfie_image } = body;
 
@@ -97,7 +96,7 @@ Deno.serve(async (req) => {
 
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
-      console.error("[kyc-verify] AI API error:", aiResponse.status, errText);
+      console.error("[didit-kyc] AI API error:", aiResponse.status, errText);
       return new Response(
         JSON.stringify({ error: "AI verification failed", details: errText }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -106,7 +105,7 @@ Deno.serve(async (req) => {
 
     const aiResult = await aiResponse.json();
     const rawContent = aiResult.choices?.[0]?.message?.content || "";
-    console.log("[kyc-verify] AI raw response:", rawContent);
+    console.log("[didit-kyc] AI raw response:", rawContent);
 
     // Parse JSON from response
     let verification: { match: boolean; score: number; nome: string | null; cpf: string | null };
@@ -114,7 +113,7 @@ Deno.serve(async (req) => {
       const jsonStr = rawContent.replace(/```json\s*/g, "").replace(/```/g, "").trim();
       verification = JSON.parse(jsonStr);
     } catch {
-      console.error("[kyc-verify] Failed to parse AI response:", rawContent);
+      console.error("[didit-kyc] Failed to parse AI response:", rawContent);
       return new Response(
         JSON.stringify({ error: "Failed to parse verification result", raw: rawContent }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -161,6 +160,14 @@ Deno.serve(async (req) => {
           .eq("user_id", userId);
       }
 
+      // Save KYC record
+      await supabaseAdmin.from("kyc_verificacoes").insert({
+        user_id: userId,
+        status: "approved",
+        similarity: verification.score / 100,
+        tipo: doctorProfile ? "medico" : "paciente",
+      });
+
       // Notify user
       await supabaseAdmin.from("notifications").insert({
         user_id: userId,
@@ -184,6 +191,13 @@ Deno.serve(async (req) => {
           .eq("user_id", userId);
       }
 
+      await supabaseAdmin.from("kyc_verificacoes").insert({
+        user_id: userId,
+        status: "rejected",
+        similarity: (verification.score || 0) / 100,
+        tipo: doctorProfile ? "medico" : "paciente",
+      });
+
       await supabaseAdmin.from("notifications").insert({
         user_id: userId,
         title: "❌ Verificação não aprovada",
@@ -204,7 +218,7 @@ Deno.serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
-    console.error("[kyc-verify] Error:", err);
+    console.error("[didit-kyc] Error:", err);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
