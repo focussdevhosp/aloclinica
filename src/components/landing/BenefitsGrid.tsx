@@ -4,6 +4,15 @@ import { ShieldCheck, Lightning, Devices, Receipt, UsersFour, FirstAid } from "@
 
 import familyImg from "@/assets/section-family-telehealth.jpg";
 import doctorAppImg from "@/assets/section-doctor-app.jpg";
+import multiplatformImg from "@/assets/benefit-multiplatform.jpg";
+import familyPlanImg from "@/assets/benefit-family-plan.jpg";
+import medicalRecordsImg from "@/assets/benefit-medical-records.jpg";
+
+const cardImages: Record<string, string> = {
+  "Multiplataforma": multiplatformImg,
+  "Plano família": familyPlanImg,
+  "Prontuário completo": medicalRecordsImg,
+};
 
 const benefits = [
   {
@@ -43,7 +52,6 @@ const benefits = [
     accent: "bg-teal-500/10 text-teal-600",
   },
 ];
-
 function BenefitsGrid() {
   return (
     <section className="py-16 md:py-28 overflow-hidden">
@@ -119,22 +127,39 @@ function BenefitsGrid() {
           </div>
 
           {/* Bottom row - 3 more benefit cards + image */}
-          {benefits.slice(3).map((b, i) => (
-            <motion.div
-              key={b.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="md:col-span-3 bg-card rounded-2xl border border-border/40 p-5 flex flex-col gap-3 hover:shadow-lg hover:border-primary/15 transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <div className={`w-11 h-11 rounded-xl ${b.accent} flex items-center justify-center`}>
-                <b.icon className="w-5 h-5" weight="fill" />
-              </div>
-              <h4 className="text-sm font-bold text-foreground">{b.title}</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">{b.description}</p>
-            </motion.div>
-          ))}
+          {benefits.slice(3).map((b, i) => {
+            const img = cardImages[b.title];
+            return (
+              <motion.div
+                key={b.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="md:col-span-3 bg-card rounded-2xl border border-border/40 overflow-hidden flex flex-col hover:shadow-lg hover:border-primary/15 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                {img && (
+                  <div className="relative h-32 overflow-hidden">
+                    <img
+                      src={img}
+                      alt={b.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+                  </div>
+                )}
+                <div className="p-5 flex flex-col gap-3">
+                  <div className={`w-11 h-11 rounded-xl ${b.accent} flex items-center justify-center`}>
+                    <b.icon className="w-5 h-5" weight="fill" />
+                  </div>
+                  <h4 className="text-sm font-bold text-foreground">{b.title}</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{b.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
 
           {/* Doctor image card */}
           <motion.div
