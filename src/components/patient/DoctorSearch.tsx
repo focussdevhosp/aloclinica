@@ -124,7 +124,7 @@ const DoctorSearch = () => {
     setLoading(true);
     const { data: doctorData } = await supabase
       .from("doctor_profiles")
-      .select("id, user_id, crm, crm_state, bio, consultation_price, rating, total_reviews, experience_years, available_now, available_now_since")
+      .select("id, user_id, crm, crm_state, bio, consultation_price, rating, total_reviews, experience_years, available_now, available_now_since, display_name")
       .eq("is_approved", true);
 
     if (!doctorData) { setLoading(false); return; }
@@ -467,7 +467,7 @@ const DoctorSearch = () => {
                           <AvatarFallback className="rounded-2xl bg-gradient-to-br from-[#00347F] to-[#2563EB] text-white font-bold text-base">{doctor.profile?.first_name?.[0]}{doctor.profile?.last_name?.[0]}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0 pr-8">
-                          <h3 className="font-bold text-foreground text-[15px] leading-tight truncate font-[Manrope]">Dr(a). {doctor.profile?.first_name} {doctor.profile?.last_name}</h3>
+                          <h3 className="font-bold text-foreground text-[15px] leading-tight truncate font-[Manrope]">{(doctor as any).display_name || `Dr(a). ${doctor.profile?.first_name} ${doctor.profile?.last_name}`}</h3>
                           <p className="text-xs text-muted-foreground mt-0.5">CRM {doctor.crm}/{doctor.crm_state}{(doctor.experience_years ?? 0) > 0 && ` · ${doctor.experience_years}a exp.`}</p>
                           {doctor.specialties.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">{doctor.specialties.slice(0, 2).map(s => (<span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-[hsl(var(--p-primary))]/10 text-[hsl(var(--p-primary))] font-semibold">{s}</span>))}</div>
