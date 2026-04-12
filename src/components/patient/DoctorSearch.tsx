@@ -158,12 +158,20 @@ const DoctorSearch = () => {
       specsMap.set(s.doctor_id, arr);
     });
 
+    const careAreasMap = new Map<string, string[]>();
+    (careAreasRes.data as any[])?.forEach((c: { doctor_id: string; area_name: string }) => {
+      const arr = careAreasMap.get(c.doctor_id) ?? [];
+      arr.push(c.area_name);
+      careAreasMap.set(c.doctor_id, arr);
+    });
+
     const results: DoctorResult[] = doctorData.map(d => ({
       ...d,
       consultation_price: Number(d.consultation_price),
       rating: Number(d.rating),
       profile: profilesMap.get(d.user_id) ?? null,
       specialties: specsMap.get(d.id) ?? [],
+      careAreas: careAreasMap.get(d.id) ?? [],
     }));
 
     const maxPrice = Math.max(...results.map(d => d.consultation_price), 500);
