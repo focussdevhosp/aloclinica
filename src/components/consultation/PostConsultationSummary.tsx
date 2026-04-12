@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import {
   CheckCircle2, Clock, FileText, Pill, Star, ArrowRight,
-  MessageSquare, Download, Shield
+  MessageSquare, Shield, Send
 } from "lucide-react";
 
 interface PostConsultationSummaryProps {
@@ -31,15 +34,30 @@ const PostConsultationSummary = ({
   const [hasPrescription, setHasPrescription] = useState(false);
   const [otherPartyName, setOtherPartyName] = useState("");
 
+  // Rating state
+  const [existingRating, setExistingRating] = useState<number | null>(null);
+  const [showRating, setShowRating] = useState(false);
+  const [hoveredStar, setHoveredStar] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [ratingSubmitting, setRatingSubmitting] = useState(false);
+  const [ratingDone, setRatingDone] = useState(false);
+
   useEffect(() => {
     const load = async () => {
       const [notesRes, prescRes, apptRes] = await Promise.all([
         supabase.from("consultation_notes").select("id").eq("appointment_id", appointmentId).limit(1),
         supabase.from("prescriptions").select("id").eq("appointment_id", appointmentId).limit(1),
-        supabase.from("appointments").select("patient_id, doctor_id").eq("id", appointmentId).single(),
+        supabase.from("appointments").select("patient_id, doctor_id, patient_rating").eq("id", appointmentId).single(),
       ]);
       setHasNotes((notesRes.data?.length ?? 0) > 0);
       setHasPrescription((prescRes.data?.length ?? 0) > 0);
+
+      if (apptRes.data?.patient_rating) {
+        setExistingRating(apptRes.data.patient_rating);
+        setSelectedRating(apptRes.data.patient_rating);
+        setRatingDone(true);
+      }
 
       if (apptRes.data) {
         const otherId = isDoctor ? apptRes.data.patient_id : null;
@@ -58,6 +76,29 @@ const PostConsultationSummary = ({
     };
     load();
   }, [appointmentId, isDoctor]);
+
+  const handleSubmitRating = async () => {
+    if (!selectedRating) { toast.error("Selecione uma avaliação de 1 a 5 estrelas"); return; }
+    setRatingSubmitting(true);
+    const { error } = await supabase.from("appointments").update({
+      patient_rating: selectedRating,
+      patient_review: reviewText.trim() || null,
+      rated_at: new Date().toISOString(),
+    }).eq("id", appointmentId);
+
+    if (error) {
+      logError("[PostConsultationSummary] submit rating failed", error);
+      toast.error("Erro ao salvar avaliação. Tente novamente.");
+    } else {
+      setRatingDone(true);
+      setExistingRating(selectedRating);
+      toast.success("Avaliação enviada! Obrigado pelo seu feedback.");
+      setTimeout(() => onContinue(), 1500);
+    }
+    setRatingSubmitting(false);
+  };
+
+  const starLabel = (n: number) => ["", "Ruim", "Regular", "Bom", "Muito bom", "Excelente"][n] ?? "";
 
   const formatDuration = (s: number) => {
     const h = Math.floor(s / 3600);
@@ -140,6 +181,94 @@ const PostConsultationSummary = ({
           </CardContent>
         </Card>
 
+        {/* Patient Rating Section */}
+        <AnimatePresence>
+          {!isDoctor && showRating && (
+            <motion.div
+              key="rating-panel"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden mb-4"
+            >
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 space-y-4">
+                  <p className="text-sm font-semibold text-foreground text-center">
+                    {ratingDone ? "Sua avaliação" : `Como foi sua consulta com ${otherPartyName || "o médico"}?`}
+                  </p>
+
+                  {/* Stars */}
+                  <div className="flex justify-center gap-2" role="group" aria-label="Avaliação de 1 a 5 estrelas">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        disabled={ratingDone}
+                        aria-label={`${n} estrela${n > 1 ? "s" : ""} — ${starLabel(n)}`}
+                        onMouseEnter={() => !ratingDone && setHoveredStar(n)}
+                        onMouseLeave={() => !ratingDone && setHoveredStar(0)}
+                        onClick={() => !ratingDone && setSelectedRating(n)}
+                        className="transition-transform active:scale-90 disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                      >
+                        <Star
+                          className={`w-9 h-9 sm:w-10 sm:h-10 transition-colors ${
+                            n <= (hoveredStar || selectedRating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-muted-foreground/40"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+
+                  {selectedRating > 0 && (
+                    <p className="text-center text-sm font-medium text-primary">
+                      {starLabel(selectedRating)}
+                    </p>
+                  )}
+
+                  {!ratingDone && (
+                    <>
+                      <Textarea
+                        placeholder="Comentário opcional sobre a consulta..."
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        rows={3}
+                        className="resize-none text-sm"
+                        maxLength={500}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          className="flex-1 h-10 rounded-xl text-sm"
+                          onClick={() => { setShowRating(false); setSelectedRating(0); setReviewText(""); setHoveredStar(0); }}
+                        >
+                          Pular
+                        </Button>
+                        <Button
+                          className="flex-1 h-10 rounded-xl text-sm gap-1.5"
+                          onClick={handleSubmitRating}
+                          disabled={ratingSubmitting || !selectedRating}
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          {ratingSubmitting ? "Enviando..." : "Enviar Avaliação"}
+                        </Button>
+                      </div>
+                    </>
+                  )}
+
+                  {ratingDone && (
+                    <p className="text-center text-xs text-muted-foreground">
+                      Avaliação registrada. Obrigado!
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Actions */}
         <div className="space-y-3">
           {isDoctor && !hasPrescription && (
@@ -152,12 +281,22 @@ const PostConsultationSummary = ({
             </Button>
           )}
 
+          {!isDoctor && !showRating && !ratingDone && (
+            <Button
+              className="w-full h-12 rounded-xl font-semibold gap-2"
+              onClick={() => setShowRating(true)}
+            >
+              <Star className="w-5 h-5" />
+              Avaliar Consulta
+            </Button>
+          )}
+
           <Button
             onClick={onContinue}
-            variant={isDoctor && !hasPrescription ? "outline" : "default"}
+            variant={(!isDoctor && !ratingDone) || (isDoctor && !hasPrescription) ? "outline" : "default"}
             className="w-full h-12 rounded-xl font-semibold gap-2"
           >
-            {isDoctor ? "Voltar ao Dashboard" : "Avaliar Consulta"}
+            {isDoctor ? "Voltar ao Dashboard" : ratingDone ? "Continuar" : "Pular Avaliação"}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>

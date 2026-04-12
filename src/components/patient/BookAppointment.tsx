@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { triggerAppointmentConfirmed } from "@/lib/whatsapp";
-import { notifyNewAppointment } from "@/lib/notifications";
+import { notifyNewAppointment, notifyPaymentConfirmed } from "@/lib/notifications";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/logger";
+import { validateCard } from "@/lib/card-utils";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -96,6 +97,8 @@ const BookAppointment = () => {
   const [pixCopyPaste, setPixCopyPaste] = useState<string | null>(null);
   const [boletoUrl, setBoletoUrl] = useState<string | null>(null);
   const [pixCopied, setPixCopied] = useState(false);
+  const [pixSecondsLeft, setPixSecondsLeft] = useState(0);
+  const [pixExpired, setPixExpired] = useState(false);
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
@@ -151,6 +154,25 @@ const BookAppointment = () => {
     if (selectedDate && doctorId) fetchBookedSlots();
   }, [selectedDate]);
 
+  // PIX expiry countdown (Asaas QR codes expire after 30 minutes)
+  useEffect(() => {
+    if (!pixQrCode) return;
+    setPixSecondsLeft(1800);
+    setPixExpired(false);
+    const timer = setInterval(() => {
+      setPixSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setPixExpired(true);
+          toast.error("PIX expirado", { description: "O QR Code expirou. Clique em 'Gerar novo PIX' para continuar." });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [pixQrCode]);
+
   // Poll for payment confirmation
   useEffect(() => {
     if (!paymentStep || !appointmentId) return;
@@ -173,30 +195,42 @@ const BookAppointment = () => {
   }, [paymentStep, appointmentId, pixQrCode, boletoUrl]);
 
   const fetchDoctor = async () => {
-    const { data: doc } = await supabase
-      .from("doctor_profiles")
-      .select("id, user_id, crm, crm_state, bio, consultation_price, rating, experience_years")
-      .eq("id", doctorId!)
-      .single();
+    try {
+      const { data: doc, error } = await supabase
+        .from("doctor_profiles")
+        .select("id, user_id, crm, crm_state, bio, consultation_price, rating, experience_years")
+        .eq("id", doctorId!)
+        .single();
 
-    if (!doc) { setLoading(false); return; }
+      if (error || !doc) {
+        toast.error("Médico não encontrado", { description: "Verifique o link e tente novamente." });
+        navigate(-1);
+        setLoading(false);
+        return;
+      }
 
-    const [profileRes, specsRes, slotsRes] = await Promise.all([
-      supabase.from("profiles").select("first_name, last_name").eq("user_id", doc.user_id).single(),
-      supabase.from("doctor_specialties").select("specialties(name)").eq("doctor_id", doc.id),
-      supabase.from("availability_slots").select("day_of_week, start_time, end_time").eq("doctor_id", doc.id).eq("is_active", true),
-    ]);
+      const [profileRes, specsRes, slotsRes] = await Promise.all([
+        supabase.from("profiles").select("first_name, last_name").eq("user_id", doc.user_id).single(),
+        supabase.from("doctor_specialties").select("specialties(name)").eq("doctor_id", doc.id),
+        supabase.from("availability_slots").select("day_of_week, start_time, end_time").eq("doctor_id", doc.id).eq("is_active", true),
+      ]);
 
-    setDoctor({
-      ...doc,
-      consultation_price: Number(doc.consultation_price),
-      rating: Number(doc.rating),
-      first_name: profileRes.data?.first_name ?? "",
-      last_name: profileRes.data?.last_name ?? "",
-      specialties: specsRes.data?.map((s: { specialties?: { name?: string } | null }) => s.specialties?.name).filter(Boolean) as string[] ?? [],
-      slots: slotsRes.data ?? [],
-    });
-    setLoading(false);
+      setDoctor({
+        ...doc,
+        consultation_price: Number(doc.consultation_price),
+        rating: Number(doc.rating),
+        first_name: profileRes.data?.first_name ?? "",
+        last_name: profileRes.data?.last_name ?? "",
+        specialties: specsRes.data?.map((s: { specialties?: { name?: string } | null }) => s.specialties?.name).filter(Boolean) as string[] ?? [],
+        slots: slotsRes.data ?? [],
+      });
+    } catch (err) {
+      logError("[BookAppointment] fetchDoctor error", err);
+      toast.error("Erro ao carregar médico", { description: "Tente novamente." });
+      navigate(-1);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchBookedSlots = async () => {
@@ -315,9 +349,9 @@ const BookAppointment = () => {
   // Step 2: Process payment via Asaas
   const handlePayment = async () => {
     if (!user || !doctor || !appointmentId) return;
-    if (paymentMethod === "card" && (!cardName || !cardNumber || !cardExpiry || !cardCvv)) {
-      toast.error("Preencha todos os campos do cartão");
-      return;
+    if (paymentMethod === "card") {
+      const cardError = validateCard(cardName, cardNumber, cardExpiry, cardCvv);
+      if (cardError) { toast.error(cardError); return; }
     }
     setProcessing(true);
 
@@ -418,10 +452,13 @@ const BookAppointment = () => {
         // Trigger notifications
         triggerAppointmentConfirmed(appointmentId).catch(err => logError("triggerAppointmentConfirmed", err));
         const pName = `${profile.first_name} ${profile.last_name}`.trim();
+        const doctorFullName = `Dr(a). ${doctor.first_name} ${doctor.last_name}`;
         if (selectedDate && selectedTime) {
           notifyNewAppointment(appointmentId, doctor.id, pName, format(selectedDate, "dd/MM/yyyy", { locale: ptBR }), selectedTime)
             .catch(err => logError("notifyNewAppointment", err));
         }
+        notifyPaymentConfirmed(user.id, doctorFullName, selectedDate ? format(selectedDate, "dd/MM/yyyy", { locale: ptBR }) : "", `R$ ${totalPrice.toFixed(2)}`)
+          .catch(err => logError("notifyPaymentConfirmed", err));
 
         toast.success("Pagamento confirmado! ✅");
         navigate("/dashboard/appointments");
@@ -830,10 +867,28 @@ const BookAppointment = () => {
                   <motion.div key="pix" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                     <Card className="border-border">
                       <CardContent className="p-6 text-center">
-                        {pixQrCode ? (
+                        {pixExpired ? (
                           <>
-                            <div className="w-48 h-48 mx-auto rounded-2xl bg-card border-2 border-border p-2 mb-4">
+                            <QrCode className="w-12 h-12 mx-auto text-destructive/40 mb-3" />
+                            <p className="text-sm font-semibold text-destructive mb-1">QR Code expirado</p>
+                            <p className="text-xs text-muted-foreground mb-4">O PIX expirou após 30 minutos.</p>
+                            <Button className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground h-12 text-base"
+                              onClick={() => { setPixQrCode(null); setPixCopyPaste(null); setPixExpired(false); handlePayment(); }}
+                              disabled={processing}>
+                              {processing ? "Gerando..." : "🔄 Gerar novo PIX"}
+                            </Button>
+                          </>
+                        ) : pixQrCode ? (
+                          <>
+                            <div className="w-48 h-48 mx-auto rounded-2xl bg-card border-2 border-border p-2 mb-3">
                               <img src={`data:image/png;base64,${pixQrCode}`} alt="QR Code PIX" className="w-full h-full object-contain rounded-xl" loading="lazy" decoding="async" />
+                            </div>
+                            {/* Expiry countdown */}
+                            <div className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full mb-3 ${
+                              pixSecondsLeft < 120 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
+                            }`}>
+                              <Clock className="w-3 h-3" />
+                              Expira em {Math.floor(pixSecondsLeft / 60).toString().padStart(2, "0")}:{(pixSecondsLeft % 60).toString().padStart(2, "0")}
                             </div>
                             <p className="text-xs text-muted-foreground mb-3">Escaneie o QR Code ou copie o código</p>
                             <Button variant="outline" className="w-full mb-4 font-mono text-xs"

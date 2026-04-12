@@ -134,10 +134,10 @@ const AdminAppointments = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Paciente</TableHead>
-                  <TableHead>Médico</TableHead>
+                  <TableHead className="hidden sm:table-cell">Médico</TableHead>
                   <TableHead>Data/Hora</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Duração</TableHead>
+                  <TableHead className="hidden md:table-cell">Tipo</TableHead>
+                  <TableHead className="hidden lg:table-cell">Duração</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -145,16 +145,16 @@ const AdminAppointments = () => {
                 {filtered.map(a => (
                   <TableRow key={a.id} className={a.status === "in_progress" ? "bg-primary/5" : a.status === "waiting" ? "bg-secondary/5" : ""}>
                     <TableCell data-label="Paciente" className="font-medium text-foreground">{a.patient_name}</TableCell>
-                    <TableCell data-label="Médico" className="text-muted-foreground">Dr(a). {a.doctor_name}</TableCell>
+                    <TableCell data-label="Médico" className="hidden sm:table-cell text-muted-foreground">Dr(a). {a.doctor_name}</TableCell>
                     <TableCell data-label="Data" className="text-muted-foreground">{format(new Date(a.scheduled_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
-                    <TableCell data-label="Tipo">
+                    <TableCell data-label="Tipo" className="hidden md:table-cell">
                       {a.appointment_type && (
                         <Badge variant="outline" className="text-xs">
                           {typeLabel[a.appointment_type] ?? a.appointment_type}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell data-label="Duração" className="text-muted-foreground">{a.duration_minutes || 30} min</TableCell>
+                    <TableCell data-label="Duração" className="hidden lg:table-cell text-muted-foreground">{a.duration_minutes || 30} min</TableCell>
                     <TableCell data-label="Status">
                       <Badge variant={statusVariant[a.status] ?? "outline"}>
                         {a.status === "in_progress" && <span className="w-1.5 h-1.5 rounded-full bg-white mr-1 shimmer-v2 inline-block" />}

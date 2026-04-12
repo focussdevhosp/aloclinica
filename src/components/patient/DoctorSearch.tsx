@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
 import mascotWave from "@/assets/mascot-wave.png";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
@@ -72,6 +73,7 @@ const DoctorSearch = () => {
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [specialties, setSpecialties] = useState<{ id: string; name: string }[]>([]);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -92,10 +94,10 @@ const DoctorSearch = () => {
   }, [user]);
 
   useEffect(() => {
-    if (search || selectedSpecialty || isUrgency) {
+    if (debouncedSearch || selectedSpecialty || isUrgency) {
       setViewMode("results");
     }
-  }, [search, selectedSpecialty, isUrgency]);
+  }, [debouncedSearch, selectedSpecialty, isUrgency]);
 
   const fetchFavorites = async () => {
     if (!user) return;
@@ -125,7 +127,8 @@ const DoctorSearch = () => {
     const { data: doctorData } = await supabase
       .from("doctor_profiles")
       .select("id, user_id, crm, crm_state, bio, consultation_price, rating, total_reviews, experience_years, available_now, available_now_since, display_name")
-      .eq("is_approved", true);
+      .eq("is_approved", true)
+      .limit(100);
 
     if (!doctorData) { setLoading(false); return; }
 
@@ -182,10 +185,10 @@ const DoctorSearch = () => {
 
   const filtered = doctors
     .filter(d => {
-      const searchLower = search.toLowerCase();
-      const nameMatch = !search ||
+      const searchLower = debouncedSearch.toLowerCase();
+      const nameMatch = !debouncedSearch ||
         `${d.profile?.first_name} ${d.profile?.last_name}`.toLowerCase().includes(searchLower) ||
-        d.crm.includes(search) ||
+        d.crm.includes(debouncedSearch) ||
         d.careAreas.some(a => a.toLowerCase().includes(searchLower));
       const specMatch = !selectedSpecialty || d.specialties.some(s => s === selectedSpecialty);
       const urgencyMatch = !isUrgency || availableNowIds.has(d.id) || Boolean(d.available_now);

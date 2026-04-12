@@ -101,8 +101,8 @@ const AdminDoctors = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Médico</TableHead>
-                  <TableHead>CRM</TableHead>
-                  <TableHead>Preço</TableHead>
+                  <TableHead className="hidden sm:table-cell">CRM</TableHead>
+                  <TableHead className="hidden md:table-cell">Preço</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -132,8 +132,8 @@ const AdminDoctors = () => {
                         <span className="font-medium text-foreground">Dr(a). {doc.first_name} {doc.last_name}</span>
                       </div>
                     </TableCell>
-                    <TableCell data-label="CRM" className="text-muted-foreground">{doc.crm}/{doc.crm_state}</TableCell>
-                    <TableCell data-label="Preço" className="text-muted-foreground">R$ {doc.consultation_price || "—"}</TableCell>
+                    <TableCell data-label="CRM" className="hidden sm:table-cell text-muted-foreground">{doc.crm}/{doc.crm_state}</TableCell>
+                    <TableCell data-label="Preço" className="hidden md:table-cell text-muted-foreground">R$ {doc.consultation_price || "—"}</TableCell>
                     <TableCell data-label="Status">
                       <Badge variant={doc.is_approved ? "default" : "outline"}>{doc.is_approved ? "Aprovado" : "Pendente"}</Badge>
                     </TableCell>

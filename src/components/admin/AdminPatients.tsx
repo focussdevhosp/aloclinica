@@ -202,9 +202,9 @@ const AdminPatients = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Paciente</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>CPF</TableHead>
-                    <TableHead>Cadastro</TableHead>
+                    <TableHead className="hidden sm:table-cell">Telefone</TableHead>
+                    <TableHead className="hidden md:table-cell">CPF</TableHead>
+                    <TableHead className="hidden md:table-cell">Cadastro</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -235,9 +235,9 @@ const AdminPatients = () => {
                           <span className="font-medium text-foreground">{p.first_name} {p.last_name}</span>
                         </div>
                       </TableCell>
-                      <TableCell data-label="Telefone" className="text-muted-foreground">{p.phone || "—"}</TableCell>
-                      <TableCell data-label="CPF" className="text-muted-foreground">{p.cpf || "—"}</TableCell>
-                      <TableCell data-label="Cadastro" className="text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</TableCell>
+                      <TableCell data-label="Telefone" className="hidden sm:table-cell text-muted-foreground">{p.phone || "—"}</TableCell>
+                      <TableCell data-label="CPF" className="hidden md:table-cell text-muted-foreground">{p.cpf || "—"}</TableCell>
+                      <TableCell data-label="Cadastro" className="hidden md:table-cell text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</TableCell>
                       <TableCell data-label="">
                         <Button size="sm" variant="ghost" onClick={() => openDetail(p)}>
                           <Eye className="w-4 h-4 mr-1" /> Ver

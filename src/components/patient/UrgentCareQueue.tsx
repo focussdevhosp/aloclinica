@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { notifyDoctorsNewQueueEntry } from "@/lib/notifications-queue";
 import { logError } from "@/lib/logger";
+import { validateCard } from "@/lib/card-utils";
 import mascotWave from "@/assets/mascot-wave.png";
 
 type PaymentMethod = "pix" | "card" | "boleto";
@@ -98,6 +99,10 @@ const UrgentCareQueue = () => {
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [pendingQueueId, setPendingQueueId] = useState<string | null>(null);
+  // PIX expiry countdown (15 minutes = 900s)
+  const PIX_EXPIRY_SECS = 900;
+  const [pixSecondsLeft, setPixSecondsLeft] = useState(PIX_EXPIRY_SECS);
+  const [pixExpired, setPixExpired] = useState(false);
   const [nearbyHospitals, setNearbyHospitals] = useState<NearbyHospital[]>([]);
   const [hospitalsLoading, setHospitalsLoading] = useState(true);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -167,6 +172,25 @@ const UrgentCareQueue = () => {
     return () => clearInterval(poll);
   }, [showPayment, pendingQueueId, pixQrCode, boletoUrl]);
 
+  // PIX expiry countdown — runs when QR code is shown
+  useEffect(() => {
+    if (!pixQrCode) { setPixSecondsLeft(PIX_EXPIRY_SECS); setPixExpired(false); return; }
+    setPixSecondsLeft(PIX_EXPIRY_SECS);
+    setPixExpired(false);
+    const timer = setInterval(() => {
+      setPixSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setPixExpired(true);
+          toast.error("PIX expirado", { description: "O QR Code expirou. Gere um novo para continuar." });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [pixQrCode]);
+
   const fetchShiftPrice = async () => {
     try { const { data } = await supabase.functions.invoke("calculate-shift-price"); if (data) setShiftInfo(data); } catch { setShiftInfo({ shift: "day", price: 75, label: "Diurno" }); }
     setLoading(false);
@@ -188,7 +212,7 @@ const UrgentCareQueue = () => {
 
   const handlePayment = async () => {
     if (!user || !shiftInfo) return;
-    if (paymentMethod === "card" && (!cardName || !cardNumber || !cardExpiry || !cardCvv)) { toast.error("Preencha todos os campos do cartão"); return; }
+    if (paymentMethod === "card") { const cardError = validateCard(cardName, cardNumber, cardExpiry, cardCvv); if (cardError) { toast.error(cardError); return; } }
     setProcessing(true);
     try {
       const { data: profile } = await supabase.from("profiles").select("first_name, last_name, cpf, phone").eq("user_id", user.id).single();
@@ -284,7 +308,48 @@ const UrgentCareQueue = () => {
                 <AnimatePresence mode="wait">
                   {paymentMethod === "pix" && (
                     <motion.div key="pix" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
-                      {pixQrCode ? (<><div className="w-48 h-48 mx-auto rounded-2xl bg-card border-2 border-border p-2 mb-4"><img src={`data:image/png;base64,${pixQrCode}`} alt="QR Code PIX" className="w-full h-full object-contain rounded-xl" /></div><Button variant="outline" className="w-full mb-4 text-xs rounded-2xl" onClick={() => { navigator.clipboard.writeText(pixCopyPaste || ""); setPixCopied(true); toast.success("Copiado!"); setTimeout(() => setPixCopied(false), 3000); }}>{pixCopied ? <><CheckCircle2 className="w-4 h-4 mr-2 text-secondary" /> Copiado!</> : <><Copy className="w-4 h-4 mr-2" /> Copiar código PIX</>}</Button><p className="text-xs text-muted-foreground">Após o pagamento, você entrará na fila automaticamente.</p></>) : (<><QrCode className="w-12 h-12 mx-auto text-[hsl(var(--p-primary))]/60 mb-4" /><Button className="w-full bg-[hsl(var(--p-primary))] text-white h-12 rounded-2xl" onClick={handlePayment} disabled={processing}>{processing ? "Gerando PIX..." : `Gerar PIX • R$ ${priceWithDiscount.toFixed(2)}`}</Button></>)}
+                      {pixQrCode ? (
+                        <>
+                          {/* QR Code with expiry overlay */}
+                          <div className="relative w-48 h-48 mx-auto mb-4">
+                            <div className={`rounded-2xl bg-card border-2 p-2 w-full h-full ${pixExpired ? "border-destructive/40 opacity-40" : "border-border"}`}>
+                              <img src={`data:image/png;base64,${pixQrCode}`} alt="QR Code PIX" className="w-full h-full object-contain rounded-xl" />
+                            </div>
+                            {pixExpired && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-background/80 backdrop-blur-sm">
+                                <p className="text-sm font-bold text-destructive">PIX Expirado</p>
+                                <Button size="sm" className="mt-2 rounded-full bg-[hsl(var(--p-primary))] text-white" onClick={() => { setPixQrCode(null); setPixCopyPaste(null); }}>
+                                  Gerar novo PIX
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Countdown badge */}
+                          {!pixExpired && (
+                            <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold mb-3 ${pixSecondsLeft < 120 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                              <Clock className="w-3 h-3" />
+                              Expira em {Math.floor(pixSecondsLeft / 60).toString().padStart(2, "0")}:{(pixSecondsLeft % 60).toString().padStart(2, "0")}
+                            </div>
+                          )}
+
+                          {!pixExpired && (
+                            <>
+                              <Button variant="outline" className="w-full mb-4 text-xs rounded-2xl" onClick={() => { navigator.clipboard.writeText(pixCopyPaste || ""); setPixCopied(true); toast.success("Copiado!"); setTimeout(() => setPixCopied(false), 3000); }}>
+                                {pixCopied ? <><CheckCircle2 className="w-4 h-4 mr-2 text-secondary" /> Copiado!</> : <><Copy className="w-4 h-4 mr-2" /> Copiar código PIX</>}
+                              </Button>
+                              <p className="text-xs text-muted-foreground">Após o pagamento, você entrará na fila automaticamente.</p>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <QrCode className="w-12 h-12 mx-auto text-[hsl(var(--p-primary))]/60 mb-4" />
+                          <Button className="w-full bg-[hsl(var(--p-primary))] text-white h-12 rounded-2xl" onClick={handlePayment} disabled={processing}>
+                            {processing ? "Gerando PIX..." : `Gerar PIX • R$ ${priceWithDiscount.toFixed(2)}`}
+                          </Button>
+                        </>
+                      )}
                     </motion.div>
                   )}
                   {paymentMethod === "card" && (

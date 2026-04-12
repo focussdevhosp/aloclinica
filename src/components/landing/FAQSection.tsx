@@ -1,4 +1,5 @@
-import { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { MagnifyingGlass, ChatCircleDots, Question, ArrowRight, CaretDown, Stethoscope, FileText, CreditCard, ShieldCheck, UserGear } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +13,9 @@ const categoryConfig: Record<string, { icon: typeof Question; color: string }> =
   médico: { icon: UserGear, color: "text-rose-500" },
 };
 
-const faqs = [
+type FaqEntry = { q: string; a: string; category: string; };
+
+const staticFaqs: FaqEntry[] = [
   { q: "A consulta por vídeo tem a mesma validade de uma presencial?", a: "Sim! A telemedicina é regulamentada pelo CFM e as consultas realizadas pela AloClinica têm a mesma validade legal de uma consulta presencial, incluindo receitas e atestados.", category: "consulta" },
   { q: "Como funciona a receita digital?", a: "Após a consulta, o médico emite uma receita digital assinada eletronicamente. Você recebe o PDF pelo aplicativo e pode apresentá-la em qualquer farmácia.", category: "receita" },
   { q: "Posso cancelar meu plano a qualquer momento?", a: "Sim, você pode cancelar seu plano mensal a qualquer momento sem multa. O acesso continua até o fim do período pago.", category: "plano" },
@@ -37,6 +40,20 @@ const FAQSection = forwardRef<HTMLElement>((_, ref) => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [openItem, setOpenItem] = useState<string | null>(null);
+  const [faqs, setFaqs] = useState<FaqEntry[]>(staticFaqs);
+
+  useEffect(() => {
+    supabase
+      .from("faq_items")
+      .select("question, answer, category")
+      .eq("is_active", true)
+      .order("order_index")
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setFaqs(data.map((d) => ({ q: d.question, a: d.answer, category: d.category ?? "geral" })));
+        }
+      });
+  }, []);
 
   const filtered = faqs.filter((faq) => {
     const matchSearch = search === "" || faq.q.toLowerCase().includes(search.toLowerCase()) || faq.a.toLowerCase().includes(search.toLowerCase());
@@ -45,6 +62,7 @@ const FAQSection = forwardRef<HTMLElement>((_, ref) => {
   });
 
   useEffect(() => {
+    if (faqs.length === 0) return;
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -54,13 +72,14 @@ const FAQSection = forwardRef<HTMLElement>((_, ref) => {
         acceptedAnswer: { "@type": "Answer", text: f.a },
       })),
     };
+    document.getElementById("faq-jsonld")?.remove();
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.textContent = JSON.stringify(jsonLd);
     script.id = "faq-jsonld";
     document.head.appendChild(script);
     return () => { document.getElementById("faq-jsonld")?.remove(); };
-  }, []);
+  }, [faqs]);
 
   return (
     <section id="faq" className="py-16 md:py-28 relative overflow-hidden" aria-labelledby="faq-heading">
@@ -127,11 +146,12 @@ const FAQSection = forwardRef<HTMLElement>((_, ref) => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.15, duration: 0.5 }}
-            className="flex flex-wrap gap-2 mb-8"
+            className="mb-8"
           >
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {categories.map((cat, i) => {
               const isActive = activeCategory === cat.key;
-              const count = cat.key === "all" ? faqs.length : faqs.filter(f => f.category === cat.key).length;
+              const count = cat.key === "all" ? faqs.length : faqs.filter((f) => f.category === cat.key).length;
               return (
                 <motion.button
                   key={cat.key}
@@ -140,7 +160,7 @@ const FAQSection = forwardRef<HTMLElement>((_, ref) => {
                   viewport={{ once: true }}
                   transition={{ delay: 0.15 + i * 0.04 }}
                   onClick={() => setActiveCategory(cat.key)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2 active:scale-95 ${
+                  className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2 active:scale-95 ${
                     isActive
                       ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                       : "bg-card text-muted-foreground border border-border/60 hover:border-primary/30 hover:text-foreground hover:shadow-sm"
@@ -155,6 +175,7 @@ const FAQSection = forwardRef<HTMLElement>((_, ref) => {
                 </motion.button>
               );
             })}
+          </div>
           </motion.div>
 
           {/* Search results count */}

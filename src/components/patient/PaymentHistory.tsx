@@ -49,7 +49,8 @@ const PaymentHistory = () => {
       .from("subscriptions")
       .select("id, plan_id, status, starts_at, expires_at, created_at, payment_method, notes")
       .eq("user_id", user!.id)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(50);
 
     if (!subsData || subsData.length === 0) { setLoading(false); return; }
 

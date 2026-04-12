@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { notifyAppointmentCancelled } from "@/lib/notifications";
+import { notifyAppointmentCancelled, notifyAppointmentRescheduled } from "@/lib/notifications";
 import { logError } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -147,6 +147,10 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
     if (error) {
       toast.error("Erro ao reagendar consulta");
     } else {
+      const newDateStr = format(newScheduledAt, "dd/MM/yyyy", { locale: ptBR });
+      const newTimeStr = format(newScheduledAt, "HH:mm");
+      notifyAppointmentRescheduled(appointmentId, newDateStr, newTimeStr)
+        .catch(err => logError("notifyAppointmentRescheduled failed", err));
       toast.success(`Consulta reagendada para ${format(newScheduledAt, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`);
       setOpen(false);
       onSuccess();

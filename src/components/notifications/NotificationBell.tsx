@@ -194,7 +194,7 @@ const NotificationBell = () => {
           </AnimatePresence>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[360px] p-0 rounded-2xl border-border/40 shadow-2xl overflow-hidden">
+      <PopoverContent align="end" className="w-[min(360px,calc(100vw-1rem))] p-0 rounded-2xl border-border/40 shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-card to-muted/20 border-b border-border/20">
           <div className="flex items-center gap-2.5">
@@ -212,7 +212,7 @@ const NotificationBell = () => {
           )}
         </div>
 
-        <ScrollArea className="max-h-[380px]">
+        <ScrollArea className="max-h-[50vh] md:max-h-[380px]">
           {notifications.length === 0 ? (
             <div className="py-16 text-center px-6">
               <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">

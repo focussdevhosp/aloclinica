@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { warn } from "@/lib/logger";
+import { warn, logError } from "@/lib/logger";
 import { supabase } from "@/integrations/supabase/client";
 import { useConsultationStore } from "@/stores/consultationStore";
 import { useAuth } from "@/contexts/AuthContext";
@@ -442,13 +442,14 @@ const PrescriptionForm = () => {
             toast.success(`📩 Receita enviada por ${channels}`);
           }
         }
-      }).catch(() => {});
+      }).catch((err) => { logError("[PrescriptionForm] send-prescription edge function failed", err); });
 
       // In-app + Push notification for prescription
       if (patientId) {
         const { notifyPrescriptionSent } = await import("@/lib/notifications");
         const medsSummary = validMeds.map(m => `${m.name} ${m.dosage}`).join(", ");
-        notifyPrescriptionSent(patientId, doctorFullName, diagnosis || undefined, medsSummary).catch(() => {});
+        notifyPrescriptionSent(patientId, doctorFullName, diagnosis || undefined, medsSummary)
+          .catch((err) => { logError("[PrescriptionForm] notifyPrescriptionSent failed", err); });
       }
       store.clearDraft();
       toast.success("Receita salva com sucesso! ✅");

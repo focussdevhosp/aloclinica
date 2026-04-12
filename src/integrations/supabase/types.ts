@@ -249,6 +249,9 @@ export type Database = {
           notes: string | null
           original_appointment_id: string | null
           patient_id: string | null
+          patient_rating: number | null
+          patient_review: string | null
+          rated_at: string | null
           payment_confirmed_at: string | null
           payment_confirmed_by: string | null
           payment_status: string | null
@@ -275,6 +278,9 @@ export type Database = {
           notes?: string | null
           original_appointment_id?: string | null
           patient_id?: string | null
+          patient_rating?: number | null
+          patient_review?: string | null
+          rated_at?: string | null
           payment_confirmed_at?: string | null
           payment_confirmed_by?: string | null
           payment_status?: string | null
@@ -301,6 +307,9 @@ export type Database = {
           notes?: string | null
           original_appointment_id?: string | null
           patient_id?: string | null
+          patient_rating?: number | null
+          patient_review?: string | null
+          rated_at?: string | null
           payment_confirmed_at?: string | null
           payment_confirmed_by?: string | null
           payment_status?: string | null
@@ -3677,6 +3686,108 @@ export type Database = {
           total_transactions: number | null
           total_withdrawn: number | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      site_config: {
+        Row: {
+          id: string
+          key: string
+          value: string | null
+          category: string
+          label: string
+          input_type: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          key: string
+          value?: string | null
+          category?: string
+          label: string
+          input_type?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          key?: string
+          value?: string | null
+          category?: string
+          label?: string
+          input_type?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          id: string
+          name: string
+          role: string | null
+          company: string | null
+          avatar_url: string | null
+          text: string
+          rating: number
+          is_active: boolean
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          role?: string | null
+          company?: string | null
+          avatar_url?: string | null
+          text: string
+          rating?: number
+          is_active?: boolean
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          role?: string | null
+          company?: string | null
+          avatar_url?: string | null
+          text?: string
+          rating?: number
+          is_active?: boolean
+          order_index?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      faq_items: {
+        Row: {
+          id: string
+          question: string
+          answer: string
+          category: string | null
+          is_active: boolean
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          question: string
+          answer: string
+          category?: string | null
+          is_active?: boolean
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          question?: string
+          answer?: string
+          category?: string | null
+          is_active?: boolean
+          order_index?: number
+          created_at?: string
         }
         Relationships: []
       }
