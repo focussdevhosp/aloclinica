@@ -18,6 +18,7 @@ interface DoctorPublicData {
   education: string | null;
   experience_years: number | null;
   name: string;
+  display_name: string | null;
   avatar_url: string | null;
   specialties: string[];
   careAreas: string[];
@@ -85,6 +86,7 @@ const DoctorPublicProfile = () => {
       education: doc.education,
       experience_years: doc.experience_years,
       name: `${doc.first_name} ${doc.last_name}`,
+      display_name: doc.display_name ?? null,
       avatar_url: doc.avatar_url ?? null,
       specialties: doc.specialties ?? [],
       careAreas: (careAreasData as any[])?.map((c: any) => c.area_name) ?? [],
