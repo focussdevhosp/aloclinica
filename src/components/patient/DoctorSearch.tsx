@@ -31,6 +31,7 @@ interface DoctorResult {
   available_now_since?: string | null;
   profile: { first_name: string; last_name: string; avatar_url: string | null } | null;
   specialties: string[];
+  careAreas: string[];
 }
 
 const fadeUp = {
@@ -131,10 +132,11 @@ const DoctorSearch = () => {
     const doctorIds = doctorData.map(d => d.id);
     const userIds = doctorData.map(d => d.user_id);
 
-    const [profilesRes, specRes, slotsRes] = await Promise.all([
+    const [profilesRes, specRes, slotsRes, careAreasRes] = await Promise.all([
       supabase.from("profiles").select("user_id, first_name, last_name, avatar_url").in("user_id", userIds),
       supabase.from("doctor_specialties").select("doctor_id, specialty_id, specialties(name)").in("doctor_id", doctorIds),
       supabase.from("availability_slots").select("doctor_id, day_of_week, start_time, end_time").eq("is_active", true).in("doctor_id", doctorIds),
+      supabase.from("doctor_care_areas" as any).select("doctor_id, area_name").in("doctor_id", doctorIds),
     ]);
 
     const now = new Date();
