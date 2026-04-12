@@ -116,10 +116,11 @@ const UserProfile = () => {
   }, [user]);
 
   const fetchDoctorProfile = async () => {
-    const { data } = await supabase.from("doctor_profiles").select("id, bio, education, experience_years, consultation_price").eq("user_id", user!.id).single();
+    const { data } = await supabase.from("doctor_profiles").select("id, bio, education, experience_years, consultation_price, display_name").eq("user_id", user!.id).single();
     if (data) {
       setDoctorProfileId(data.id);
       setBio(data.bio || ""); setEducation(data.education || "");
+      setDisplayName((data as any).display_name || "");
       setExperienceYears(data.experience_years || 0); setConsultationPrice(Number(data.consultation_price) || 89);
       const [specRes, careRes] = await Promise.all([
         supabase.from("doctor_specialties").select("specialty_id").eq("doctor_id", data.id),
