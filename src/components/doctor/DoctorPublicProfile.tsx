@@ -18,6 +18,7 @@ interface DoctorPublicData {
   education: string | null;
   experience_years: number | null;
   name: string;
+  display_name: string | null;
   avatar_url: string | null;
   specialties: string[];
   careAreas: string[];
@@ -85,6 +86,7 @@ const DoctorPublicProfile = () => {
       education: doc.education,
       experience_years: doc.experience_years,
       name: `${doc.first_name} ${doc.last_name}`,
+      display_name: doc.display_name ?? null,
       avatar_url: doc.avatar_url ?? null,
       specialties: doc.specialties ?? [],
       careAreas: (careAreasData as any[])?.map((c: any) => c.area_name) ?? [],
@@ -156,7 +158,7 @@ const DoctorPublicProfile = () => {
 
                 <div className="text-center sm:text-left flex-1">
                   <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
-                    <h1 className="text-2xl font-bold text-foreground tabular-nums">Dr(a). {doctor.name}</h1>
+                    <h1 className="text-2xl font-bold text-foreground tabular-nums">{doctor.display_name || `Dr(a). ${doctor.name}`}</h1>
                     {doctor.crm_verified ? (
                       <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 gap-1">
                         <ShieldCheck className="w-3.5 h-3.5" />

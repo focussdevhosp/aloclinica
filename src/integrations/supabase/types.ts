@@ -1039,6 +1039,7 @@ export type Database = {
           crm_verified: boolean
           crm_verified_at: string | null
           crm_verified_by: string | null
+          display_name: string | null
           education: string | null
           experience_years: number | null
           id: string
@@ -1063,6 +1064,7 @@ export type Database = {
           crm_verified?: boolean
           crm_verified_at?: string | null
           crm_verified_by?: string | null
+          display_name?: string | null
           education?: string | null
           experience_years?: number | null
           id?: string
@@ -1087,6 +1089,7 @@ export type Database = {
           crm_verified?: boolean
           crm_verified_at?: string | null
           crm_verified_by?: string | null
+          display_name?: string | null
           education?: string | null
           experience_years?: number | null
           id?: string
