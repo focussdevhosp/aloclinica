@@ -80,6 +80,8 @@ const UserProfile = () => {
   const [consultationPrice, setConsultationPrice] = useState(89);
   const [priceMin, setPriceMin] = useState<number | null>(null);
   const [priceMax, setPriceMax] = useState<number | null>(null);
+  const [doctorCareAreas, setDoctorCareAreas] = useState<string[]>([]);
+  const [doctorProfileId, setDoctorProfileId] = useState<string | null>(null);
   const isDoctor = roles.includes("doctor");
 
   useEffect(() => {
