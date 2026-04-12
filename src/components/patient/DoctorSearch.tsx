@@ -472,6 +472,14 @@ const DoctorSearch = () => {
                           {doctor.specialties.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">{doctor.specialties.slice(0, 2).map(s => (<span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-[hsl(var(--p-primary))]/10 text-[hsl(var(--p-primary))] font-semibold">{s}</span>))}</div>
                           )}
+                          {doctor.careAreas.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {doctor.careAreas.slice(0, 3).map(a => (
+                                <span key={a} className="text-[10px] px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground font-medium">{a}</span>
+                              ))}
+                              {doctor.careAreas.length > 3 && <span className="text-[10px] text-muted-foreground/60">+{doctor.careAreas.length - 3}</span>}
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {doctor.available_now && (
                               <span className="text-[11px] px-2.5 py-1 rounded-full bg-[hsl(var(--p-success-soft))] text-success font-semibold flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />Plantão</span>
