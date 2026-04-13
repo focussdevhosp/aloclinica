@@ -78,6 +78,10 @@ const SignupClinic = lazy(() => import("./pages/SignupClinic"));
 const SignupSupport = lazy(() => import("./pages/SignupSupport"));
 const SignupLaudista = lazy(() => import("./pages/SignupLaudista"));
 
+// Landing pages
+const ForDoctors = lazy(() => import("./pages/ForDoctors"));
+const ForClinics = lazy(() => import("./pages/ForClinics"));
+
 // Prefetch das rotas mais acessadas após o browser ficar idle
 if (typeof window !== "undefined") {
   const prefetch = () => {
@@ -167,6 +171,8 @@ const AnimatedRoutes = () => {
       <Route path="/para-empresas/telelaudo" element={<B2BTelelaudo />} />
       <Route path="/teleconsulta" element={<Teleconsulta />} />
       <Route path="/oftalmologia" element={<Oftalmologia />} />
+      <Route path="/para-medicos" element={<ForDoctors />} />
+      <Route path="/para-clinicas" element={<ForClinics />} />
 
       <Route path="/telelaudo" element={<Navigate to="/laudista" replace />} />
       <Route path="/telelaudo-workspace" element={<ProtectedRoute><TelelaudoWorkspace /></ProtectedRoute>} />

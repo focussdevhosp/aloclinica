@@ -2,7 +2,7 @@ import { useState, memo, forwardRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { Stethoscope, VideoCamera, Buildings, Brain, FileText, SignIn, ShoppingBag, SignOut, SquaresFour, GlobeSimple, CaretRight, Eye } from "@phosphor-icons/react";
+import { Stethoscope, VideoCamera, Buildings, FileText, SignIn, ShoppingBag, SignOut, SquaresFour, CaretRight, Eye } from "@phosphor-icons/react";
 import mascot from "@/assets/mascot.png";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -72,10 +72,11 @@ const Header = memo(forwardRef<HTMLElement>((_, ref) => {
   const mobileLinks = [
     { label: "Teleconsulta", href: "/teleconsulta" },
     { label: "Oftalmologia", href: "/oftalmologia" },
-    { label: "Sou Médico", href: "/medico" },
+    { label: "Telelaudo", href: "/para-empresas/telelaudo" },
+    { label: "Planos", href: "/#pricing" },
+    { label: "Sou Médico", href: "/para-medicos" },
     { label: "Sou Laudista", href: "/laudista" },
-    { label: "Sou Clínica", href: "/clinica" },
-    { label: "Para Empresas", href: "/para-empresas" },
+    { label: "Sou Clínica", href: "/para-clinicas" },
   ];
 
   const triggerCls = "group/trigger text-[13px] font-medium text-muted-foreground hover:text-foreground bg-transparent data-[state=open]:text-foreground data-[state=open]:bg-muted/40 px-3.5 h-9 rounded-full transition-colors duration-150 gap-1.5";
@@ -118,46 +119,45 @@ const Header = memo(forwardRef<HTMLElement>((_, ref) => {
                       <ListItem href="/oftalmologia" title="Oftalmologia" icon={Eye}>
                         Exames, laudos e receitas para óculos e lentes de contato.
                       </ListItem>
-                      <ListItem href="/paciente" title="Consulta Avulsa" icon={Stethoscope}>
-                        Atendimento rápido, seguro e sem burocracia.
+                      <ListItem href="/para-empresas/telelaudo" title="Telelaudo" icon={FileText}>
+                        Laudos a distância com IA, SLA e assinatura digital.
                       </ListItem>
                     </ul>
                   </div>
                 </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    to="/#pricing"
+                    className={cn(
+                      triggerCls,
+                      "data-[state=open]:text-foreground data-[state=open]:bg-muted/40"
+                    )}
+                  >
+                    <ShoppingBag className={triggerIconCls} weight="fill" />
+                    Planos
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={triggerCls}>
                   <Stethoscope className={triggerIconCls} weight="fill" />
-                  Profissionais
+                  Para Profissionais
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="p-2 w-[300px]">
                     <ul className="grid gap-0.5">
-                      <ListItem href="/medico" title="Sou Médico" icon={Stethoscope}>
+                      <ListItem href="/para-medicos" title="Sou Médico" icon={Stethoscope}>
                         Atenda pacientes online e aumente sua renda.
                       </ListItem>
                       <ListItem href="/laudista" title="Sou Laudista" icon={FileText} badge="IA">
                         Emita laudos à distância com IA e assinatura digital.
                       </ListItem>
-                      <ListItem href="/clinica" title="Sou Clínica" icon={Buildings}>
+                      <ListItem href="/para-clinicas" title="Sou Clínica" icon={Buildings}>
                         Gerencie agendamento, prontuário e equipe.
-                      </ListItem>
-                    </ul>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={triggerCls}>
-                  <Buildings className={triggerIconCls} weight="fill" />
-                  Para Empresas
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="p-2 w-[300px]">
-                    <ul className="grid gap-0.5">
-                      <ListItem href="/para-empresas/telelaudo" title="Telelaudo para Clínicas" icon={Brain}>
-                        Laudos a distância com IA, SLA e assinatura digital.
                       </ListItem>
                     </ul>
                   </div>

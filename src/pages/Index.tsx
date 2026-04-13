@@ -10,12 +10,10 @@ import FloatingMobileCTA from "@/components/landing/FloatingMobileCTA";
 import DeferredSection from "@/components/ui/deferred-section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Stethoscope, Brain } from "@phosphor-icons/react";
+import { Stethoscope } from "@phosphor-icons/react";
 import { Stethoscope as StethoscopeLucide, Eye, Building2, ArrowRight, type LucideIcon } from "lucide-react";
 import { useSiteConfig } from "@/lib/site-config";
 import { useSiteSections } from "@/lib/site-sections";
-
-import bannerAi from "@/assets/banner-ai-triage.webp";
 
 // Icon name → component map (used to resolve string "icon" from CMS JSON)
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -55,12 +53,9 @@ const StatsSection = lazy(() => import("@/components/landing/StatsSection"));
 const HorizontalScrollCards = lazy(() => import("@/components/landing/HorizontalScrollCards"));
 const SpecialtiesShowcase = lazy(() => import("@/components/landing/SpecialtiesShowcase"));
 const HowItWorksSection = lazy(() => import("@/components/landing/HowItWorksSection"));
-const TeleLaudoSection = lazy(() => import("@/components/landing/TeleLaudoSection"));
 const BenefitsGrid = lazy(() => import("@/components/landing/BenefitsGrid"));
 const HealthNetworkSection = lazy(() => import("@/components/landing/HealthNetworkSection"));
-const InfoBannerStrip = lazy(() => import("@/components/landing/InfoBannerStrip"));
 const PricingSection = lazy(() => import("@/components/landing/PricingSection"));
-const ForDoctorsSection = lazy(() => import("@/components/landing/ForDoctorsSection"));
 const TestimonialsSection = lazy(() => import("@/components/landing/TestimonialsSection"));
 const CTABanner = lazy(() => import("@/components/landing/CTABanner"));
 const FAQSection = lazy(() => import("@/components/landing/FAQSection"));
@@ -231,24 +226,6 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
         <HowItWorksSection />
       </DeferredSection>}
 
-      {/* Telelaudo section */}
-      {isOn("telelaudo") && <DeferredSection fallbackClassName="h-[520px]" rootMargin="200px 0px">
-        <TeleLaudoSection />
-      </DeferredSection>}
-
-      {/* AI Triage banner */}
-      {isOn("info_banner") && <DeferredSection fallbackClassName="h-36 mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
-        <InfoBannerStrip
-          icon={Brain}
-          label="Inteligência Artificial"
-          title="Triagem inteligente com IA"
-          highlight="Descubra o especialista ideal em segundos"
-          href="/teleconsulta"
-          gradient="from-blue-600 to-primary"
-          mascotSrc={bannerAi}
-          variant="chevron"
-        />
-      </DeferredSection>}
 
       {isOn("benefits") && <DeferredSection fallbackClassName="h-[600px]" rootMargin="200px 0px">
         <BenefitsGrid />
@@ -260,10 +237,6 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
 
       {isOn("pricing") && <DeferredSection fallbackClassName="h-[640px]" rootMargin="200px 0px">
         <PricingSection />
-      </DeferredSection>}
-
-      {isOn("for_doctors") && <DeferredSection fallbackClassName="h-[540px]" rootMargin="200px 0px">
-        <ForDoctorsSection />
       </DeferredSection>}
 
       {isOn("testimonials") && <DeferredSection fallbackClassName="h-[520px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
