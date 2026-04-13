@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, AlertCircle, Info, Zap, TrendingUp } from "lucide-react";
+import { CheckCircle, AlertCircle, Info, Zap, TrendingUp as TrendUp } from "lucide-react";
 import { toast } from "sonner";
 
 interface ValidationIssue {

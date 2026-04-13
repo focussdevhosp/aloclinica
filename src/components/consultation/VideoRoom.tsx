@@ -38,7 +38,7 @@ interface ChatMessage {
   time: string;
   fileUrl?: string;
   fileName?: string;
-  fileType?: string;
+  fileType?: "image" | "document";
 }
 
 const VideoRoom = () => {
@@ -411,15 +411,12 @@ const VideoRoom = () => {
         try {
           const parsed = JSON.parse(noteData.content);
           if (parsed.subjective !== undefined) {
-            setSoapNotes(parsed);
-            setNotes(JSON.stringify(parsed));
+            soap.setAllNotes(parsed);
           } else {
-            setNotes(noteData.content);
-            setSoapNotes({ subjective: noteData.content, objective: "", assessment: "", plan: "" });
+            soap.setAllNotes({ subjective: noteData.content, objective: "", assessment: "", plan: "" });
           }
         } catch {
-          setNotes(noteData.content);
-          setSoapNotes({ subjective: noteData.content, objective: "", assessment: "", plan: "" });
+          soap.setAllNotes({ subjective: noteData.content, objective: "", assessment: "", plan: "" });
         }
       }
     }
@@ -545,7 +542,7 @@ const VideoRoom = () => {
         pdf.setFont("helvetica", "bold");
         pdf.text("Médico:", 20, y);
         pdf.setFont("helvetica", "normal");
-        pdf.text(`${doctorName}  |  CRM ${doc.crm}/${doc.crm_state}`, 45, y);
+        pdf.text(`${doctorName}  |  CRM ${doctorProfile?.crm}/${doctorProfile?.crm_state}`, 45, y);
         y += 6;
         pdf.setFont("helvetica", "bold");
         pdf.text("Paciente:", 20, y);
@@ -836,7 +833,7 @@ const VideoRoom = () => {
 
     // Persist to database using messages table
     try {
-      await supabase.from("messages").insert({
+      await (supabase.from("messages") as any).insert({
         appointment_id: appointmentId,
         sender_id: user?.id,
         content: text,
@@ -849,7 +846,7 @@ const VideoRoom = () => {
     }
   };
 
-  const soapTabs: { key: "S" | "O" | "A" | "P"; label: string; field: keyof typeof soapNotes; placeholder: string }[] = [
+  const soapTabs: { key: "S" | "O" | "A" | "P"; label: string; field: keyof SOAPNotes; placeholder: string }[] = [
     { key: "S", label: "Subjetivo", field: "subjective", placeholder: "O que o paciente relata: queixas, sintomas, histórico..." },
     { key: "O", label: "Objetivo", field: "objective", placeholder: "Dados objetivos: sinais vitais, exames, observações clínicas..." },
     { key: "A", label: "Avaliação", field: "assessment", placeholder: "Diagnóstico / hipótese diagnóstica (CID-10)..." },
@@ -945,7 +942,7 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
             {aiFillingSOAP ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
             {aiFillingSOAP ? "Gerando..." : "IA"}
           </Button>
-          <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field, soapNotes[soapTabs.find(t => t.key === activeSOAP)!.field] + " " + text)} />
+          <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes, soap.notes[soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes] + " " + text)} />
         </div>
       </div>
 
@@ -972,7 +969,7 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
           <p className="text-[11px] font-medium text-[hsl(220,15%,55%)]">{tab.label}</p>
           <MedicalAutocomplete
             value={soap.notes[tab.field]}
-            onChange={(val) => updateSOAPField(tab.field, val)}
+            onChange={(val) => updateSOAPField(tab.field as keyof SOAPNotes, val)}
             field="notes"
             placeholder={tab.placeholder}
             className="flex-1 bg-[hsl(220,20%,8%)] border-[hsl(220,15%,16%)] text-white placeholder:text-[hsl(220,15%,30%)] resize-none rounded-xl min-h-[120px] focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
@@ -1271,7 +1268,7 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
                   <p className="text-[10px] text-[hsl(220,15%,40%)]">Modo focado</p>
                 </div>
               </div>
-              <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field, soapNotes[soapTabs.find(t => t.key === activeSOAP)!.field] + " " + text)} />
+              <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes, soap.notes[soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes] + " " + text)} />
             </div>
             {notesPanel}
           </div>
