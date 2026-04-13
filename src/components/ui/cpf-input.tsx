@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { formatMask, unmask } from "@/hooks/use-mask";
-import { validarCPF } from "@/lib/cpf";
+import { validarCPF } from "@/lib/form-validators";
 import { CheckCircle, XCircle } from "lucide-react";
 
 interface CpfInputProps {

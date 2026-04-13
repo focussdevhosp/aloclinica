@@ -34,7 +34,7 @@ import {
 import TermsConsentCheckbox from "@/components/auth/TermsConsentCheckbox";
 import { registerConsent } from "@/lib/consent";
 import { formatMask, unmask } from "@/hooks/use-mask";
-import { validarCPF } from "@/lib/cpf";
+import { validarCPF } from "@/lib/form-validators";
 import CpfInput from "@/components/ui/cpf-input";
 import { CalendarBlank } from "@phosphor-icons/react";
 import SEOHead from "@/components/SEOHead";

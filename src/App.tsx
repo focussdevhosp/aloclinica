@@ -70,6 +70,14 @@ const BookOftalmologyAppointment = lazy(() => import("./pages/BookOftalmologyApp
 const PrescriptionDetail = lazy(() => import("./pages/PrescriptionDetail"));
 const PrescriptionReviewerDashboard = lazy(() => import("./pages/PrescriptionReviewerDashboard"));
 
+// Signup pages
+const SignupPatient = lazy(() => import("./pages/SignupPatient"));
+const SignupDoctor = lazy(() => import("./pages/SignupDoctor"));
+const SignupOftalmologist = lazy(() => import("./pages/SignupOftalmologist"));
+const SignupClinic = lazy(() => import("./pages/SignupClinic"));
+const SignupSupport = lazy(() => import("./pages/SignupSupport"));
+const SignupLaudista = lazy(() => import("./pages/SignupLaudista"));
+
 // Prefetch das rotas mais acessadas após o browser ficar idle
 if (typeof window !== "undefined") {
   const prefetch = () => {
@@ -129,8 +137,18 @@ const AnimatedRoutes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
       <Route path="/paciente" element={<AuthPaciente />} />
+      <Route path="/paciente/cadastro" element={<SignupPatient />} />
       <Route path="/medico" element={<AuthMedico />} />
+      <Route path="/medico/cadastro" element={<SignupDoctor />} />
+      <Route path="/oftalmologista" element={<AuthOftalmologista />} />
+      <Route path="/oftalmologista/cadastro" element={<SignupOftalmologist />} />
+      <Route path="/clinica" element={<AuthClinica />} />
+      <Route path="/clinica/cadastro" element={<SignupClinic />} />
       <Route path="/admin" element={<AuthAdmin />} />
+      <Route path="/suporte" element={<AuthSuporte />} />
+      <Route path="/suporte/cadastro" element={<SignupSupport />} />
+      <Route path="/laudista" element={<AuthLaudista />} />
+      <Route path="/laudista/cadastro" element={<SignupLaudista />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/terms" element={<Terms />} />
@@ -140,21 +158,17 @@ const AnimatedRoutes = () => {
       <Route path="/refund" element={<RefundPolicy />} />
       <Route path="/doctor-terms" element={<DoctorTerms />} />
       <Route path="/accessibility" element={<Accessibility />} />
-      <Route path="/suporte" element={<AuthSuporte />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/dr/:slug" element={<DoctorPublicProfilePage />} />
       <Route path="/l/:id" element={<LinkRedirect />} />
       <Route path="/validar/:id" element={<ValidateDocument />} />
       <Route path="/validar" element={<ValidateDocument />} />
-      
+
       <Route path="/para-empresas/telelaudo" element={<B2BTelelaudo />} />
       <Route path="/teleconsulta" element={<Teleconsulta />} />
       <Route path="/oftalmologia" element={<Oftalmologia />} />
-      
+
       <Route path="/telelaudo" element={<Navigate to="/laudista" replace />} />
-      <Route path="/laudista" element={<AuthLaudista />} />
-      <Route path="/oftalmologista" element={<AuthOftalmologista />} />
-      <Route path="/clinica" element={<AuthClinica />} />
       <Route path="/telelaudo-workspace" element={<ProtectedRoute><TelelaudoWorkspace /></ProtectedRoute>} />
       <Route path="/laudos/fila" element={<ProtectedRoute><LaudosFila /></ProtectedRoute>} />
       <Route path="/laudos/editor/:exameId" element={<ProtectedRoute><LaudosEditor /></ProtectedRoute>} />

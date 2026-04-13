@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import mascotWelcome from "@/assets/mascot-welcome.png";
 import { formatMask } from "@/hooks/use-mask";
-import { validarCPF } from "@/lib/cpf";
+import { validarCPF } from "@/lib/form-validators";
 
 const ONBOARDING_KEY = "aloclinica_onboarding_completed";
 const KYC_PENDING_KEY = "aloclinica_kyc_pending";
