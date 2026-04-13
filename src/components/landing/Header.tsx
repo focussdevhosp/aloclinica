@@ -127,19 +127,14 @@ const Header = memo(forwardRef<HTMLElement>((_, ref) => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/#pricing"
-                    className={cn(
-                      triggerCls,
-                      "data-[state=open]:text-foreground data-[state=open]:bg-muted/40"
-                    )}
-                  >
-                    <ShoppingBag className={triggerIconCls} weight="fill" />
-                    Planos
-                  </Link>
-                </NavigationMenuLink>
+              <NavigationMenuItem className="flex">
+                <Link
+                  to="/#pricing"
+                  className={triggerCls}
+                >
+                  <ShoppingBag className={triggerIconCls} weight="fill" />
+                  Planos
+                </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
