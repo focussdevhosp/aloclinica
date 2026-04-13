@@ -28,7 +28,7 @@ export const getPatientNav = (active: string) => [
 
   // ── Saúde Digital (extras) ──
   { label: "Planos de Cuidado", href: "/dashboard/patient/care-plans?role=patient", icon: <NavIcon icon={<FirstAid size={16} weight="fill" />} color="rose" />, active: active === "care-plans", group: "Saúde Digital" },
-  { label: "Vacinas", href: "/dashboard/patient/vaccinations?role=patient", icon: <NavIcon icon={<Syringe size={16} weight="fill" />} color="violet" />, active: active === "vaccinations", group: "Saúde Digital" },
+  { label: "Vacinas", href: "/dashboard/patient/vaccinations?role=patient", icon: <NavIcon icon={<Syringe size={16} weight="fill" />} color="purple" />, active: active === "vaccinations", group: "Saúde Digital" },
 
   // ── Perfil Clínico ──
   { label: "Cartão Saúde", href: "/dashboard/patient/health-card?role=patient", icon: <NavIcon icon={<IdentificationCard size={16} weight="fill" />} color="blue" />, active: active === "health-card", group: "Perfil Clínico" },

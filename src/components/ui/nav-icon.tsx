@@ -24,7 +24,7 @@ interface NavIconProps {
 }
 
 export const NavIcon = ({ icon, color = "blue", active, className }: NavIconProps) => {
-  const c = colorMap[color];
+  const c = colorMap[color] ?? colorMap.blue;
   return (
     <span
       className={cn(
