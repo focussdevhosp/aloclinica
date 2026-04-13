@@ -645,13 +645,13 @@ serve(async (req) => {
       await sb.from("rate_limits").insert({ identifier, endpoint: "send-email", window_start: new Date().toISOString() });
     } catch { /* rate limit check failure is non-blocking */ }
 
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY") || Deno.env.get("RESEND_API_KEY");
 
-    if (!RESEND_API_KEY) {
+    if (!BREVO_API_KEY) {
       const body: EmailRequest = await req.json();
       console.info("[DEV] Email would be sent:", JSON.stringify(body));
       return new Response(
-        JSON.stringify({ success: true, dev: true, message: "Email logged (RESEND_API_KEY not configured)" }),
+        JSON.stringify({ success: true, dev: true, message: "Email logged (BREVO_API_KEY not configured)" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -668,44 +668,44 @@ serve(async (req) => {
     }
 
     const { subject, html } = template(data);
-    const fromEmail = Deno.env.get("EMAIL_FROM_ADDRESS") || "noreply@aloclinica.com.br";
+    const fromEmail = Deno.env.get("EMAIL_FROM_ADDRESS") || "noreply@telemedicinaaloclinica.sbs";
     const fromName = Deno.env.get("EMAIL_FROM_NAME") || "AloClínica";
 
-    const res = await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "api-key": BREVO_API_KEY,
+        accept: "application/json",
       },
       body: JSON.stringify({
-        from: `${fromName} <${fromEmail}>`,
-        to: [to],
+        sender: { name: fromName, email: fromEmail },
+        to: [{ email: to }],
         subject,
-        html,
+        htmlContent: html,
       }),
     });
 
     const result = await res.json();
 
     if (!res.ok) {
-      // Handle domain not verified gracefully
       const errStr = JSON.stringify(result);
-      if (errStr.includes("verify") || errStr.includes("domain") || errStr.includes("sender")) {
-        console.warn("Resend domain not verified — email skipped:", to, "template:", type);
+      if (errStr.includes("verify") || errStr.includes("domain") || errStr.includes("sender") || errStr.includes("not_authenticated")) {
+        console.warn("Brevo domain not authenticated — email skipped:", to, "template:", type);
         return new Response(
-          JSON.stringify({ success: true, skipped: true, reason: "domain_not_verified", details: result }),
+          JSON.stringify({ success: true, skipped: true, reason: "domain_not_authenticated", details: result }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      console.error("Resend error:", result);
+      console.error("Brevo error:", result);
       return new Response(JSON.stringify({ error: "Failed to send email", details: result }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log("Email sent via Resend:", type, "to:", to, "id:", result.id);
-    return new Response(JSON.stringify({ success: true, id: result.id }), {
+    console.log("Email sent via Brevo:", type, "to:", to, "id:", result.messageId);
+    return new Response(JSON.stringify({ success: true, id: result.messageId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
