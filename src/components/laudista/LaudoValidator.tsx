@@ -117,7 +117,7 @@ export function LaudoValidator({ laudoText, examType, onValidationComplete, isLo
   }
 
   return (
-    <AnimatePresence mode="inOut">
+    <AnimatePresence mode="wait">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

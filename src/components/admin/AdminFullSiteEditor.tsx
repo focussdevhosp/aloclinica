@@ -92,7 +92,7 @@ export default function AdminFullSiteEditor() {
     await load();
   };
 
-  const toggleEnabled = async (s: Section) => {
+  const toggleEnabled = async (s: Section): Promise<void> => {
     const { error } = await (supabase as any)
       .from("site_sections")
       .update({ is_enabled: !s.is_enabled })

@@ -144,7 +144,7 @@ const DoctorSearch = () => {
   const fetchDoctors = async () => {
     setLoading(true);
     // Request rich optional columns; fall back gracefully if schema lacks them.
-    const richCols = "id, user_id, crm, crm_state, bio, short_description, consultation_price, consultation_duration, rating, total_reviews, experience_years, available_now, available_now_since, display_name, crm_verified, accepts_insurance, languages";
+    const richCols = "id, user_id, crm, crm_state, bio, short_description, consultation_price, consultation_duration_min, rating, total_reviews, experience_years, available_now, available_now_since, display_name, crm_verified, accepts_insurance, languages";
     let resp = await supabase
       .from("doctor_profiles")
       .select(richCols)
