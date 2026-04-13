@@ -235,7 +235,7 @@ const BookAppointment = () => {
 
     // Start fallback polling after 10 seconds if realtime not connected
     pollTimeout = setTimeout(() => {
-      if (channel.state !== "SUBSCRIBED") {
+      if ((channel as any).state !== "SUBSCRIBED") {
         startFallbackPoll();
       }
     }, 10000);

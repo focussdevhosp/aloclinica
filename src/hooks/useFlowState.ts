@@ -27,8 +27,8 @@ export function useFlowState(options: FlowStateHookOptions = {}) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Determine user role from profile/auth
-  const userRole = (profile?.role ?? "patient") as UserRole;
-  const serviceType = (profile?.service_type ?? "telemedicina") as ServiceType;
+  const userRole = ((profile as any)?.role ?? "patient") as UserRole;
+  const serviceType = ((profile as any)?.service_type ?? "telemedicina") as ServiceType;
 
   useEffect(() => {
     setIsLoading(false);
@@ -145,7 +145,7 @@ export function useFlowState(options: FlowStateHookOptions = {}) {
               { role: userRole, operation, permission },
               false
             );
-            options.onPermissionDenied?.(permission);
+            (options as any).onPermissionDenied?.(permission);
             return false;
           }
         }
@@ -192,8 +192,8 @@ export function useFlowState(options: FlowStateHookOptions = {}) {
 
     // Utils
     isAuthenticated: !!user,
-    isApproved: profile?.is_approved ?? false,
-    isActive: profile?.is_active ?? false,
+    isApproved: (profile as any)?.is_approved ?? false,
+    isActive: (profile as any)?.is_active ?? false,
   };
 }
 

@@ -16,7 +16,7 @@ import {
   Heart, Lightning, ClipboardText, FileText, UploadSimple,
   Sparkle, Stethoscope, MagnifyingGlass, Star, Plus, Warning,
   Pill, CaretRight, Heartbeat, Timer, TrendUp, TrendDown,
-  FirstAidKit, ChatCircleDots, User, Activity,
+  FirstAidKit, ChatCircleDots, User,
 } from "@phosphor-icons/react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import PatientOnboarding, { ONBOARDING_KEY, KYC_PENDING_KEY } from "@/components/patient/PatientOnboarding";

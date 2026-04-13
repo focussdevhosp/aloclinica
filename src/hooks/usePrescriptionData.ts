@@ -132,11 +132,11 @@ export function usePrescriptionData(appointmentId?: string) {
             ...doctor,
             first_name: docProfile?.first_name ?? "",
             last_name: docProfile?.last_name ?? "",
-          };
+          } as any;
         }
 
         // 4. Check for existing prescription draft
-        const { data: existing } = await supabase
+        const { data: existing } = await (supabase as any)
           .from("prescriptions")
           .select("diagnosis, observations, medications")
           .eq("appointment_id", appointmentId)
@@ -146,12 +146,12 @@ export function usePrescriptionData(appointmentId?: string) {
         setData({
           appointmentId,
           doctorId: appt.doctor_id,
-          patientId,
+          patientId: patientId || "",
           patientName,
           patientCpf,
-          diagnosis: existing?.diagnosis || "",
-          observations: existing?.observations || "",
-          medications: existing?.medications || [emptyMedication()],
+          diagnosis: (existing as any)?.diagnosis || "",
+          observations: (existing as any)?.observations || "",
+          medications: (existing as any)?.medications || [emptyMedication()],
           doctorInfo,
         });
       } catch (err) {
@@ -248,7 +248,7 @@ export function usePrescriptionData(appointmentId?: string) {
     if (!validate()) return false;
 
     try {
-      const { error } = await supabase.from("prescriptions").upsert({
+      const { error } = await (supabase as any).from("prescriptions").upsert({
         appointment_id: data.appointmentId,
         doctor_id: data.doctorId,
         patient_id: data.patientId,

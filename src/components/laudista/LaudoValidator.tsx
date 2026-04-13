@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, AlertCircle, Info, Zap, TrendingUp } from "lucide-react";
+import { CheckCircle, AlertCircle, Info, Zap, TrendingUp as TrendUp } from "lucide-react";
 import { toast } from "sonner";
 
 interface ValidationIssue {
@@ -117,7 +117,7 @@ export function LaudoValidator({ laudoText, examType, onValidationComplete, isLo
   }
 
   return (
-    <AnimatePresence mode="inOut">
+    <AnimatePresence mode="wait">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

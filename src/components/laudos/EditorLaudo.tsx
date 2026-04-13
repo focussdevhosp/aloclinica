@@ -53,12 +53,12 @@ export default function EditorLaudo() {
         // Load doctor info
         const { data: doctorData } = await supabase
           .from("doctor_profiles")
-          .select("first_name, last_name, crm, crm_state")
+          .select("full_name, crm, crm_state")
           .eq("user_id", user.id)
           .single();
 
         if (doctorData) {
-          setDoctorName(`${doctorData.first_name} ${doctorData.last_name}`);
+          setDoctorName(doctorData.full_name || "");
           setDoctorCRM(`${doctorData.crm}/${doctorData.crm_state}`);
         }
       } catch {

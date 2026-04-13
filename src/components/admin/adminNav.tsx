@@ -27,7 +27,7 @@ export const getAdminNav = (active: string) => [
   { label: "WhatsApp", href: "/dashboard/admin/whatsapp?role=admin", icon: <NavIcon icon={<WhatsappLogo size={16} weight="fill" />} color="green" />, active: active === "whatsapp", group: "Sistema" },
   { label: "PACS / DICOM", href: "/dashboard/admin/pacs?role=admin", icon: <NavIcon icon={<HardDrives size={16} weight="fill" />} color="cyan" />, active: active === "pacs", group: "Sistema" },
   { label: "Configurações", href: "/dashboard/settings?role=admin", icon: <NavIcon icon={<Sliders size={16} weight="fill" />} color="slate" />, active: active === "settings", group: "Sistema" },
-  { label: "Config. do Site", href: "/dashboard/admin/site-config?role=admin", icon: <NavIcon icon={<PaintBrush size={16} weight="fill" />} color="violet" />, active: active === "site-config", group: "Sistema" },
-  { label: "Editor do site", href: "/dashboard/admin/site-editor?role=admin", icon: <NavIcon icon={<PencilRuler size={16} weight="fill" />} color="violet" />, active: active === "site-editor", group: "Sistema" },
-  { label: "Biblioteca de mídia", href: "/dashboard/admin/media?role=admin", icon: <NavIcon icon={<ImageIcon size={16} weight="fill" />} color="violet" />, active: active === "media", group: "Sistema" },
+  { label: "Config. do Site", href: "/dashboard/admin/site-config?role=admin", icon: <NavIcon icon={<PaintBrush size={16} weight="fill" />} color="purple" />, active: active === "site-config", group: "Sistema" },
+  { label: "Editor do site", href: "/dashboard/admin/site-editor?role=admin", icon: <NavIcon icon={<PencilRuler size={16} weight="fill" />} color="purple" />, active: active === "site-editor", group: "Sistema" },
+  { label: "Biblioteca de mídia", href: "/dashboard/admin/media?role=admin", icon: <NavIcon icon={<ImageIcon size={16} weight="fill" />} color="purple" />, active: active === "media", group: "Sistema" },
 ];

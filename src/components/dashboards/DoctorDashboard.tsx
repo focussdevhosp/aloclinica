@@ -11,7 +11,7 @@ import { logError } from "@/lib/logger";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { Calendar, DollarSign, Users, TrendingUp, Video, BarChart2, ArrowRight, Clock, RadioFilled, AlertCircle } from "lucide-react";
+import { Calendar, DollarSign, Users, TrendingUp, Video, BarChart2, ArrowRight, Clock, Radio, AlertCircle } from "lucide-react";
 import DoctorAnalyticsCharts from "./DoctorAnalyticsCharts";
 import { differenceInHours, differenceInMinutes } from "date-fns";
 import DoctorOnboarding from "@/components/doctor/DoctorOnboarding";
@@ -71,7 +71,7 @@ const DoctorDashboard = () => {
         return;
       }
 
-      setIsOnline(data?.available_for_on_demand ?? true);
+      setIsOnline((data as any)?.available_for_on_demand ?? true);
     } catch (error) {
       logError("Error loading online status:", error);
     }
@@ -84,7 +84,7 @@ const DoctorDashboard = () => {
     try {
       const { error } = await supabase
         .from("doctor_profiles")
-        .update({ available_for_on_demand: newStatus })
+        .update({ available_for_on_demand: newStatus } as any)
         .eq("user_id", user!.id);
 
       if (error) {

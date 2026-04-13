@@ -26,7 +26,7 @@ import PostConsultationSummary from "./PostConsultationSummary";
 import PatientInfoPanel from "./PatientInfoPanel";
 import DoctorInfoPanel from "./DoctorInfoPanel";
 import { ConsultationChatPanel } from "./ConsultationChatPanel";
-import { useSOAPNotes } from "@/hooks/useSOAPNotes";
+import { useSOAPNotes, type SOAPNotes } from "@/hooks/useSOAPNotes";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,7 +38,7 @@ interface ChatMessage {
   time: string;
   fileUrl?: string;
   fileName?: string;
-  fileType?: string;
+  fileType?: "image" | "document";
 }
 
 const VideoRoom = () => {
@@ -411,15 +411,14 @@ const VideoRoom = () => {
         try {
           const parsed = JSON.parse(noteData.content);
           if (parsed.subjective !== undefined) {
-            setSoapNotes(parsed);
-            setNotes(JSON.stringify(parsed));
+            Object.entries(parsed).forEach(([k, v]) => {
+              if (["subjective","objective","assessment","plan"].includes(k)) soap.updateSection(k as keyof import("@/hooks/useSOAPNotes").SOAPNotes, v as string);
+            });
           } else {
-            setNotes(noteData.content);
-            setSoapNotes({ subjective: noteData.content, objective: "", assessment: "", plan: "" });
+            soap.updateSection("subjective", noteData.content);
           }
         } catch {
-          setNotes(noteData.content);
-          setSoapNotes({ subjective: noteData.content, objective: "", assessment: "", plan: "" });
+          soap.updateSection("subjective", noteData.content);
         }
       }
     }
@@ -434,7 +433,7 @@ const VideoRoom = () => {
     return `${h > 0 ? `${h}:` : ""}${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
   };
 
-  const sendMessage = async (fileUrl?: string, fileName?: string, fileType?: string) => {
+  const sendMessage = async (fileUrl?: string, fileName?: string, fileType?: "image" | "document") => {
     if (!chatInput.trim() && !fileUrl) return;
     const content = chatInput.trim() || (fileName ? `[Arquivo: ${fileName}]` : "");
     const msg: ChatMessage = {
@@ -482,7 +481,7 @@ const VideoRoom = () => {
     if (!file || !user) return;
     try {
       const fileUrl = await handleFileUploadForChat(file);
-      await sendMessage(fileUrl, file.name, file.type);
+      await sendMessage(fileUrl, file.name, file.type.startsWith("image") ? "image" : "document");
     } catch (err) {
       logError("File upload error", err);
       toast.error("Erro ao enviar arquivo");
@@ -502,8 +501,10 @@ const VideoRoom = () => {
         const { jsPDF } = await import("jspdf");
 
         // Fetch doctor and patient names
-        const { data: doctorProfile } = await supabase
+        const { data: doctorProfileData } = await supabase
           .from("profiles").select("first_name, last_name").eq("user_id", user!.id).single();
+        const { data: doctorDocProfile } = await supabase
+          .from("doctor_profiles").select("crm, crm_state").eq("user_id", user!.id).single();
         
         const patientId = appointment.patient_id;
         let patientName = "Paciente";
@@ -513,7 +514,7 @@ const VideoRoom = () => {
           if (patientProfile) patientName = `${patientProfile.first_name} ${patientProfile.last_name}`.trim();
         }
 
-        const doctorName = doctorProfile ? `Dr(a). ${doctorProfile.first_name} ${doctorProfile.last_name}`.trim() : "Médico";
+        const doctorName = doctorProfileData ? `Dr(a). ${doctorProfileData.first_name} ${doctorProfileData.last_name}`.trim() : "Médico";
         const now = new Date();
         const dateStr = format(now, "dd/MM/yyyy 'às' HH:mm");
 
@@ -545,7 +546,7 @@ const VideoRoom = () => {
         pdf.setFont("helvetica", "bold");
         pdf.text("Médico:", 20, y);
         pdf.setFont("helvetica", "normal");
-        pdf.text(`${doctorName}  |  CRM ${doc.crm}/${doc.crm_state}`, 45, y);
+        pdf.text(`${doctorName}  |  CRM ${doctorDocProfile?.crm ?? ""}/${doctorDocProfile?.crm_state ?? ""}`, 45, y);
         y += 6;
         pdf.setFont("helvetica", "bold");
         pdf.text("Paciente:", 20, y);
@@ -645,12 +646,13 @@ const VideoRoom = () => {
 
   // Show "Saved" indicator for 3 seconds after SOAP notes are saved
   useEffect(() => {
-    if (soap.isSaving) return;
+    if (soap.isSaving) return undefined;
     if (!soap.isDirty && soap.lastSaved) {
       setShowSavedIndicator(true);
       const timer = setTimeout(() => setShowSavedIndicator(false), 3000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [soap.isSaving, soap.isDirty, soap.lastSaved]);
 
   // Auto-save SOAP notes every 30 seconds
@@ -836,7 +838,7 @@ const VideoRoom = () => {
 
     // Persist to database using messages table
     try {
-      await supabase.from("messages").insert({
+      await (supabase.from("messages") as any).insert({
         appointment_id: appointmentId,
         sender_id: user?.id,
         content: text,
@@ -849,7 +851,7 @@ const VideoRoom = () => {
     }
   };
 
-  const soapTabs: { key: "S" | "O" | "A" | "P"; label: string; field: keyof typeof soapNotes; placeholder: string }[] = [
+  const soapTabs: { key: "S" | "O" | "A" | "P"; label: string; field: keyof SOAPNotes; placeholder: string }[] = [
     { key: "S", label: "Subjetivo", field: "subjective", placeholder: "O que o paciente relata: queixas, sintomas, histórico..." },
     { key: "O", label: "Objetivo", field: "objective", placeholder: "Dados objetivos: sinais vitais, exames, observações clínicas..." },
     { key: "A", label: "Avaliação", field: "assessment", placeholder: "Diagnóstico / hipótese diagnóstica (CID-10)..." },
@@ -945,7 +947,7 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
             {aiFillingSOAP ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
             {aiFillingSOAP ? "Gerando..." : "IA"}
           </Button>
-          <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field, soapNotes[soapTabs.find(t => t.key === activeSOAP)!.field] + " " + text)} />
+          <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes, soap.notes[soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes] + " " + text)} />
         </div>
       </div>
 
@@ -972,7 +974,7 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
           <p className="text-[11px] font-medium text-[hsl(220,15%,55%)]">{tab.label}</p>
           <MedicalAutocomplete
             value={soap.notes[tab.field]}
-            onChange={(val) => updateSOAPField(tab.field, val)}
+            onChange={(val) => updateSOAPField(tab.field as keyof SOAPNotes, val)}
             field="notes"
             placeholder={tab.placeholder}
             className="flex-1 bg-[hsl(220,20%,8%)] border-[hsl(220,15%,16%)] text-white placeholder:text-[hsl(220,15%,30%)] resize-none rounded-xl min-h-[120px] focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
@@ -1271,7 +1273,7 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
                   <p className="text-[10px] text-[hsl(220,15%,40%)]">Modo focado</p>
                 </div>
               </div>
-              <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field, soapNotes[soapTabs.find(t => t.key === activeSOAP)!.field] + " " + text)} />
+              <SpeechToText onTranscript={(text) => updateSOAPField(soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes, soap.notes[soapTabs.find(t => t.key === activeSOAP)!.field as keyof SOAPNotes] + " " + text)} />
             </div>
             {notesPanel}
           </div>
