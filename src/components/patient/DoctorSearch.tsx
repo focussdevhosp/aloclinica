@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Star, Calendar, Zap, AlertTriangle, SlidersHorizontal, X, Heart, ChevronRight, Clock, Stethoscope, Brain, Eye as EyeIcon, Bone, Baby, Activity } from "lucide-react";
+import { Search, Star, Calendar, Zap, AlertTriangle, SlidersHorizontal, X, Heart, ChevronRight, Clock, Stethoscope, Brain, Eye as EyeIcon, Bone, Baby, Activity, BadgeCheck, ShieldCheck, Languages as LanguagesIcon, ExternalLink } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,16 +25,25 @@ interface DoctorResult {
   crm: string;
   crm_state: string;
   bio: string | null;
+  short_description?: string | null;
   consultation_price: number;
+  consultation_duration?: number | null;
   rating: number;
   total_reviews: number | null;
   experience_years: number | null;
   available_now?: boolean;
   available_now_since?: string | null;
+  display_name?: string | null;
+  crm_verified?: boolean;
+  kyc_status?: string | null;
+  accepts_insurance?: boolean | null;
+  languages?: string[] | null;
   profile: { first_name: string; last_name: string; avatar_url: string | null } | null;
   specialties: string[];
   careAreas: string[];
 }
+
+const LANG_LABEL: Record<string, string> = { pt: "PT", "pt-BR": "PT", en: "EN", es: "ES", fr: "FR", it: "IT", de: "DE" };
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -91,6 +101,7 @@ const DoctorSearch = () => {
   const [availabilityFilter, setAvailabilityFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("rating");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [insuranceOnly, setInsuranceOnly] = useState(false);
 
   useEffect(() => {
     fetchSpecialties();
@@ -132,12 +143,24 @@ const DoctorSearch = () => {
 
   const fetchDoctors = async () => {
     setLoading(true);
-    const { data: doctorData } = await supabase
+    // Request rich optional columns; fall back gracefully if schema lacks them.
+    const richCols = "id, user_id, crm, crm_state, bio, short_description, consultation_price, consultation_duration, rating, total_reviews, experience_years, available_now, available_now_since, display_name, crm_verified, accepts_insurance, languages";
+    let resp = await supabase
       .from("doctor_profiles")
-      .select("id, user_id, crm, crm_state, bio, consultation_price, rating, total_reviews, experience_years, available_now, available_now_since, display_name")
+      .select(richCols)
       .eq("is_approved", true)
       .eq("doctor_type" as any, doctorType)
       .limit(100);
+    if (resp.error) {
+      // Retry with minimal columns if any optional column is missing
+      resp = await supabase
+        .from("doctor_profiles")
+        .select("id, user_id, crm, crm_state, bio, consultation_price, rating, total_reviews, experience_years, available_now, available_now_since, display_name, crm_verified")
+        .eq("is_approved", true)
+        .eq("doctor_type" as any, doctorType)
+        .limit(100);
+    }
+    const doctorData = resp.data as any[] | null;
 
     if (!doctorData) { setLoading(false); return; }
 
@@ -177,10 +200,11 @@ const DoctorSearch = () => {
       careAreasMap.set(c.doctor_id, arr);
     });
 
-    const results: DoctorResult[] = doctorData.map(d => ({
+    const results: DoctorResult[] = doctorData.map((d: any) => ({
       ...d,
       consultation_price: Number(d.consultation_price),
       rating: Number(d.rating),
+      languages: Array.isArray(d.languages) ? d.languages : (typeof d.languages === "string" && d.languages ? [d.languages] : null),
       profile: profilesMap.get(d.user_id) ?? null,
       specialties: specsMap.get(d.id) ?? [],
       careAreas: careAreasMap.get(d.id) ?? [],
@@ -206,7 +230,8 @@ const DoctorSearch = () => {
       const availMatch = availabilityFilter === "all" ||
         (availabilityFilter === "today" && availableNowIds.has(d.id)) ||
         (availabilityFilter === "on_duty" && Boolean(d.available_now));
-      return nameMatch && specMatch && urgencyMatch && priceMatch && ratingMatch && availMatch;
+      const insuranceMatch = !insuranceOnly || Boolean(d.accepts_insurance);
+      return nameMatch && specMatch && urgencyMatch && priceMatch && ratingMatch && availMatch && insuranceMatch;
     })
     .sort((a, b) => {
       const aFav = favoriteIds.has(a.id) ? 1 : 0;
@@ -222,13 +247,14 @@ const DoctorSearch = () => {
       return 0;
     });
 
-  const activeFilters = (minRating > 0 ? 1 : 0) + (availabilityFilter !== "all" ? 1 : 0) + (sortBy !== "rating" ? 1 : 0);
+  const activeFilters = (minRating > 0 ? 1 : 0) + (availabilityFilter !== "all" ? 1 : 0) + (sortBy !== "rating" ? 1 : 0) + (insuranceOnly ? 1 : 0);
 
   const clearFilters = () => {
     setMinRating(0);
     setAvailabilityFilter("all");
     setSortBy("rating");
     setPriceRange([0, 500]);
+    setInsuranceOnly(false);
   };
 
   const FiltersContent = () => (
@@ -257,6 +283,13 @@ const DoctorSearch = () => {
             <SelectItem value="on_duty">🟢 De plantão agora</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+      <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-muted/40">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-[hsl(var(--p-primary))]" />
+          <p className="text-sm font-medium text-foreground">Aceita convênio</p>
+        </div>
+        <Switch checked={insuranceOnly} onCheckedChange={setInsuranceOnly} />
       </div>
       <div>
         <p className="text-sm font-medium text-foreground mb-3">🔄 Ordenar por</p>
@@ -501,12 +534,22 @@ const DoctorSearch = () => {
                       </button>
                       <div className="flex items-start gap-3">
                         <Avatar className="w-14 h-14 rounded-2xl shrink-0 ring-2 ring-[hsl(var(--p-primary))]/15">
-                          {doctor.profile?.avatar_url && <AvatarImage src={doctor.profile.avatar_url} alt={`Dr(a). ${doctor.profile?.first_name}`} className="rounded-2xl object-cover" />}
-                          <AvatarFallback className="rounded-2xl bg-gradient-to-br from-[#00347F] to-[#2563EB] text-white font-bold text-base">{doctor.profile?.first_name?.[0]}{doctor.profile?.last_name?.[0]}</AvatarFallback>
+                          {doctor.profile?.avatar_url && <AvatarImage src={doctor.profile.avatar_url} alt={`Dr(a). ${doctor.profile?.first_name}`} className="rounded-2xl object-cover" loading="lazy" decoding="async" />}
+                          <AvatarFallback className="rounded-2xl bg-gradient-to-br from-[#00347F] to-[#2563EB] text-white font-bold text-base">{(doctor.display_name?.[0] || doctor.profile?.first_name?.[0] || "?")}{doctor.profile?.last_name?.[0] ?? ""}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0 pr-8">
-                          <h3 className="font-bold text-foreground text-[15px] leading-tight truncate font-[Manrope]">{(doctor as any).display_name || `Dr(a). ${doctor.profile?.first_name} ${doctor.profile?.last_name}`}</h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">CRM {doctor.crm}/{doctor.crm_state}{(doctor.experience_years ?? 0) > 0 && ` · ${doctor.experience_years}a exp.`}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h3 className="font-bold text-foreground text-[15px] leading-tight truncate font-[Manrope]">{doctor.display_name || `Dr(a). ${doctor.profile?.first_name ?? ""} ${doctor.profile?.last_name ?? ""}`.trim()}</h3>
+                            {doctor.kyc_status === "approved" && doctor.crm_verified && (
+                              <span title="Médico verificado" className="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-secondary/15 text-secondary">
+                                <BadgeCheck className="w-3 h-3" /> Verificado
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">CRM-{doctor.crm_state} {doctor.crm}{(doctor.experience_years ?? 0) > 0 && ` · ${doctor.experience_years} anos de experiência`}</p>
+                          {(doctor.short_description || doctor.bio) && (
+                            <p className="text-[12px] text-muted-foreground/90 mt-1 line-clamp-2">{doctor.short_description || doctor.bio}</p>
+                          )}
                           {doctor.specialties.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">{doctor.specialties.slice(0, 2).map(s => (<span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-[hsl(var(--p-primary))]/10 text-[hsl(var(--p-primary))] font-semibold">{s}</span>))}</div>
                           )}
@@ -525,21 +568,39 @@ const DoctorSearch = () => {
                             {availableNowIds.has(doctor.id) && !doctor.available_now && (
                               <span className="text-[11px] px-2.5 py-1 rounded-full bg-secondary/10 text-secondary font-medium flex items-center gap-1"><Zap className="w-3 h-3" /> Disponível</span>
                             )}
-                            {doctor.rating > 0 && (
-                              <span className="flex items-center gap-1 text-xs text-muted-foreground"><Star className="w-3.5 h-3.5 text-warning fill-warning" />{doctor.rating.toFixed(1)}<span className="text-muted-foreground/60">({doctor.total_reviews})</span></span>
+                            {doctor.rating > 0 ? (
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground"><Star className="w-3.5 h-3.5 text-warning fill-warning" />{doctor.rating.toFixed(1)}<span className="text-muted-foreground/60">({doctor.total_reviews ?? 0})</span></span>
+                            ) : (
+                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground font-medium">Novo</span>
+                            )}
+                            {doctor.accepts_insurance && (
+                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-[hsl(var(--p-primary))]/10 text-[hsl(var(--p-primary))] font-semibold flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Convênio</span>
+                            )}
+                            {doctor.languages && doctor.languages.length > 0 && (
+                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground font-medium flex items-center gap-1">
+                                <LanguagesIcon className="w-3 h-3" />
+                                {doctor.languages.slice(0, 3).map(l => LANG_LABEL[l] || l.slice(0, 2).toUpperCase()).join(" · ")}
+                              </span>
                             )}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30">
-                        <div>
-                          <span className="text-xl font-extrabold text-foreground font-[Manrope]">R${doctor.consultation_price}</span>
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30 gap-2">
+                        <div className="min-w-0">
+                          <span className="text-xl font-extrabold text-foreground font-[Manrope]">R$ {doctor.consultation_price.toFixed(2).replace(".", ",")}</span>
                           <span className="text-xs text-muted-foreground ml-1">/consulta</span>
+                          <span className="block text-[11px] text-muted-foreground/80 flex items-center gap-1"><Clock className="w-3 h-3" /> {doctor.consultation_duration ?? 30} min</span>
                         </div>
-                        <Button size="sm" className="h-10 px-5 rounded-full bg-[#00347F] text-white text-sm font-bold gap-1.5 shadow-[var(--p-shadow-btn)]"
-                          onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/schedule/${doctor.id}`); }}>
-                          <Calendar className="w-4 h-4" /> Agendar <ChevronRight className="w-4 h-4 -mr-1" />
-                        </Button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Button size="sm" variant="ghost" className="h-9 px-2.5 rounded-full text-xs text-muted-foreground hover:text-foreground"
+                            onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/doctor-profile/${doctor.id}`); }}>
+                            <ExternalLink className="w-3.5 h-3.5 mr-1" /> Perfil
+                          </Button>
+                          <Button size="sm" className="h-10 px-5 rounded-full bg-[#00347F] text-white text-sm font-bold gap-1.5 shadow-[var(--p-shadow-btn)]"
+                            onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/schedule/${doctor.id}`); }}>
+                            <Calendar className="w-4 h-4" /> Agendar <ChevronRight className="w-4 h-4 -mr-1" />
+                          </Button>
+                        </div>
                       </div>
                     </motion.div>
                   ))}

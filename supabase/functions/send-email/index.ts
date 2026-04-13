@@ -140,6 +140,7 @@ const TEMPLATE_BANNER: Record<string, string> = {
   security_alert: "alert",
   welcome_laudista: "welcome_doctor",
   welcome_ophthalmologist: "welcome_doctor",
+  prescription_expiring: "alert",
   exam_assigned: "exam",
   clinic_exam_report_ready: "exam",
   doctor_payout_completed: "payment",
@@ -723,6 +724,22 @@ const templates: Record<string, (d: Record<string, string>) => { subject: string
       `)}
       ${btn(URLS.doctorDashboard, "Acessar Painel")}
     `, "welcome_ophthalmologist"),
+  }),
+
+  prescription_expiring: (d) => ({
+    subject: "⚠️ Sua Prescrição Oftalmológica está vencendo",
+    html: wrap(`
+      <h2 style="color:${BRAND.amber};margin:0 0 16px;">Prescrição em Vencimento</h2>
+      <p>Olá <strong>${d.patient_name || "Paciente"}</strong>,</p>
+      <p>Sua prescrição oftalmológica está chegando ao vencimento. Renove sua prescrição agora mesmo!</p>
+      ${card(`
+        <p><strong>👁️ Oftalmologista:</strong> ${d.doctor_name || "—"}</p>
+        <p><strong>📅 Data de Vencimento:</strong> ${d.expiry_date || "—"}</p>
+        <p style="margin-top:12px;padding-top:12px;border-top:1px solid ${BRAND.border};"><strong>⚠️ Ação Necessária:</strong> Agende uma nova consulta para renovar sua prescrição.</p>
+      `)}
+      ${btn(URLS.patientAppointments || sub("paciente", "/agendar/oftalmologia"), "Agendar Consulta")}
+      <p style="color:${BRAND.muted};font-size:13px;margin-top:16px;">Você pode visualizar e baixar sua prescrição atual na área "Meus Exames Oftalmológicos" do seu painel.</p>
+    `, "prescription_expiring"),
   }),
 
   exam_assigned: (d) => ({

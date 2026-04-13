@@ -6,222 +6,237 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+const COMPREFACE_URL = "http://72.62.138.208:8000";
+const COMPREFACE_VERIFY_KEY = "5f3c100e-0144-465d-87b3-86c34ba70a1e";
+const COMPREFACE_DETECT_KEY = "a2d930ec-e3ee-46b4-b770-023524e41178";
 
+// Strict anti-fraud thresholds
+const MIN_SIMILARITY = 0.90;      // 90% face match required
+const MIN_FACE_DETECT_PROB = 0.95;
+const MAX_FACE_SIZE_VARIANCE = 0.5;
+
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [meta, b64] = dataUrl.startsWith("data:") ? dataUrl.split(",") : ["data:image/jpeg;base64", dataUrl];
+  const mime = meta.match(/data:([^;]+)/)?.[1] || "image/jpeg";
+  const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+  return new Blob([bytes], { type: mime });
+}
+
+async function detectFaces(imageDataUrl: string) {
+  const fd = new FormData();
+  fd.append("file", dataUrlToBlob(imageDataUrl), "img.jpg");
+  const res = await fetch(`${COMPREFACE_URL}/api/v1/detection/detect?face_plugins=age,gender,pose`, {
+    method: "POST",
+    headers: { "x-api-key": COMPREFACE_DETECT_KEY },
+    body: fd,
+  });
+  if (!res.ok) throw new Error(`Compreface detect failed: ${res.status}`);
+  return await res.json();
+}
+
+async function verifyFaces(sourceDataUrl: string, targetDataUrl: string) {
+  const fd = new FormData();
+  fd.append("source_image", dataUrlToBlob(sourceDataUrl), "source.jpg");
+  fd.append("target_image", dataUrlToBlob(targetDataUrl), "target.jpg");
+  const res = await fetch(`${COMPREFACE_URL}/api/v1/verification/verify`, {
+    method: "POST",
+    headers: { "x-api-key": COMPREFACE_VERIFY_KEY },
+    body: fd,
+  });
+  if (!res.ok) throw new Error(`Compreface verify failed: ${res.status}`);
+  return await res.json();
+}
+
+async function extractDocumentData(documentImageDataUrl: string): Promise<{ nome: string | null; cpf: string | null }> {
+  const DEEPSEEK_API_KEY = Deno.env.get("DEEPSEEK_API_KEY");
+  if (!DEEPSEEK_API_KEY) return { nome: null, cpf: null };
+  try {
+    const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${DEEPSEEK_API_KEY}` },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-exp:free",
+        messages: [{
+          role: "user",
+          content: [
+            { type: "text", text: 'Extraia o Nome completo e o CPF deste documento de identidade brasileiro. Responda só JSON: {"nome":"...","cpf":"..."}. Se faltar algo, use null.' },
+            { type: "image_url", image_url: { url: documentImageDataUrl } },
+          ],
+        }],
+        max_tokens: 200,
+        temperature: 0,
+      }),
+    });
+    if (!resp.ok) return { nome: null, cpf: null };
+    const j = await resp.json();
+    const raw = (j.choices?.[0]?.message?.content || "").replace(/```json\s*|```/g, "").trim();
+    const parsed = JSON.parse(raw);
+    return { nome: parsed?.nome ?? null, cpf: parsed?.cpf ?? null };
+  } catch (e) {
+    console.warn("[didit-kyc] OCR failed:", e);
+    return { nome: null, cpf: null };
+  }
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const DEEPSEEK_API_KEY = Deno.env.get("DEEPSEEK_API_KEY");
-  if (!DEEPSEEK_API_KEY) {
-    return new Response(JSON.stringify({ error: "DeepSeek API not configured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
   try {
-    // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
+      { global: { headers: { Authorization: authHeader } } },
     );
-
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
     const userId = user.id;
-    const body = await req.json();
-    const { document_image, selfie_image } = body;
 
+    const { document_image, selfie_image } = await req.json();
     if (!document_image || !selfie_image) {
-      return new Response(JSON.stringify({ error: "document_image and selfie_image are required (base64)" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(JSON.stringify({ error: "document_image e selfie_image são obrigatórios (data URL base64)" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Call DeepSeek Vision API via OpenRouter
-    const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "deepseek/deepseek-chat-v3-0324:free",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Analise estas duas imagens. A primeira é um documento de identidade brasileiro e a segunda é uma selfie. Verifique se o rosto na selfie é o mesmo do documento. Extraia o Nome e o CPF do documento. Responda estritamente em JSON sem markdown: {"match": boolean, "score": 0-100, "nome": string, "cpf": string}. Se não conseguir identificar algum campo, use null.`
-              },
-              {
-                type: "image_url",
-                image_url: { url: document_image.startsWith("data:") ? document_image : `data:image/jpeg;base64,${document_image}` }
-              },
-              {
-                type: "image_url",
-                image_url: { url: selfie_image.startsWith("data:") ? selfie_image : `data:image/jpeg;base64,${selfie_image}` }
-              }
-            ]
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0,
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const errText = await aiResponse.text();
-      console.error("[didit-kyc] AI API error:", aiResponse.status, errText);
-      return new Response(
-        JSON.stringify({ error: "AI verification failed", details: errText }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const aiResult = await aiResponse.json();
-    const rawContent = aiResult.choices?.[0]?.message?.content || "";
-    console.log("[didit-kyc] AI raw response:", rawContent);
-
-    // Parse JSON from response
-    let verification: { match: boolean; score: number; nome: string | null; cpf: string | null };
+    // LAYER 1: Anti-spoof — detect faces in both, require real face + high probability
+    let docDetect, selfieDetect;
     try {
-      const jsonStr = rawContent.replace(/```json\s*/g, "").replace(/```/g, "").trim();
-      verification = JSON.parse(jsonStr);
-    } catch {
-      console.error("[didit-kyc] Failed to parse AI response:", rawContent);
-      return new Response(
-        JSON.stringify({ error: "Failed to parse verification result", raw: rawContent }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      [docDetect, selfieDetect] = await Promise.all([
+        detectFaces(document_image),
+        detectFaces(selfie_image),
+      ]);
+    } catch (e) {
+      console.error("[didit-kyc] detect failure:", e);
+      return new Response(JSON.stringify({
+        error: "Falha ao detectar faces. Tente novamente com fotos nítidas e bem iluminadas.",
+        stage: "detect",
+      }), { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Use service role for writing
+    const docFaces = docDetect?.result || [];
+    const selfieFaces = selfieDetect?.result || [];
+
+    const reasons: string[] = [];
+    if (docFaces.length !== 1) reasons.push(`Documento precisa ter exatamente 1 rosto visível (encontrados: ${docFaces.length})`);
+    if (selfieFaces.length !== 1) reasons.push(`Selfie precisa ter exatamente 1 rosto (encontrados: ${selfieFaces.length})`);
+    const docProb = docFaces[0]?.box?.probability || 0;
+    const selfieProb = selfieFaces[0]?.box?.probability || 0;
+    if (docProb < MIN_FACE_DETECT_PROB) reasons.push("Rosto no documento com baixa confiança — use foto nítida do RG/CNH");
+    if (selfieProb < MIN_FACE_DETECT_PROB) reasons.push("Selfie com baixa confiança — melhore a iluminação");
+
+    // Anti-spoof: selfie pose must be frontal (yaw/pitch/roll within limits)
+    const selfPose = selfieFaces[0]?.pose;
+    if (selfPose) {
+      if (Math.abs(selfPose.yaw || 0) > 25 || Math.abs(selfPose.pitch || 0) > 25) {
+        reasons.push("Olhe diretamente para a câmera — sem inclinar ou virar o rosto");
+      }
+    }
+
+    if (reasons.length > 0) {
+      return new Response(JSON.stringify({
+        match: false, score: 0, status: "rejected",
+        error: reasons.join(". "), stage: "anti_spoof",
+      }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // LAYER 2: Biometric verification — Compreface face match
+    let verifyResult;
+    try {
+      verifyResult = await verifyFaces(document_image, selfie_image);
+    } catch (e) {
+      console.error("[didit-kyc] verify failure:", e);
+      return new Response(JSON.stringify({
+        error: "Falha na verificação biométrica. Tente novamente.",
+        stage: "verify",
+      }), { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const similarity = verifyResult?.result?.[0]?.face_matches?.[0]?.similarity ?? 0;
+    const score = Math.round(similarity * 100);
+    const match = similarity >= MIN_SIMILARITY;
+
+    // LAYER 3: OCR (best-effort, doesn't block approval)
+    const { nome, cpf } = await extractDocumentData(document_image);
+
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Log the verification
+    // Audit log
     await supabaseAdmin.from("activity_logs").insert({
-      action: verification.match ? "kyc_approved" : "kyc_rejected",
-      entity_type: "kyc",
-      entity_id: userId,
-      user_id: userId,
+      action: match ? "kyc_approved" : "kyc_rejected",
+      entity_type: "kyc", entity_id: userId, user_id: userId,
       details: {
-        provider: "deepseek_vision",
-        match: verification.match,
-        score: verification.score,
-        nome: verification.nome,
-        cpf: verification.cpf,
+        provider: "compreface+deepseek_ocr",
+        similarity, score, match, nome, cpf,
+        doc_face_prob: docProb, selfie_face_prob: selfieProb,
+        thresholds: { min_similarity: MIN_SIMILARITY, min_face_prob: MIN_FACE_DETECT_PROB },
       },
     });
 
-    // If match, update doctor KYC status
-    if (verification.match && verification.score >= 60) {
-      const { data: doctorProfile } = await supabaseAdmin
-        .from("doctor_profiles")
-        .select("id")
-        .eq("user_id", userId)
-        .maybeSingle();
+    const { data: doctorProfile } = await supabaseAdmin
+      .from("doctor_profiles").select("id").eq("user_id", userId).maybeSingle();
 
+    if (match) {
       if (doctorProfile) {
-        await supabaseAdmin
-          .from("doctor_profiles")
-          .update({
-            kyc_status: "approved",
-            kyc_verified_at: new Date().toISOString(),
-            kyc_face_match_score: verification.score,
-          })
-          .eq("user_id", userId);
+        await supabaseAdmin.from("doctor_profiles").update({
+          kyc_status: "approved",
+          kyc_verified_at: new Date().toISOString(),
+          kyc_face_match_score: score,
+        }).eq("user_id", userId);
       }
-
-      // Save KYC record
       await supabaseAdmin.from("kyc_verificacoes").insert({
-        user_id: userId,
-        status: "approved",
-        similarity: verification.score / 100,
+        user_id: userId, status: "approved", similarity,
         tipo: doctorProfile ? "medico" : "paciente",
       });
-
-      // Notify user
       await supabaseAdmin.from("notifications").insert({
         user_id: userId,
         title: "✅ Identidade verificada!",
-        message: "Sua verificação biométrica foi aprovada com sucesso.",
-        type: "info",
-        link: "/dashboard",
+        message: `Verificação biométrica aprovada (similaridade ${score}%).`,
+        type: "info", link: "/dashboard",
       });
     } else {
-      // Rejected
-      const { data: doctorProfile } = await supabaseAdmin
-        .from("doctor_profiles")
-        .select("id")
-        .eq("user_id", userId)
-        .maybeSingle();
-
       if (doctorProfile) {
-        await supabaseAdmin
-          .from("doctor_profiles")
-          .update({ kyc_status: "rejected" })
-          .eq("user_id", userId);
+        await supabaseAdmin.from("doctor_profiles").update({ kyc_status: "rejected" }).eq("user_id", userId);
       }
-
       await supabaseAdmin.from("kyc_verificacoes").insert({
-        user_id: userId,
-        status: "rejected",
-        similarity: (verification.score || 0) / 100,
+        user_id: userId, status: "rejected", similarity,
         tipo: doctorProfile ? "medico" : "paciente",
       });
-
       await supabaseAdmin.from("notifications").insert({
         user_id: userId,
         title: "❌ Verificação não aprovada",
-        message: "Não foi possível confirmar sua identidade. Tente novamente com fotos mais nítidas.",
-        type: "warning",
-        link: "/dashboard/profile?kyc=open",
+        message: `A selfie não corresponde ao documento (similaridade ${score}%). Tente de novo com fotos nítidas.`,
+        type: "warning", link: "/dashboard/profile?kyc=open",
       });
     }
 
-    return new Response(
-      JSON.stringify({
-        match: verification.match,
-        score: verification.score,
-        nome: verification.nome,
-        cpf: verification.cpf,
-        status: verification.match && verification.score >= 60 ? "approved" : "rejected",
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (err) {
+    return new Response(JSON.stringify({
+      match, score, similarity, nome, cpf,
+      status: match ? "approved" : "rejected",
+      error: match ? null : `Rostos não correspondem (similaridade ${score}%, mínimo ${MIN_SIMILARITY * 100}%)`,
+    }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  } catch (err: any) {
     console.error("[didit-kyc] Error:", err);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: err?.message || "Internal server error" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

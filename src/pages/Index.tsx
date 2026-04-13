@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Stethoscope, Brain } from "@phosphor-icons/react";
 import { Stethoscope as StethoscopeLucide, Eye, Building2, ArrowRight, type LucideIcon } from "lucide-react";
 import { useSiteConfig } from "@/lib/site-config";
+import { useSiteSections } from "@/lib/site-sections";
 
 import bannerAi from "@/assets/banner-ai-triage.webp";
 
@@ -70,7 +71,14 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { get } = useSiteConfig();
-  const entryCards = parseEntryCards(get("entry_cards", ""));
+  const { enabled, configOf, sections } = useSiteSections();
+  // If DB has seeded sections, use entry_cards from there; else fall back.
+  const entryCardsFromDB = configOf<{ items?: EntryCard[] }>("entry_cards", { items: undefined });
+  const entryCards = entryCardsFromDB.items && entryCardsFromDB.items.length > 0
+    ? entryCardsFromDB.items
+    : parseEntryCards(get("entry_cards", ""));
+  // When sections not loaded yet, render everything (default).
+  const isOn = (key: string) => sections ? enabled(key) : true;
 
   useEffect(() => {
     const prev = theme;
@@ -116,11 +124,11 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
           aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "2500", bestRating: "5" },
         }}
       />
-      <Header />
-      <HeroSection />
+      {isOn("header") && <Header />}
+      {isOn("hero") && <HeroSection />}
 
       {/* Entry-point cards: route patient or clinic to the right place */}
-      <section aria-label="Como podemos te ajudar" className="py-8 px-4">
+      {isOn("entry_cards") && <section aria-label="Como podemos te ajudar" className="py-8 px-4">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28">
           <div className="grid gap-4 sm:grid-cols-3">
             {entryCards.map((item) => {
@@ -161,14 +169,14 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
             })}
           </div>
         </div>
-      </section>
+      </section>}
 
-      <SocialProofBar />
+      {isOn("social_proof") && <SocialProofBar />}
 
       {/* Stats counters */}
-      <DeferredSection fallbackClassName="h-24" rootMargin="100px 0px">
+      {isOn("stats") && <DeferredSection fallbackClassName="h-24" rootMargin="100px 0px">
         <StatsSection />
-      </DeferredSection>
+      </DeferredSection>}
 
       {/* Plantão 24h banner */}
       <section className="py-8 px-4 relative overflow-hidden">
@@ -209,27 +217,27 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
       </section>
 
       {/* Services showcase with hero image */}
-      <DeferredSection fallbackClassName="h-screen" rootMargin="300px 0px">
+      {isOn("horizontal_cards") && <DeferredSection fallbackClassName="h-screen" rootMargin="300px 0px">
         <HorizontalScrollCards />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* Specialties grid — NEW */}
-      <DeferredSection fallbackClassName="h-[520px]" rootMargin="200px 0px">
+      {/* Specialties grid */}
+      {isOn("specialties") && <DeferredSection fallbackClassName="h-[520px]" rootMargin="200px 0px">
         <SpecialtiesShowcase />
-      </DeferredSection>
+      </DeferredSection>}
 
       {/* How it works */}
-      <DeferredSection fallbackClassName="h-[520px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
+      {isOn("how_it_works") && <DeferredSection fallbackClassName="h-[520px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
         <HowItWorksSection />
-      </DeferredSection>
+      </DeferredSection>}
 
       {/* Telelaudo section */}
-      <DeferredSection fallbackClassName="h-[520px]" rootMargin="200px 0px">
+      {isOn("telelaudo") && <DeferredSection fallbackClassName="h-[520px]" rootMargin="200px 0px">
         <TeleLaudoSection />
-      </DeferredSection>
+      </DeferredSection>}
 
       {/* AI Triage banner */}
-      <DeferredSection fallbackClassName="h-36 mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
+      {isOn("info_banner") && <DeferredSection fallbackClassName="h-36 mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
         <InfoBannerStrip
           icon={Brain}
           label="Inteligência Artificial"
@@ -240,48 +248,41 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
           mascotSrc={bannerAi}
           variant="chevron"
         />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* Benefits bento grid */}
-      <DeferredSection fallbackClassName="h-[600px]" rootMargin="200px 0px">
+      {isOn("benefits") && <DeferredSection fallbackClassName="h-[600px]" rootMargin="200px 0px">
         <BenefitsGrid />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* Health network section */}
-      <DeferredSection fallbackClassName="h-[500px]" rootMargin="200px 0px">
+      {isOn("health_network") && <DeferredSection fallbackClassName="h-[500px]" rootMargin="200px 0px">
         <HealthNetworkSection />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* Pricing */}
-      <DeferredSection fallbackClassName="h-[640px]" rootMargin="200px 0px">
+      {isOn("pricing") && <DeferredSection fallbackClassName="h-[640px]" rootMargin="200px 0px">
         <PricingSection />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* For doctors */}
-      <DeferredSection fallbackClassName="h-[540px]" rootMargin="200px 0px">
+      {isOn("for_doctors") && <DeferredSection fallbackClassName="h-[540px]" rootMargin="200px 0px">
         <ForDoctorsSection />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* Testimonials */}
-      <DeferredSection fallbackClassName="h-[520px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
+      {isOn("testimonials") && <DeferredSection fallbackClassName="h-[520px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
         <TestimonialsSection />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* CTA comparison */}
-      <DeferredSection fallbackClassName="h-[340px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
+      {isOn("cta_banner") && <DeferredSection fallbackClassName="h-[340px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
         <CTABanner />
-      </DeferredSection>
+      </DeferredSection>}
 
-      {/* FAQ */}
-      <DeferredSection fallbackClassName="h-[560px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
+      {isOn("faq") && <DeferredSection fallbackClassName="h-[560px] mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28">
         <FAQSection />
-      </DeferredSection>
+      </DeferredSection>}
 
-      <DeferredSection fallbackClassName="h-72 mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28" rootMargin="180px 0px">
+      {isOn("footer") && <DeferredSection fallbackClassName="h-72 mx-4 sm:mx-6 lg:mx-12 xl:mx-20 2xl:mx-28" rootMargin="180px 0px">
         <Footer />
-      </DeferredSection>
+      </DeferredSection>}
 
-      <FloatingMobileCTA />
+      {isOn("floating_cta") && <FloatingMobileCTA />}
     </div>
   );
 });
