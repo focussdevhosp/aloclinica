@@ -86,6 +86,10 @@ const CartaoB2B = lazy(() => import("./pages/CartaoB2B"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Seguranca = lazy(() => import("./pages/Seguranca"));
 const Contato = lazy(() => import("./pages/Contato"));
+const ComoFunciona = lazy(() => import("./pages/ComoFunciona"));
+const Especialidades = lazy(() => import("./pages/Especialidades"));
+const Recursos = lazy(() => import("./pages/Recursos"));
+const FAQ = lazy(() => import("./pages/FAQ"));
 
 // Prefetch das rotas mais acessadas após o browser ficar idle
 if (typeof window !== "undefined") {
@@ -183,6 +187,10 @@ const AnimatedRoutes = () => {
       <Route path="/sobre" element={<Sobre />} />
       <Route path="/seguranca" element={<Seguranca />} />
       <Route path="/contato" element={<Contato />} />
+      <Route path="/como-funciona" element={<ComoFunciona />} />
+      <Route path="/especialidades" element={<Especialidades />} />
+      <Route path="/recursos" element={<Recursos />} />
+      <Route path="/faq" element={<FAQ />} />
 
       <Route path="/telelaudo" element={<Navigate to="/laudista" replace />} />
       <Route path="/telelaudo-workspace" element={<ProtectedRoute><TelelaudoWorkspace /></ProtectedRoute>} />
