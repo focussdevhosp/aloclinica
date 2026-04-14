@@ -114,9 +114,8 @@ const Agendar = () => {
   }, [selectedSpecialty]);
 
   const handleSelectDoctor = (doctorId: string) => {
-    // Redirect to login with return URL containing the doctor and specialty info
     const returnUrl = `/dashboard/schedule?doctor=${doctorId}&specialty=${encodeURIComponent(selectedSpecialty || "")}`;
-    navigate(`/paciente/cadastro?redirect=${encodeURIComponent(returnUrl)}`);
+    navigate(`/paciente?redirect=${encodeURIComponent(returnUrl)}`);
   };
 
   const handleBack = () => {
