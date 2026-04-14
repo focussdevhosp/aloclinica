@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SEOHead from "@/components/SEOHead";
 import Header from "@/components/landing/Header";
 import { lazy, Suspense } from "react";
-import heroTeleconsulta from "@/assets/hero-teleconsulta.png";
+import heroTeleconsultaPhone from "@/assets/hero-teleconsulta-phone.png";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
 
