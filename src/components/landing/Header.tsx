@@ -70,14 +70,11 @@ const Header = memo(forwardRef<HTMLElement>((_, ref) => {
   }, []);
 
   const mobileLinks = [
+    { label: "Laudos", href: "/para-empresas/telelaudo" },
+    { label: "Plantão", href: "/plantao" },
     { label: "Teleconsulta", href: "/teleconsulta" },
-    // { label: "Oftalmologia", href: "/oftalmologia" },
-    // { label: "Telelaudo", href: "/para-empresas/telelaudo" },
-    // { label: "Cartão Benefícios", href: "/cartao-beneficios" },
-    // { label: "Cartão B2B", href: "/cartao-b2b" },
+    { label: "Receita", href: "/receita" },
     { label: "Sou Médico", href: "/para-medicos" },
-    // { label: "Sou Laudista", href: "/laudista" },
-    // { label: "Sou Clínica", href: "/para-clinicas" },
   ];
 
   const triggerCls = "group/trigger text-[13px] font-medium text-muted-foreground hover:text-foreground bg-transparent data-[state=open]:text-foreground data-[state=open]:bg-muted/40 px-3.5 h-9 rounded-full transition-colors duration-150 gap-1.5";
