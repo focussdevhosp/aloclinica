@@ -54,6 +54,7 @@ interface PublicDoctor {
   available_now: boolean;
   available_for_telemedicine: boolean | null;
   sub_specialties: string[] | null;
+  care_areas?: string[];
 }
 
 const fadeUp = {
