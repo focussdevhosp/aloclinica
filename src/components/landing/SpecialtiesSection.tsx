@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Stethoscope, ArrowRight, CaretDown } from "@phosphor-icons/react";
+import { ArrowRight, CaretDown } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 
 import pingoClinicoGeral from "@/assets/pingo-clinico-geral.png";
@@ -17,6 +17,24 @@ import pingoEndocrinologista from "@/assets/pingo-endocrinologista.png";
 import pingoUrologista from "@/assets/pingo-urologista.png";
 import pingoGastroenterologista from "@/assets/pingo-gastroenterologista.png";
 
+import pingoAcupunturista from "@/assets/pingo-acupunturista.png";
+import pingoAnestesiologista from "@/assets/pingo-anestesiologista.png";
+import pingoCirurgiaoGI from "@/assets/pingo-cirurgiao-gi.png";
+import pingoCirurgiaoGeral from "@/assets/pingo-cirurgiao-geral.png";
+import pingoCirurgiaoOnco from "@/assets/pingo-cirurgiao-onco.png";
+import pingoCirurgiaoPlastico from "@/assets/pingo-cirurgiao-plastico.png";
+import pingoCirurgiaoVascular from "@/assets/pingo-cirurgiao-vascular.png";
+import pingoCirurgiaoDentista from "@/assets/pingo-cirurgiao-dentista.png";
+import pingoClinicaMedica from "@/assets/pingo-clinica-medica.png";
+import pingoFisiatra from "@/assets/pingo-fisiatra.png";
+import pingoFisioterapeuta from "@/assets/pingo-fisioterapeuta.png";
+import pingoFonoaudiologo from "@/assets/pingo-fonoaudiologo.png";
+import pingoGeriatra from "@/assets/pingo-geriatra.png";
+import pingoHomeopata from "@/assets/pingo-homeopata.png";
+import pingoInfectologista from "@/assets/pingo-infectologista.png";
+import pingoMedicoFamilia from "@/assets/pingo-medico-familia.png";
+
+// Reuse some icons for remaining specialties that don't have unique ones yet
 const topSpecialties = [
   { name: "Clínico geral", img: pingoClinicoGeral },
   { name: "Dermatologista", img: pingoDermatologista },
@@ -33,14 +51,60 @@ const topSpecialties = [
 ];
 
 const moreSpecialties = [
-  "Acupunturista", "Anestesiologista", "Cirurgião gastrointestinal",
-  "Cirurgião geral", "Cirurgião oncológico", "Cirurgião plástico", "Cirurgião vascular",
-  "Cirurgião-dentista", "Clínica médica", "Fisiatra", "Fisioterapeuta", "Fonoaudiólogo",
-  "Geriatra", "Homeopata", "Infectologista", "Médico de família",
-  "Médico de tráfego", "Médico do trabalho", "Nefrologista", "Nutricionista",
-  "Nutrólogista", "Otorrinolaringologista", "Pneumologista", "Psicólogo",
-  "Reumatologista",
+  { name: "Acupunturista", img: pingoAcupunturista },
+  { name: "Anestesiologista", img: pingoAnestesiologista },
+  { name: "Cirurgião gastrointestinal", img: pingoCirurgiaoGI },
+  { name: "Cirurgião geral", img: pingoCirurgiaoGeral },
+  { name: "Cirurgião oncológico", img: pingoCirurgiaoOnco },
+  { name: "Cirurgião plástico", img: pingoCirurgiaoPlastico },
+  { name: "Cirurgião vascular", img: pingoCirurgiaoVascular },
+  { name: "Cirurgião-dentista", img: pingoCirurgiaoDentista },
+  { name: "Clínica médica", img: pingoClinicaMedica },
+  { name: "Fisiatra", img: pingoFisiatra },
+  { name: "Fisioterapeuta", img: pingoFisioterapeuta },
+  { name: "Fonoaudiólogo", img: pingoFonoaudiologo },
+  { name: "Geriatra", img: pingoGeriatra },
+  { name: "Homeopata", img: pingoHomeopata },
+  { name: "Infectologista", img: pingoInfectologista },
+  { name: "Médico de família", img: pingoMedicoFamilia },
+  { name: "Médico de tráfego", img: pingoClinicoGeral },
+  { name: "Médico do trabalho", img: pingoClinicoGeral },
+  { name: "Nefrologista", img: pingoUrologista },
+  { name: "Nutricionista", img: pingoEndocrinologista },
+  { name: "Nutrólogista", img: pingoEndocrinologista },
+  { name: "Otorrinolaringologista", img: pingoFonoaudiologo },
+  { name: "Pneumologista", img: pingoAnestesiologista },
+  { name: "Psicólogo", img: pingoPsiquiatra },
+  { name: "Reumatologista", img: pingoOrtopedista },
 ];
+
+const SpecialtyCard = ({ name, img, index }: { name: string; img: string; index: number }) => {
+  const navigate = useNavigate();
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-card/80 border border-border/40 hover:shadow-lg hover:border-primary/25 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+      onClick={() => navigate("/dashboard/doctors")}
+    >
+      <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+        <img
+          src={img}
+          alt={`Pingo ${name}`}
+          loading="lazy"
+          width={80}
+          height={80}
+          className="w-full h-full object-contain"
+        />
+      </div>
+      <span className="text-xs md:text-sm font-semibold text-foreground text-center leading-tight group-hover:text-primary transition-colors">
+        {name}
+      </span>
+    </motion.button>
+  );
+};
 
 function SpecialtiesSection() {
   const navigate = useNavigate();
@@ -74,29 +138,7 @@ function SpecialtiesSection() {
         {/* Top 12 with Pingo icons */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
           {topSpecialties.map((s, i) => (
-            <motion.button
-              key={s.name}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-card/80 border border-border/40 hover:shadow-lg hover:border-primary/25 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-              onClick={() => navigate("/dashboard/doctors")}
-            >
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                <img
-                  src={s.img}
-                  alt={`Pingo ${s.name}`}
-                  loading="lazy"
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <span className="text-xs md:text-sm font-semibold text-foreground text-center leading-tight group-hover:text-primary transition-colors">
-                {s.name}
-              </span>
-            </motion.button>
+            <SpecialtyCard key={s.name} name={s.name} img={s.img} index={i} />
           ))}
         </div>
 
@@ -111,20 +153,8 @@ function SpecialtiesSection() {
               className="overflow-hidden"
             >
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
-                {moreSpecialties.map((name, i) => (
-                  <motion.button
-                    key={name}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.02, duration: 0.35 }}
-                    className="group flex items-center justify-center gap-2 px-3 py-4 rounded-2xl bg-card/80 border border-border/40 hover:shadow-lg hover:border-primary/25 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                    onClick={() => navigate("/dashboard/doctors")}
-                  >
-                    <Stethoscope className="w-4 h-4 text-primary/50 group-hover:text-primary shrink-0 transition-colors" weight="fill" />
-                    <span className="text-xs md:text-sm font-semibold text-foreground text-center leading-tight group-hover:text-primary transition-colors">
-                      {name}
-                    </span>
-                  </motion.button>
+                {moreSpecialties.map((s, i) => (
+                  <SpecialtyCard key={s.name} name={s.name} img={s.img} index={i} />
                 ))}
               </div>
             </motion.div>
