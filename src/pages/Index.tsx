@@ -179,6 +179,104 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
       {/* ═══════════════ ESPECIALIDADES ═══════════════ */}
       <SpecialtiesSection />
 
+      {/* ═══════════════ DEPOIMENTOS ═══════════════ */}
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-primary/[0.03] to-background" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-center">
+            {/* Left — Pingo + Rating */}
+            <motion.div
+              className="flex flex-col items-center text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <img
+                src={pingoDepoimentos}
+                alt="Pingo com 5 estrelas de avaliação"
+                loading="lazy"
+                width={512}
+                height={512}
+                className="w-[240px] sm:w-[300px] lg:w-[340px] drop-shadow-xl mb-6"
+              />
+              <div className="flex items-center gap-1.5 mb-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-2xl font-extrabold text-foreground">4.9/5</p>
+              <p className="text-sm text-muted-foreground">Baseado em +12.000 avaliações</p>
+            </motion.div>
+
+            {/* Right — Testimonials */}
+            <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="mb-6"
+              >
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary bg-primary/[0.08] px-4 py-1.5 rounded-full mb-4">
+                  ✦ Depoimentos
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground leading-tight">
+                  O que nossos pacientes{" "}
+                  <span className="text-gradient">estão dizendo</span>
+                </h2>
+              </motion.div>
+
+              {[
+                {
+                  name: "Maria Fernanda",
+                  city: "São Paulo, SP",
+                  text: "Consultar pela AloClínica mudou minha vida. Recebi atendimento excelente do cardiologista sem sair de casa. Super recomendo!",
+                  specialty: "Cardiologia",
+                },
+                {
+                  name: "João Carlos",
+                  city: "Recife, PE",
+                  text: "Moro no interior e finalmente consegui consultar com um dermatologista. A receita digital funcionou perfeitamente na farmácia.",
+                  specialty: "Dermatologia",
+                },
+                {
+                  name: "Ana Beatriz",
+                  city: "Belo Horizonte, MG",
+                  text: "Atendimento rápido, médica muito atenciosa e a plataforma é super fácil de usar. Resolveu meu problema em 20 minutos!",
+                  specialty: "Clínico Geral",
+                },
+              ].map((t, i) => (
+                <motion.div
+                  key={t.name}
+                  className="p-5 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+                  initial={{ opacity: 0, x: 24 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.15 + i * 0.1 }}
+                >
+                  <div className="flex items-center gap-1 mb-2.5">
+                    {Array.from({ length: 5 }).map((_, si) => (
+                      <Star key={si} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    ))}
+                    <span className="text-xs text-muted-foreground ml-2">{t.specialty}</span>
+                  </div>
+                  <p className="text-sm text-foreground mb-3 leading-relaxed">"{t.text}"</p>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-xs font-bold text-primary">{t.name[0]}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.city}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 });
