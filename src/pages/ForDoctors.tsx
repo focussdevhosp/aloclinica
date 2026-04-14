@@ -12,7 +12,9 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
 
-import heroDoctor from "@/assets/hero-doctor.png";
+import doctorTeleconsulta from "@/assets/doctor-teleconsulta.png";
+import doctorFerramentas from "@/assets/doctor-ferramentas.png";
+import doctorRenda from "@/assets/doctor-renda.png";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
 
@@ -109,7 +111,7 @@ const ForDoctors = forwardRef<HTMLDivElement>((_, ref) => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <img
-                src={heroDoctor}
+                src={doctorTeleconsulta}
                 alt="Pingo médico em teleconsulta"
                 width={440}
                 height={440}
@@ -166,7 +168,7 @@ const ForDoctors = forwardRef<HTMLDivElement>((_, ref) => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div className="flex justify-center order-2 lg:order-1" {...fadeUp} transition={{ duration: 0.6 }}>
               <img
-                src={heroDoctor}
+                src={doctorFerramentas}
                 alt="Pingo com ferramentas médicas"
                 loading="lazy"
                 width={512}
@@ -310,7 +312,7 @@ const ForDoctors = forwardRef<HTMLDivElement>((_, ref) => {
 
             <motion.div className="flex justify-center" {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
               <img
-                src={heroDoctor}
+                src={doctorRenda}
                 alt="Pingo médico renda extra"
                 loading="lazy"
                 width={512}
