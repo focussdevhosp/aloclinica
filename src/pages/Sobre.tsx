@@ -6,7 +6,10 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
 
-import heroDoctor from "@/assets/hero-doctor.png";
+import doctorConfianca from "@/assets/doctor-confianca.png";
+import doctorTecnologia from "@/assets/doctor-tecnologia.png";
+import doctorPacientes from "@/assets/doctor-pacientes.png";
+import doctorSeguranca from "@/assets/doctor-seguranca.png";
 import pingoVideocall from "@/assets/pingo-videocall.png";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
@@ -80,7 +83,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <img src={heroDoctor} alt="Pingo mascote da AloClínica" width={400} height={400} className="w-[280px] sm:w-[340px] lg:w-[400px] drop-shadow-2xl" />
+              <img src={doctorConfianca} alt="Pingo mascote da AloClínica" width={400} height={400} className="w-[280px] sm:w-[340px] lg:w-[400px] drop-shadow-2xl" />
             </motion.div>
           </div>
         </div>
@@ -115,7 +118,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div className="flex justify-center order-2 lg:order-1" {...fadeUp} transition={{ duration: 0.6 }}>
-              <img src={heroDoctor} alt="Pingo com tecnologia médica" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[320px] lg:w-[380px] drop-shadow-xl" />
+              <img src={doctorTecnologia} alt="Pingo com tecnologia médica" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[320px] lg:w-[380px] drop-shadow-xl" />
             </motion.div>
 
             <motion.div className="order-1 lg:order-2" {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
@@ -247,7 +250,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
             </motion.div>
 
             <motion.div className="flex justify-center" {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              <img src={heroDoctor} alt="Pingo com pacientes felizes" loading="lazy" width={512} height={512} className="w-[280px] sm:w-[340px] lg:w-[420px] drop-shadow-xl" />
+              <img src={doctorPacientes} alt="Pingo com pacientes felizes" loading="lazy" width={512} height={512} className="w-[280px] sm:w-[340px] lg:w-[420px] drop-shadow-xl" />
             </motion.div>
           </div>
         </div>
@@ -296,7 +299,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div className="flex justify-center order-2 lg:order-1" {...fadeUp} transition={{ duration: 0.6 }}>
-              <img src={heroDoctor} alt="Pingo segurança de dados" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[300px] lg:w-[360px] drop-shadow-xl" />
+              <img src={doctorSeguranca} alt="Pingo segurança de dados" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[300px] lg:w-[360px] drop-shadow-xl" />
             </motion.div>
 
             <motion.div className="order-1 lg:order-2" {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
