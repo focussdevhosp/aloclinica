@@ -15,16 +15,8 @@ import pingoPrescription from "@/assets/pingo-prescription.png";
 
 const Index = forwardRef<HTMLDivElement>((_, ref) => {
   const { setTheme, theme } = useTheme();
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const { get } = useSiteConfig();
-  const { enabled, configOf, sections } = useSiteSections();
-  // If DB has seeded sections, use entry_cards from there; else fall back.
-  const entryCardsFromDB = configOf<{ items?: EntryCard[] }>("entry_cards", { items: undefined });
-  const entryCards = entryCardsFromDB.items && entryCardsFromDB.items.length > 0
-    ? entryCardsFromDB.items
-    : parseEntryCards(get("entry_cards", ""));
-  // When sections not loaded yet, render everything (default).
+  const { enabled, sections } = useSiteSections();
   const isOn = (key: string) => sections ? enabled(key) : true;
 
   useEffect(() => {
