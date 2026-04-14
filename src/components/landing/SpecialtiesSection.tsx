@@ -131,7 +131,7 @@ function SpecialtiesSection() {
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex justify-center">
           {!showAll && (
             <Button
               size="lg"
@@ -143,15 +143,6 @@ function SpecialtiesSection() {
               <CaretDown className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-y-0.5" weight="bold" />
             </Button>
           )}
-          <Button
-            size="lg"
-            variant="outline"
-            className="rounded-2xl h-[50px] px-8 text-sm font-bold border-2 hover:border-primary/30 hover:bg-primary/[0.04] transition-all group"
-            onClick={() => navigate("/dashboard/doctors")}
-          >
-            Ver todos os especialistas
-            <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" weight="bold" />
-          </Button>
         </div>
       </div>
     </section>
