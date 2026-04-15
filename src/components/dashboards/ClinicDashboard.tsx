@@ -196,7 +196,7 @@ const ClinicDashboard = () => {
         <HeroBanner
           gradient="from-[#1e1b6b] via-[#3730a3] to-[#6366f1]"
           pingoSrc={pingoAdmin}
-          pingoAlt="Pingo"
+          pingoAlt="Dra. Lila"
           liveDot={false}
           liveColor="green"
           bubble={{
@@ -236,10 +236,10 @@ const ClinicDashboard = () => {
           { label: "Taxa de ocupação", value: `${occupancy}%`, icon: "📊", iconBg: "bg-amber-50 dark:bg-amber-950/30", valueClass: "text-amber-600 dark:text-amber-400" },
         ]} />
 
-        {/* Pingo Banner */}
+        {/* Dra. Lila Banner */}
         <PingoBannerCard
           pingImg={pingoAdmin}
-          pingAlt="Pingo"
+          pingAlt="Dra. Lila"
           pingSize={82}
           bgClass="bg-indigo-50 dark:bg-indigo-950/20"
           borderClass="border-indigo-100 dark:border-indigo-900/30"

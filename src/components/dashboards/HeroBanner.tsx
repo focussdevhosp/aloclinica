@@ -26,7 +26,7 @@ interface HeroBannerProps {
 
 export function HeroBanner({
   gradient, tag, liveDot = false, liveColor = "green",
-  name, subtitle, bubble, pingoSrc, pingoAlt = "Pingo",
+  name, subtitle, bubble, pingoSrc, pingoAlt = "Dra. Lila",
   kpis = [], loading = false, onRefresh, refreshing = false,
   topRight, className,
 }: HeroBannerProps) {
@@ -113,7 +113,7 @@ export function HeroBanner({
             )}
           </div>
 
-          {/* RIGHT: Pingo mascot */}
+          {/* RIGHT: Dra. Lila mascot */}
           <motion.div className="shrink-0 -mb-1">
             <motion.img
               src={pingoSrc} alt={pingoAlt} draggable={false}

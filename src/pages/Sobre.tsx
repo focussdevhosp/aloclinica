@@ -83,7 +83,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <img src={doctorConfianca} alt="Pingo mascote da AloClínica" width={400} height={400} className="w-[280px] sm:w-[340px] lg:w-[400px] drop-shadow-2xl" />
+              <img src={doctorConfianca} alt="Dra. Lila mascote da AloClínica" width={400} height={400} className="w-[280px] sm:w-[340px] lg:w-[400px] drop-shadow-2xl" />
             </motion.div>
           </div>
         </div>
@@ -118,7 +118,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div className="flex justify-center order-2 lg:order-1" {...fadeUp} transition={{ duration: 0.6 }}>
-              <img src={doctorTecnologia} alt="Pingo com tecnologia médica" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[320px] lg:w-[380px] drop-shadow-xl" />
+              <img src={doctorTecnologia} alt="Dra. Lila com tecnologia médica" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[320px] lg:w-[380px] drop-shadow-xl" />
             </motion.div>
 
             <motion.div className="order-1 lg:order-2" {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
@@ -250,7 +250,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
             </motion.div>
 
             <motion.div className="flex justify-center" {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
-              <img src={doctorPacientes} alt="Pingo com pacientes felizes" loading="lazy" width={512} height={512} className="w-[280px] sm:w-[340px] lg:w-[420px] drop-shadow-xl" />
+              <img src={doctorPacientes} alt="Dra. Lila com pacientes felizes" loading="lazy" width={512} height={512} className="w-[280px] sm:w-[340px] lg:w-[420px] drop-shadow-xl" />
             </motion.div>
           </div>
         </div>
@@ -299,7 +299,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div className="flex justify-center order-2 lg:order-1" {...fadeUp} transition={{ duration: 0.6 }}>
-              <img src={doctorSeguranca} alt="Pingo segurança de dados" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[300px] lg:w-[360px] drop-shadow-xl" />
+              <img src={doctorSeguranca} alt="Dra. Lila segurança de dados" loading="lazy" width={512} height={512} className="w-[260px] sm:w-[300px] lg:w-[360px] drop-shadow-xl" />
             </motion.div>
 
             <motion.div className="order-1 lg:order-2" {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
@@ -390,7 +390,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
             <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary-foreground)/0.22),transparent_38%),radial-gradient(circle_at_bottom_right,hsl(var(--primary-foreground)/0.14),transparent_34%)]" />
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 px-8 sm:px-12 py-14 sm:py-16">
               <div className="flex items-center gap-6">
-                <img src={pingoVideocall} alt="Pingo" loading="lazy" width={100} height={100} className="w-20 h-20 hidden sm:block drop-shadow-lg" />
+                <img src={pingoVideocall} alt="Dra. Lila" loading="lazy" width={100} height={100} className="w-20 h-20 hidden sm:block drop-shadow-lg" />
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-foreground mb-2">
                     Comece a cuidar da sua saúde hoje

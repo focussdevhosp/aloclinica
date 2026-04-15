@@ -37,7 +37,7 @@ interface PingoMascotProps {
 
 export function PingoMascot({
   variant = "wave", size = 120, className, animate = false, bounce = true,
-  alt = "Pingo mascote AloClínica", onClick,
+  alt = "Dra. Lila mascote AloClínica", onClick,
 }: PingoMascotProps) {
   const src = SOURCES[variant] ?? SOURCES.default;
   return (
