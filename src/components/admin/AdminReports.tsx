@@ -84,7 +84,7 @@ const AdminReports = () => {
       const { data: specs } = await db.from("specialties").select("id, name").in("id", specIds.length > 0 ? specIds : ["none"]);
       const specMap = new Map(specs?.map(s => [s.id, s.name]) ?? []);
       const docSpecMap = new Map<string, string>();
-      (docSpecs ?? []).forEach(ds => docSpecMap.set(ds.doctor_id, specMap.get(ds.specialty_id) ?? "Outros"));
+      (docSpecs ?? []).forEach(ds => docSpecMap.set(ds.doctor_id, specMap.get(ds.specialty_id as any) ?? "Outros"));
       const specCount: Record<string, number> = {};
       completedAppts.forEach(a => {
         const spec = docSpecMap.get(a.doctor_id) ?? "Sem especialidade";

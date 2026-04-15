@@ -165,8 +165,8 @@ const AdminDashboard = () => {
     let totalRevenue = 0;
     if (activePlansRes.data && activePlansRes.data.length > 0) {
       const { data: plans } = await db.from("plans").select("id, price");
-      const planPriceMap = new Map(plans?.map(p => [p.id, Number(p.price)]) ?? []);
-      activePlansRes.data.forEach(s => { totalRevenue += planPriceMap.get(s.plan_id) ?? 0; });
+      const planPriceMap = new Map((plans as any[])?.map((p: any) => [p.id, Number(p.price)]) ?? []);
+      activePlansRes.data.forEach((s: any) => { totalRevenue += planPriceMap.get(s.plan_id) ?? 0; });
     }
 
     setStats({
@@ -188,7 +188,7 @@ const AdminDashboard = () => {
     const planMap = new Map((plansRes2.data ?? []).map((p: any) => [p.id, p] as const));
     const enrichSub = (s: any) => ({
       ...s, user_name: pMap.get(s.user_id) ?? "—",
-      plan_name: planMap.get(s.plan_id)?.name ?? "—", plan_price: planMap.get(s.plan_id)?.price ?? 0,
+      plan_name: (planMap.get(s.plan_id) as any)?.name ?? "—", plan_price: (planMap.get(s.plan_id) as any)?.price ?? 0,
     });
     setRecentSubs((allSubsRes.data ?? []).map(enrichSub));
     setOverdueSubs((expiredSubsRes.data ?? []).map(enrichSub));
@@ -196,9 +196,9 @@ const AdminDashboard = () => {
     if (pendingRes.data && pendingRes.data.length > 0) {
       const docUserIds = pendingRes.data.map(d => d.user_id);
       const { data: docProfiles } = await db.from("profiles").select("user_id, first_name, last_name").in("user_id", docUserIds);
-      const dpMap = new Map(docProfiles?.map(p => [p.user_id, p]) ?? []);
-      setPendingDoctors(pendingRes.data.map(d => ({
-        ...d, name: dpMap.has(d.user_id) ? `${dpMap.get(d.user_id)!.first_name} ${dpMap.get(d.user_id)!.last_name}` : "—",
+      const dpMap = new Map(docProfiles?.map((p: any) => [p.user_id, p]) ?? []);
+      setPendingDoctors(pendingRes.data.map((d: any) => ({
+        ...d, name: dpMap.has(d.user_id) ? `${(dpMap.get(d.user_id) as any)!.first_name} ${(dpMap.get(d.user_id) as any)!.last_name}` : "—",
       })));
     }
 
