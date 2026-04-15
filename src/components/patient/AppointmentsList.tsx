@@ -123,9 +123,9 @@ const AppointmentsList = () => {
       specMap.set(s.doctor_id, arr);
     });
 
-    setAppointments(data.map(a => {
-      const doc = doctorMap.get(a.doctor_id);
-      const profile = doc ? profileMap.get(doc.user_id) : null;
+    setAppointments(data.map((a: any) => {
+      const doc = doctorMap.get(a.doctor_id) as any;
+      const profile = doc ? (profileMap.get(doc.user_id) as any) : null;
       const displayStatus = (a.status === "scheduled" && a.payment_status === "pending") ? "payment_pending" : a.status;
       return {
         id: a.id,
