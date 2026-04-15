@@ -109,7 +109,7 @@ const PartnerDashboard = () => {
           { label: "Hoje", value: validations.filter(v => new Date(v.created_at).toDateString() === new Date().toDateString()).length, icon: "📅", iconBg: "bg-violet-50 dark:bg-violet-950/30", valueClass: "text-violet-600 dark:text-violet-400", accentClass: "bg-violet-500" },
         ]} />
 
-        {/* Pingo Banner */}
+        {/* Dra. Lila Banner */}
         <PingoBannerCard
           pingImg={pingoPartner}
           pingAlt="Dra. Lila"

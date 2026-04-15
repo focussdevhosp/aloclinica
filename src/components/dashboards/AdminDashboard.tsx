@@ -315,7 +315,7 @@ const AdminDashboard = () => {
           { label: "Laudos emitidos", value: stats.total_laudos, icon: "📋", iconBg: "bg-violet-50 dark:bg-violet-950/30", valueClass: "text-violet-600 dark:text-violet-400", trend: 31 , accentClass: "bg-violet-500" },
         ]} />
 
-        {/* Pingo Admin Banner */}
+        {/* Dra. Lila Admin Banner */}
         <PingoBannerCard
           pingImg={pingoAdmin}
           pingAlt="Dra. Lila"

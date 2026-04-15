@@ -226,7 +226,7 @@ const PanelCenter = () => {
           <HeroBanner
             gradient="from-[#0f172a] via-[#1e293b] to-[#334155]"
             pingoSrc={pingoAdmin}
-            pingoAlt="Pingo Admin"
+            pingoAlt="Dra. Lila Admin"
             liveDot={totalOnline > 0}
             liveColor="green"
             bubble={{

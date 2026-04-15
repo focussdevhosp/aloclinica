@@ -147,7 +147,7 @@ const ChatPage = () => {
         <div className="md:hidden">
           {!showChat ? (
             <div>
-              {/* Header with Pingo avatar */}
+              {/* Header with Dra. Lila avatar */}
               <div className="flex items-center gap-3 mb-6">
                 <img src={mascotWave} alt="Dra. Lila" className="w-10 h-10 rounded-full object-cover" />
                 <div>

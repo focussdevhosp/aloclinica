@@ -333,10 +333,10 @@ const DoctorDashboard = () => {
               </div>
             )}
 
-            {/* Pingo Memed banner */}
+            {/* Dra. Lila Memed banner */}
             <PingoBannerCard
               pingImg={mascotReading}
-              pingAlt="Pingo com receita"
+              pingAlt="Dra. Lila com receita"
               pingSize={82}
               bgClass="bg-blue-50 dark:bg-blue-950/30"
               borderClass="border-blue-100 dark:border-blue-900/30"

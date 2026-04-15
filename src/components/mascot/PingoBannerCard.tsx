@@ -44,7 +44,7 @@ export function PingoBannerCard({
       {/* Top shine line */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
 
-      {/* Pingo — real PNG */}
+      {/* Dra. Lila — real PNG */}
       <div
         className={cn("flex shrink-0 items-end justify-center", animate && "pingo-float-slow")}
         style={{ width: pingSize, height: pingSize }}

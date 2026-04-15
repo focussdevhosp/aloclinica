@@ -83,7 +83,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <img src={doctorConfianca} alt="Pingo mascote da AloClínica" width={400} height={400} className="w-[280px] sm:w-[340px] lg:w-[400px] drop-shadow-2xl" />
+              <img src={doctorConfianca} alt="Dra. Lila mascote da AloClínica" width={400} height={400} className="w-[280px] sm:w-[340px] lg:w-[400px] drop-shadow-2xl" />
             </motion.div>
           </div>
         </div>

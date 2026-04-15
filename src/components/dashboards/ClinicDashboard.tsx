@@ -236,7 +236,7 @@ const ClinicDashboard = () => {
           { label: "Taxa de ocupação", value: `${occupancy}%`, icon: "📊", iconBg: "bg-amber-50 dark:bg-amber-950/30", valueClass: "text-amber-600 dark:text-amber-400" },
         ]} />
 
-        {/* Pingo Banner */}
+        {/* Dra. Lila Banner */}
         <PingoBannerCard
           pingImg={pingoAdmin}
           pingAlt="Dra. Lila"

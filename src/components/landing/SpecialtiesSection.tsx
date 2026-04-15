@@ -92,7 +92,7 @@ const SpecialtyCard = ({ name, img, index }: { name: string; img: string; index:
       <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
         <img
           src={img}
-          alt={`Pingo ${name}`}
+          alt={`Dra. Lila ${name}`}
           loading="lazy"
           width={80}
           height={80}
@@ -135,7 +135,7 @@ function SpecialtiesSection() {
           </p>
         </motion.div>
 
-        {/* Top 12 with Pingo icons */}
+        {/* Top 12 with Dr. Lila icons */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
           {topSpecialties.map((s, i) => (
             <SpecialtyCard key={s.name} name={s.name} img={s.img} index={i} />

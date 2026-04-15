@@ -330,7 +330,7 @@ const SupportDashboard = () => {
 
         <motion.div variants={fadeUp}>
           
-        {/* Pingo Banner */}
+        {/* Dra. Lila Banner */}
         <PingoBannerCard
           pingImg={pingoSupport}
           pingAlt="Dra. Lila"

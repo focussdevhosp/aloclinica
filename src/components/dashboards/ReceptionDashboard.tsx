@@ -216,7 +216,7 @@ const ReceptionDashboard = () => {
           { label: "Concluídas", value: stats.completed, icon: "✅", iconBg: "bg-blue-50 dark:bg-blue-950/30", valueClass: "text-[#1255C8] dark:text-blue-400", accentClass: "bg-blue-500" },
         ]} />
 
-        {/* Pingo Banner */}
+        {/* Dra. Lila Banner */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-start">
         <div className="space-y-5">
         <PingoBannerCard

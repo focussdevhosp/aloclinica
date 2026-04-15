@@ -107,7 +107,7 @@ const AuthSimpleRole = ({
             >
               <motion.img
                 src={mascotSrc}
-                alt={`Pingo - ${title}`}
+                alt={`Dra. Lila - ${title}`}
                 className="w-48 h-48 object-contain select-none"
                 style={{ filter: "drop-shadow(0 8px 32px rgba(0,0,50,.4))" }}
                 animate={{ y: [0, -8, 0] }}
