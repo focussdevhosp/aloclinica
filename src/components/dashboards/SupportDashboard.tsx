@@ -136,10 +136,10 @@ const SupportDashboard = () => {
         if (!rMap.has(r.user_id)) rMap.set(r.user_id, []);
         rMap.get(r.user_id)!.push(r.role);
       });
-      setOnlineUsers(data.map(d => ({
+      setOnlineUsers(data.map((d: any) => ({
         ...d,
-        first_name: pMap.get(d.user_id)?.first_name ?? "",
-        last_name: pMap.get(d.user_id)?.last_name ?? "",
+        first_name: (pMap.get(d.user_id) as any)?.first_name ?? "",
+        last_name: (pMap.get(d.user_id) as any)?.last_name ?? "",
         roles: rMap.get(d.user_id) ?? [],
       })));
     };

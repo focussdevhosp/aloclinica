@@ -12,7 +12,7 @@ import { getPatientNav } from "./patientNav";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import mascotWave from "@/assets/mascot-wave.png";
-import type { Json } from "@/integrations/db/types";
+import type { Json } from "@/integrations/supabase/types";
 
 interface SubscriptionEntry {
   id: string;
@@ -59,15 +59,15 @@ const PaymentHistory = () => {
       .from("plans")
       .select("id, name, price, description, features, interval")
       .in("id", planIds);
-    const planMap = new Map(plans?.map((p) => [p.id, p]) ?? []);
+    const planMap = new Map((plans as any[])?.map((p: any) => [p.id, p]) ?? []);
 
-    setSubs(subsData.map((s) => ({
+    setSubs(subsData.map((s: any) => ({
       ...s,
-      plan_name: planMap.get(s.plan_id)?.name ?? "—",
-      plan_price: planMap.get(s.plan_id)?.price ?? 0,
-      plan_description: planMap.get(s.plan_id)?.description ?? "",
-      plan_interval: planMap.get(s.plan_id)?.interval ?? "monthly",
-      plan_features: planMap.get(s.plan_id)?.features ?? [],
+      plan_name: (planMap.get(s.plan_id) as any)?.name ?? "—",
+      plan_price: (planMap.get(s.plan_id) as any)?.price ?? 0,
+      plan_description: (planMap.get(s.plan_id) as any)?.description ?? "",
+      plan_interval: (planMap.get(s.plan_id) as any)?.interval ?? "monthly",
+      plan_features: (planMap.get(s.plan_id) as any)?.features ?? [],
     })));
     setLoading(false);
   };

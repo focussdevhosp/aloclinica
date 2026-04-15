@@ -93,17 +93,17 @@ const AdminAnalyticsCharts = () => {
     setStatusBreakdown(Object.entries(statusCount).map(([status, count]) => ({ name: statusLabels[status] || status, value: count })));
 
     // Specialty distribution
-    const specMap = new Map((specsRes.data ?? []).map((s) => [s.id, s.name]));
+    const specMap = new Map((specsRes.data ?? []).map((s: any) => [s.id, s.name]));
     const specCount: Record<string, number> = {};
-    (docSpecsRes.data ?? []).forEach((ds) => { const name = specMap.get(ds.specialty_id) || "Outro"; specCount[name] = (specCount[name] || 0) + 1; });
+    (docSpecsRes.data ?? []).forEach((ds: any) => { const name = specMap.get(ds.specialty_id as string) || "Outro"; specCount[name as string] = ((specCount[name as string]) || 0) + 1; });
     setSpecialtyData(Object.entries(specCount).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, count]) => ({ name, count })));
 
     // Revenue
     const { data: plans } = await db.from("plans").select("id, price");
-    const planPriceMap = new Map(plans?.map(p => [p.id, Number(p.price)]) ?? []);
+    const planPriceMap = new Map((plans as any[])?.map((p: any) => [p.id, Number(p.price)]) ?? []);
     const revenueByMonth = new Map<string, number>();
     for (let i = 5; i >= 0; i--) { revenueByMonth.set(format(subDays(new Date(), i * 30), "MMM/yy", { locale: ptBR }), 0); }
-    (subsRes.data ?? []).filter(s => s.status === "active").forEach(s => {
+    (subsRes.data ?? []).filter((s: any) => s.status === "active").forEach((s: any) => {
       const mk = format(new Date(s.created_at), "MMM/yy", { locale: ptBR });
       if (revenueByMonth.has(mk)) revenueByMonth.set(mk, (revenueByMonth.get(mk) ?? 0) + (planPriceMap.get(s.plan_id) ?? 0));
     });
@@ -261,7 +261,7 @@ const AdminAnalyticsCharts = () => {
     appts.forEach(a => {
       const specIds = docSpecMap.get(a.doctor_id) ?? [];
       specIds.forEach(sid => {
-        const spec = specMap.get(sid);
+        const spec = specMap.get(sid) as any;
         if (!spec) return;
         if (!specRevenue[sid]) specRevenue[sid] = { name: spec.name, total: 0, completed: 0, cancelled: 0, revenue: 0 };
         specRevenue[sid].total++;

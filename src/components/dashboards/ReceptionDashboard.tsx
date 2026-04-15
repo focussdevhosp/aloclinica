@@ -111,8 +111,8 @@ const ReceptionDashboard = () => {
       if (p) docMap.set(d.id, `Dr(a). ${p.first_name} ${p.last_name}`);
     });
 
-    const enriched = data.map(a => {
-      const patient = pMap.get(a.patient_id!);
+    const enriched = data.map((a: any) => {
+      const patient = pMap.get(a.patient_id!) as any;
       return {
         ...a,
         patient_name: patient ? `${patient.first_name} ${patient.last_name}` : "—",

@@ -1,11 +1,10 @@
 import jsPDF from "jspdf";
-import type { Database } from "@/integrations/supabase/types";
 
-type Prescription = Database["public"]["Tables"]["ophthalmology_prescriptions"]["Row"];
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 const fmt = (v: number | null | undefined) => (v != null ? String(v) : "—");
 
-export function generateOphthalmologyPrescriptionPDF(rx: Prescription, doctorName: string, doctorCRM: string) {
+export function generateOphthalmologyPrescriptionPDF(rx: any, doctorName: string, doctorCRM: string) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const w = doc.internal.pageSize.getWidth();
   let y = 20;
