@@ -166,7 +166,7 @@ const DoctorDashboard = () => {
         <HeroBanner
           gradient="from-[#042A1C] via-[#065f46] to-[#059669]"
           pingoSrc={mascotWave}
-          pingoAlt="Pingo médico"
+          pingoAlt="Dra. Lila"
           liveDot={waitingCount > 0}
           liveColor="red"
           bubble={{
@@ -319,7 +319,7 @@ const DoctorDashboard = () => {
                 onLinkClick={() => navigate("/dashboard/doctor/waiting-room")} />
             ) : !loading && (
               <div className="flex flex-col items-center py-6 text-center rounded-2xl border border-dashed border-border/40 bg-muted/10">
-                <motion.img src={mascotWelcome} alt="Pingo"
+                <motion.img src={mascotWelcome} alt="Dra. Lila"
                   className="mb-3 h-20 w-20 object-contain select-none"
                   style={{ filter: "drop-shadow(0 6px 14px rgba(0,0,0,.15))" }}
                   animate={{ y: [0, -8, 0] }}

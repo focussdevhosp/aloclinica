@@ -177,7 +177,7 @@ const ReceptionDashboard = () => {
         <HeroBanner
           gradient="from-[#451a03] via-[#b45309] to-[#d97706]"
           pingoSrc={pingoReception}
-          pingoAlt="Pingo"
+          pingoAlt="Dra. Lila"
           liveDot={false}
           liveColor="green"
           bubble={{
@@ -221,7 +221,7 @@ const ReceptionDashboard = () => {
         <div className="space-y-5">
         <PingoBannerCard
           pingImg={pingoReception}
-          pingAlt="Pingo"
+          pingAlt="Dra. Lila"
           pingSize={82}
           bgClass="bg-amber-50 dark:bg-amber-950/20"
           borderClass="border-amber-100 dark:border-amber-900/30"

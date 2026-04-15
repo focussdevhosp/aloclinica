@@ -257,7 +257,7 @@ const SupportDashboard = () => {
         <HeroBanner
           gradient="from-[#2D1B00] via-[#854F0B] to-[#B45309]"
           pingoSrc={pingoSupport}
-          pingoAlt="Pingo"
+          pingoAlt="Dra. Lila"
           liveDot={false}
           liveColor="green"
           bubble={{
@@ -333,7 +333,7 @@ const SupportDashboard = () => {
         {/* Pingo Banner */}
         <PingoBannerCard
           pingImg={pingoSupport}
-          pingAlt="Pingo"
+          pingAlt="Dra. Lila"
           pingSize={82}
           bgClass="bg-amber-50 dark:bg-amber-950/20"
           borderClass="border-amber-100 dark:border-amber-900/30"

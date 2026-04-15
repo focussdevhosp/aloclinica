@@ -138,7 +138,7 @@ const Notifications = () => {
               Pingu avisou: Manter a hidratação é essencial para sua concentração hoje. Que tal uma pausa para um copo d'água?
             </p>
           </div>
-          <img src={mascotWave} alt="Pingo" className="absolute -right-4 -bottom-4 w-36 h-36 object-contain opacity-90 -rotate-12 drop-shadow-xl" loading="lazy" decoding="async" />
+          <img src={mascotWave} alt="Dra. Lila" className="absolute -right-4 -bottom-4 w-36 h-36 object-contain opacity-90 -rotate-12 drop-shadow-xl" loading="lazy" decoding="async" />
         </div>
 
         {unreadCount > 0 && (

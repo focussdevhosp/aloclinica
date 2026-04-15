@@ -81,7 +81,7 @@ const PartnerDashboard = () => {
         <HeroBanner
           gradient="from-[#022B1C] via-[#065f46] to-[#059669]"
           pingoSrc={pingoPartner}
-          pingoAlt="Pingo"
+          pingoAlt="Dra. Lila"
           liveDot={true}
           liveColor="green"
           bubble={{
@@ -112,7 +112,7 @@ const PartnerDashboard = () => {
         {/* Pingo Banner */}
         <PingoBannerCard
           pingImg={pingoPartner}
-          pingAlt="Pingo"
+          pingAlt="Dra. Lila"
           pingSize={82}
           bgClass="bg-teal-50 dark:bg-teal-950/20"
           borderClass="border-teal-100 dark:border-teal-900/30"

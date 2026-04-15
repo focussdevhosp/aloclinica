@@ -26,7 +26,7 @@ interface PingoBannerCardProps {
 }
 
 export function PingoBannerCard({
-  pingImg, pingAlt = "Pingo", pingSize = 88,
+  pingImg, pingAlt = "Dra. Lila", pingSize = 88,
   bgClass = "bg-blue-50 dark:bg-blue-950/30",
   borderClass = "border-blue-100 dark:border-blue-900/30",
   label, labelColor = "text-blue-600 dark:text-blue-400",

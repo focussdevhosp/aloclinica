@@ -112,7 +112,7 @@ const AuthAdmin = () => {
             <ArrowLeft className="w-4 h-4" /> Voltar
           </Link>
           <div className="relative z-10 flex items-center gap-3">
-            <img src={pingoAdmin} alt="Pingo" className="w-14 h-14 object-contain drop-shadow-lg" loading="lazy" decoding="async" width={56} height={56} />
+            <img src={pingoAdmin} alt="Dra. Lila" className="w-14 h-14 object-contain drop-shadow-lg" loading="lazy" decoding="async" width={56} height={56} />
             <div>
               <h1 className="text-xl font-bold text-white">Painel Administrativo</h1>
               <p className="text-xs text-white/50">Área restrita</p>
