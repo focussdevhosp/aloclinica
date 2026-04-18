@@ -4,78 +4,73 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, CaretDown } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 
-import pingoClinicoGeral from "@/assets/pingo-clinico-geral.png";
-import pingoDermatologista from "@/assets/pingo-dermatologista.png";
-import pingoGinecologista from "@/assets/pingo-ginecologista.png";
-import pingoOrtopedista from "@/assets/pingo-ortopedista.png";
-import pingoCardiologista from "@/assets/pingo-cardiologista.png";
-import pingoPediatra from "@/assets/pingo-pediatra.png";
-import pingoPsiquiatra from "@/assets/pingo-psiquiatra.png";
-import pingoNeurologista from "@/assets/pingo-neurologista.png";
-import pingoOftalmologista from "@/assets/pingo-oftalmologista.png";
-import pingoEndocrinologista from "@/assets/pingo-endocrinologista.png";
-import pingoUrologista from "@/assets/pingo-urologista.png";
-import pingoGastroenterologista from "@/assets/pingo-gastroenterologista.png";
+import specClinicoGeral from "@/assets/spec-clinico-geral.png";
+import specDermatologista from "@/assets/spec-dermatologista.png";
+import specGinecologista from "@/assets/spec-ginecologista.png";
+import specOrtopedista from "@/assets/spec-ortopedista.png";
+import specCardiologista from "@/assets/spec-cardiologista.png";
+import specPediatra from "@/assets/spec-pediatra.png";
+import specPsiquiatra from "@/assets/spec-psiquiatra.png";
+import specNeurologista from "@/assets/spec-neurologista.png";
+import specOftalmologista from "@/assets/spec-oftalmologista.png";
+import specEndocrinologista from "@/assets/spec-endocrinologista.png";
+import specUrologista from "@/assets/spec-urologista.png";
+import specGastroenterologista from "@/assets/spec-gastroenterologista.png";
 
-import pingoAcupunturista from "@/assets/pingo-acupunturista.png";
-import pingoAnestesiologista from "@/assets/pingo-anestesiologista.png";
-import pingoCirurgiaoGI from "@/assets/pingo-cirurgiao-gi.png";
-import pingoCirurgiaoGeral from "@/assets/pingo-cirurgiao-geral.png";
-import pingoCirurgiaoOnco from "@/assets/pingo-cirurgiao-onco.png";
-import pingoCirurgiaoPlastico from "@/assets/pingo-cirurgiao-plastico.png";
-import pingoCirurgiaoVascular from "@/assets/pingo-cirurgiao-vascular.png";
-import pingoCirurgiaoDentista from "@/assets/pingo-cirurgiao-dentista.png";
-import pingoClinicaMedica from "@/assets/pingo-clinica-medica.png";
-import pingoFisiatra from "@/assets/pingo-fisiatra.png";
-import pingoFisioterapeuta from "@/assets/pingo-fisioterapeuta.png";
-import pingoFonoaudiologo from "@/assets/pingo-fonoaudiologo.png";
-import pingoGeriatra from "@/assets/pingo-geriatra.png";
-import pingoHomeopata from "@/assets/pingo-homeopata.png";
-import pingoInfectologista from "@/assets/pingo-infectologista.png";
-import pingoMedicoFamilia from "@/assets/pingo-medico-familia.png";
+import specAcupunturista from "@/assets/spec-acupunturista.png";
+import specAnestesiologista from "@/assets/spec-anestesiologista.png";
+import specCirurgiaoGeral from "@/assets/spec-cirurgiao-geral.png";
+import specCirurgiaoOnco from "@/assets/spec-cirurgiao-onco.png";
+import specCirurgiaoPlastico from "@/assets/spec-cirurgiao-plastico.png";
+import specCirurgiaoVascular from "@/assets/spec-cirurgiao-vascular.png";
+import specClinicaMedica from "@/assets/spec-clinico-geral.png";
+import specGeriatra from "@/assets/spec-geriatra.png";
+import specHomeopata from "@/assets/spec-homeopata.png";
+import specInfectologista from "@/assets/spec-infectologista.png";
+import specMedicoFamilia from "@/assets/spec-medico-familia.png";
+import specNefrologia from "@/assets/spec-nefrologia.png";
+import specNutricionista from "@/assets/spec-nutricionista.png";
+import specOtorrino from "@/assets/spec-otorrino.png";
+import specPneumologista from "@/assets/spec-pneumologista.png";
+import specReumatologista from "@/assets/spec-reumatologista.png";
 
 // Reuse some icons for remaining specialties that don't have unique ones yet
 const topSpecialties = [
-  { name: "Clínico geral", img: pingoClinicoGeral },
-  { name: "Dermatologista", img: pingoDermatologista },
-  { name: "Ginecologista-obstetra", img: pingoGinecologista },
-  { name: "Ortopedista", img: pingoOrtopedista },
-  { name: "Cardiologista", img: pingoCardiologista },
-  { name: "Pediatra", img: pingoPediatra },
-  { name: "Psiquiatra", img: pingoPsiquiatra },
-  { name: "Neurologista", img: pingoNeurologista },
-  { name: "Oftalmologista", img: pingoOftalmologista },
-  { name: "Endocrinologista", img: pingoEndocrinologista },
-  { name: "Urologista", img: pingoUrologista },
-  { name: "Gastroenterologista", img: pingoGastroenterologista },
+  { name: "Clínico geral", img: specClinicoGeral },
+  { name: "Dermatologista", img: specDermatologista },
+  { name: "Ginecologista-obstetra", img: specGinecologista },
+  { name: "Ortopedista", img: specOrtopedista },
+  { name: "Cardiologista", img: specCardiologista },
+  { name: "Pediatra", img: specPediatra },
+  { name: "Psiquiatra", img: specPsiquiatra },
+  { name: "Neurologista", img: specNeurologista },
+  { name: "Oftalmologista", img: specOftalmologista },
+  { name: "Endocrinologista", img: specEndocrinologista },
+  { name: "Urologista", img: specUrologista },
+  { name: "Gastroenterologista", img: specGastroenterologista },
 ];
 
 const moreSpecialties = [
-  { name: "Acupunturista", img: pingoAcupunturista },
-  { name: "Anestesiologista", img: pingoAnestesiologista },
-  { name: "Cirurgião gastrointestinal", img: pingoCirurgiaoGI },
-  { name: "Cirurgião geral", img: pingoCirurgiaoGeral },
-  { name: "Cirurgião oncológico", img: pingoCirurgiaoOnco },
-  { name: "Cirurgião plástico", img: pingoCirurgiaoPlastico },
-  { name: "Cirurgião vascular", img: pingoCirurgiaoVascular },
-  { name: "Cirurgião-dentista", img: pingoCirurgiaoDentista },
-  { name: "Clínica médica", img: pingoClinicaMedica },
-  { name: "Fisiatra", img: pingoFisiatra },
-  { name: "Fisioterapeuta", img: pingoFisioterapeuta },
-  { name: "Fonoaudiólogo", img: pingoFonoaudiologo },
-  { name: "Geriatra", img: pingoGeriatra },
-  { name: "Homeopata", img: pingoHomeopata },
-  { name: "Infectologista", img: pingoInfectologista },
-  { name: "Médico de família", img: pingoMedicoFamilia },
-  { name: "Médico de tráfego", img: pingoClinicoGeral },
-  { name: "Médico do trabalho", img: pingoClinicoGeral },
-  { name: "Nefrologista", img: pingoUrologista },
-  { name: "Nutricionista", img: pingoEndocrinologista },
-  { name: "Nutrólogista", img: pingoEndocrinologista },
-  { name: "Otorrinolaringologista", img: pingoFonoaudiologo },
-  { name: "Pneumologista", img: pingoAnestesiologista },
-  { name: "Psicólogo", img: pingoPsiquiatra },
-  { name: "Reumatologista", img: pingoOrtopedista },
+  { name: "Acupunturista", img: specAcupunturista },
+  { name: "Anestesiologista", img: specAnestesiologista },
+  { name: "Cirurgião geral", img: specCirurgiaoGeral },
+  { name: "Cirurgião oncológico", img: specCirurgiaoOnco },
+  { name: "Cirurgião plástico", img: specCirurgiaoPlastico },
+  { name: "Cirurgião vascular", img: specCirurgiaoVascular },
+  { name: "Clínica médica", img: specClinicaMedica },
+  { name: "Geriatra", img: specGeriatra },
+  { name: "Homeopata", img: specHomeopata },
+  { name: "Infectologista", img: specInfectologista },
+  { name: "Médico de família", img: specMedicoFamilia },
+  { name: "Médico de tráfego", img: specClinicoGeral },
+  { name: "Médico do trabalho", img: specClinicoGeral },
+  { name: "Nefrologista", img: specNefrologia },
+  { name: "Nutricionista", img: specNutricionista },
+  { name: "Nutrólogo", img: specNutricionista },
+  { name: "Otorrinolaringologista", img: specOtorrino },
+  { name: "Pneumologista", img: specPneumologista },
+  { name: "Psicólogo", img: specPsiquiatra },
+  { name: "Reumatologista", img: specReumatologista },
 ];
 
 const SpecialtyCard = ({ name, img, index }: { name: string; img: string; index: number }) => {
@@ -89,14 +84,14 @@ const SpecialtyCard = ({ name, img, index }: { name: string; img: string; index:
       className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-card/80 border border-border/40 hover:shadow-lg hover:border-primary/25 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
       onClick={() => navigate("/dashboard/doctors")}
     >
-      <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+      <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
         <img
           src={img}
-          alt={`Dra. Lila ${name}`}
+          alt={`Pingo ${name}`}
           loading="lazy"
           width={80}
           height={80}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain drop-shadow-sm"
         />
       </div>
       <span className="text-xs md:text-sm font-semibold text-foreground text-center leading-tight group-hover:text-primary transition-colors">
