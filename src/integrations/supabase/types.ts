@@ -815,31 +815,49 @@ export type Database = {
       document_verifications: {
         Row: {
           created_at: string
+          details: Json | null
+          doctor_crm: string | null
+          doctor_name: string | null
           document_hash: string
           document_type: string | null
           id: string
           is_valid: boolean | null
+          patient_cpf: string | null
+          patient_name: string | null
           signer_id: string | null
+          verification_code: string | null
           verification_method: string | null
           verified_at: string | null
         }
         Insert: {
           created_at?: string
+          details?: Json | null
+          doctor_crm?: string | null
+          doctor_name?: string | null
           document_hash: string
           document_type?: string | null
           id?: string
           is_valid?: boolean | null
+          patient_cpf?: string | null
+          patient_name?: string | null
           signer_id?: string | null
+          verification_code?: string | null
           verification_method?: string | null
           verified_at?: string | null
         }
         Update: {
           created_at?: string
+          details?: Json | null
+          doctor_crm?: string | null
+          doctor_name?: string | null
           document_hash?: string
           document_type?: string | null
           id?: string
           is_valid?: boolean | null
+          patient_cpf?: string | null
+          patient_name?: string | null
           signer_id?: string | null
+          verification_code?: string | null
           verification_method?: string | null
           verified_at?: string | null
         }
@@ -1826,11 +1844,13 @@ export type Database = {
           instructions: string | null
           is_signed: boolean | null
           medications: Json | null
+          observations: string | null
           patient_id: string
           pdf_url: string | null
           prescription_type: string | null
           signature_hash: string | null
           signed_at: string | null
+          status: string | null
           updated_at: string
           valid_until: string | null
           verification_code: string | null
@@ -1844,11 +1864,13 @@ export type Database = {
           instructions?: string | null
           is_signed?: boolean | null
           medications?: Json | null
+          observations?: string | null
           patient_id: string
           pdf_url?: string | null
           prescription_type?: string | null
           signature_hash?: string | null
           signed_at?: string | null
+          status?: string | null
           updated_at?: string
           valid_until?: string | null
           verification_code?: string | null
@@ -1862,11 +1884,13 @@ export type Database = {
           instructions?: string | null
           is_signed?: boolean | null
           medications?: Json | null
+          observations?: string | null
           patient_id?: string
           pdf_url?: string | null
           prescription_type?: string | null
           signature_hash?: string | null
           signed_at?: string | null
+          status?: string | null
           updated_at?: string
           valid_until?: string | null
           verification_code?: string | null
