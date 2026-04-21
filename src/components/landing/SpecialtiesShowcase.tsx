@@ -19,37 +19,37 @@ import specOphthalmology from "@/assets/spec-oftalmologista.png";
 import specDermatology from "@/assets/spec-dermatologista.png";
 import specGeneral from "@/assets/spec-clinico-geral.png";
 import specEndocrinology from "@/assets/spec-endocrinologista.png";
-import specAcupuntura from "@/assets/spec-acupunturista.png";
-import specAlergia from "@/assets/spec-alergologista.png";
+import specAcupuntura from "@/assets/spec-acupuntura.png";
+import specAlergia from "@/assets/spec-alergia.png";
 import specAngiologia from "@/assets/spec-angiologia.png";
-import specCirurgia from "@/assets/spec-cirurgiao-geral.png";
+import specCirurgia from "@/assets/spec-cirurgia.png";
 import specColoproctologia from "@/assets/spec-coloproctologia.png";
-import specGastro from "@/assets/spec-gastroenterologista.png";
-import specGeriatria from "@/assets/spec-geriatra.png";
-import specGinecologia from "@/assets/spec-ginecologista.png";
+import specGastro from "@/assets/spec-gastro.png";
+import specGeriatria from "@/assets/spec-geriatria.png";
+import specGinecologia from "@/assets/spec-ginecologia.png";
 import specHematologia from "@/assets/spec-hematologia.png";
-import specInfectologia from "@/assets/spec-infectologista.png";
+import specInfectologia from "@/assets/spec-infectologia.png";
 import specMastologia from "@/assets/spec-mastologia.png";
-import specFamilia from "@/assets/spec-medico-familia.png";
+import specFamilia from "@/assets/spec-familia.png";
 import specEsporte from "@/assets/spec-esporte.png";
 import specNefrologia from "@/assets/spec-nefrologia.png";
-import specNutrologia from "@/assets/spec-nutricionista.png";
-import specOncologia from "@/assets/spec-cirurgiao-onco.png";
+import specNutrologia from "@/assets/spec-nutrologia.png";
+import specOncologia from "@/assets/spec-oncologia.png";
 import specOtorrino from "@/assets/spec-otorrino.png";
-import specPneumologia from "@/assets/spec-pneumologista.png";
-import specPsiquiatria from "@/assets/spec-psiquiatra.png";
+import specPneumologia from "@/assets/spec-pneumologia.png";
+import specPsiquiatria from "@/assets/spec-psiquiatria.png";
 import specRadiologia from "@/assets/spec-radiologia.png";
-import specReumatologia from "@/assets/spec-reumatologista.png";
-import specUrologia from "@/assets/spec-urologista.png";
-import specAnestesiologia from "@/assets/spec-anestesiologista.png";
+import specReumatologia from "@/assets/spec-reumatologia.png";
+import specUrologia from "@/assets/spec-urologia.png";
+import specAnestesiologia from "@/assets/spec-anestesiologia.png";
 import specEndoscopia from "@/assets/spec-endoscopia.png";
 import specGenetica from "@/assets/spec-genetica.png";
-import specHomeopatia from "@/assets/spec-homeopata.png";
-import specPlastica from "@/assets/spec-cirurgiao-plastico.png";
-import specCirurgiaCardio from "@/assets/spec-cirurgiao-vascular.png";
+import specHomeopatia from "@/assets/spec-homeopatia.png";
+import specPlastica from "@/assets/spec-plastica.png";
+import specCirurgiaCardio from "@/assets/spec-cirurgia-cardio.png";
 import specIntensiva from "@/assets/spec-intensiva.png";
 import specCabecaPescoco from "@/assets/spec-cabeca-pescoco.png";
-import specCirurgiaVascular from "@/assets/spec-cirurgiao-vascular.png";
+import specCirurgiaVascular from "@/assets/spec-cirurgia-vascular.png";
 
 const specialties = [
   { name: "Cardiologia", icon: Heart, image: specCardiology, color: "from-rose-500/15 to-rose-500/[0.03]", desc: "Cuidando do seu coração para ele bater sempre forte e feliz." },
@@ -140,7 +140,7 @@ function SpecialtiesShowcase() {
                   {/* Pingo (transparent) on a soft tinted backdrop */}
                   <div className={`relative h-40 sm:h-44 bg-gradient-to-br ${spec.color} flex items-center justify-center rounded-t-2xl`}>
                     <OptimizedImage
-                      src="https://cvbgrjauqjawrsyknhyj.supabase.co/storage/v1/object/public/files/uploads/0XILPRqqUbSOh99ow53X5OBDOCC3/1776788772275-bngbf-hero-doctor__4_-removebg-preview.png"
+                      src={spec.image}
                       alt={`Especialista - ${spec.name}`}
                       className="h-full w-auto object-contain drop-shadow-xl group-hover:scale-110 transition-transform duration-500 ease-out"
                       width={512}
