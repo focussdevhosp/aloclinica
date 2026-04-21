@@ -9,7 +9,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import ErrorBoundary from "./components/ErrorBoundary";
-const Index = lazy(() => import("./pages/Index"));
+import Index from "./pages/Index";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const ProtectedRoute = lazy(() => import("@/components/auth/ProtectedRoute"));
 import { logError } from "@/lib/logger";
@@ -26,8 +26,8 @@ const CookieBanner = lazy(() => import("./components/CookieBanner"));
 const PWAInstallPrompt = lazy(() => import("./components/PWAInstallPrompt"));
 
 // Lazy-loaded pages for code splitting
-const AuthPaciente = lazy(() => import("./pages/AuthPaciente"));
-const AuthMedico = lazy(() => import("./pages/AuthMedico"));
+import AuthPaciente from "./pages/AuthPaciente";
+import AuthMedico from "./pages/AuthMedico";
 const AuthAdmin = lazy(() => import("./pages/AuthAdmin"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));

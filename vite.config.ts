@@ -1,3 +1,4 @@
+// Optimized Vite configuration for AloClinica
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -163,59 +164,17 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     cssCodeSplit: true,
     // Only modulepreload critical-path chunks; let others load on demand
-    modulePreload: {
-      resolveDependencies: (_filename, deps, { hostId: _hostId, hostType }) => {
-        // Only keep modulepreload for the entry HTML, not for lazy chunks
-        if (hostType !== "html") return [];
-        const CRITICAL_CHUNKS = ["vendor-react", "vendor-router", "vendor-query"];
-        return deps.filter((dep) =>
-          CRITICAL_CHUNKS.some((c) => dep.includes(c)) || !dep.includes("vendor-")
-        );
-      },
-    },
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          // React core — ALWAYS loaded first
-          if (
-            id.includes("node_modules/react/") ||
-            id.includes("node_modules/react-dom/") ||
-            id.includes("node_modules/react/jsx-runtime")
-          ) {
-            return "vendor-react";
-          }
-          // Router
-          if (id.includes("node_modules/react-router-dom/")) return "vendor-router";
-          // Supabase
-          if (id.includes("node_modules/@supabase/")) return "vendor-supabase";
-          // TanStack Query
-          if (id.includes("node_modules/@tanstack/react-query")) return "vendor-query";
-          // Radix UI primitives
-          if (id.includes("node_modules/@radix-ui/")) return "vendor-radix";
-          // Charts
-          if (id.includes("node_modules/recharts/")) return "vendor-charts";
-          // Animations
-          if (id.includes("node_modules/framer-motion/")) return "vendor-motion";
-          // GSAP
-          if (id.includes("node_modules/gsap/") || id.includes("node_modules/@gsap/")) return "vendor-gsap";
-          // TipTap (depends on React — must load after vendor-react)
-          if (id.includes("node_modules/@tiptap/")) return "vendor-tiptap";
-          // Forms
-          if (
-            id.includes("node_modules/react-hook-form/") ||
-            id.includes("node_modules/@hookform/") ||
-            id.includes("node_modules/zod/")
-          ) {
-            return "vendor-forms";
-          }
-          // Date utilities
-          if (id.includes("node_modules/date-fns/") || id.includes("node_modules/react-day-picker/")) {
-            return "vendor-dates";
-          }
-          // PDF generation
-          if (id.includes("node_modules/jspdf/")) return "vendor-pdf";
-        },
-      },
-    },
+    // modulePreload: {
+    //   resolveDependencies: (_filename, deps, { hostId: _hostId, hostType }) => {
+    //     // ...
+    //   },
+    // },
+    // rollupOptions: {
+    //   output: {
+    //     manualChunks(id) {
+    //       // ...
+    //     },
+    //   },
+    // },
   },
 }));
