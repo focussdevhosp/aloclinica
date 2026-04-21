@@ -143,8 +143,8 @@ const HeroSection = memo(
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] to-secondary/[0.04] blur-[80px] rounded-full scale-90 -z-10" />
 
                 <OptimizedImage
-                  src={heroImgUrl || heroDoctor}
-                  alt="Médico realizando teleconsulta pela AloClinica"
+                  src={heroImgUrl || "https://cvbgrjauqjawrsyknhyj.supabase.co/storage/v1/object/public/files/uploads/0XILPRqqUbSOh99ow53X5OBDOCC3/1776788772275-bngbf-hero-doctor__4_-removebg-preview.png"}
+                  alt="Médico especialista realizando teleconsulta"
                   className="w-full h-auto drop-shadow-xl"
                   priority
                 />
