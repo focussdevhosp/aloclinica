@@ -265,9 +265,16 @@ const Agendar = () => {
                         )}
                       >
                         <img src={spec.img} alt={spec.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" loading="lazy" />
-                        <span className="text-xs sm:text-sm font-semibold text-foreground text-center leading-tight">
-                          {spec.name}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-xs sm:text-sm font-bold text-foreground text-center leading-tight">
+                            {spec.name}
+                          </span>
+                          {spec.desc && (
+                            <p className="text-[10px] text-muted-foreground text-center leading-tight opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2 px-2">
+                              {spec.desc}
+                            </p>
+                          )}
+                        </div>
                         <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors absolute top-3 right-3 opacity-0 group-hover:opacity-100" />
                       </motion.button>
                     ))}
