@@ -27,13 +27,8 @@ import pingoCirurgiaoVascular from "@/assets/pingo-cirurgiao-vascular.png";
 import pingoGeriatra from "@/assets/pingo-geriatra.png";
 import pingoHomeopata from "@/assets/pingo-homeopata.png";
 import pingoInfectologista from "@/assets/pingo-infectologista.png";
+import pingoMedicoFamilia from "@/assets/pingo-medico-familia.png";
 import pingoClinicaMedica from "@/assets/pingo-clinica-medica.png";
-import pingoNefrologia from "@/assets/pingo-nefrologia.png";
-import pingoNutricionista from "@/assets/pingo-nutricionista.png";
-import pingoOtorrino from "@/assets/pingo-otorrino.png";
-import pingoPneumologista from "@/assets/pingo-pneumologista.png";
-import pingoReumatologista from "@/assets/pingo-reumatologista.png";
-
 // Reuse some icons for remaining specialties that don't have unique ones yet
 const topSpecialties = [
   { name: "Clínico geral", img: pingoClinicoGeral, desc: "Seu primeiro contato para qualquer sintoma. Eu te ajudo a começar!" },
