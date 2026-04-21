@@ -34,6 +34,11 @@ import pingoNutricionista from "@/assets/pingo-nutricionista.png";
 import pingoOtorrino from "@/assets/pingo-otorrino.png";
 import pingoPneumologista from "@/assets/pingo-pneumologista.png";
 import pingoReumatologista from "@/assets/pingo-reumatologista.png";
+import pingoAlergologista from "@/assets/pingo-alergologista.png";
+import pingoFisioterapeuta from "@/assets/pingo-fisioterapeuta.png";
+import pingoFonoaudiologo from "@/assets/pingo-fonoaudiologo.png";
+import pingoFisiatra from "@/assets/pingo-fisiatra.png";
+import pingoCirurgiaoDentista from "@/assets/pingo-cirurgiao-dentista.png";
 
 const topSpecialties = [
   { name: "Clínico geral", img: pingoClinicoGeral, desc: "Seu primeiro contato para qualquer sintoma. Eu te ajudo a começar!" },
