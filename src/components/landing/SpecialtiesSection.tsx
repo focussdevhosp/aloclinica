@@ -27,7 +27,7 @@ import pingoCirurgiaoVascular from "@/assets/pingo-cirurgiao-vascular.png";
 import pingoGeriatra from "@/assets/pingo-geriatra.png";
 import pingoHomeopata from "@/assets/pingo-homeopata.png";
 import pingoInfectologista from "@/assets/pingo-infectologista.png";
-import pingoMedicoFamilia from "@/assets/pingo-medico-familia.png";
+import pingoClinicaMedica from "@/assets/pingo-clinica-medica.png";
 import pingoNefrologia from "@/assets/pingo-nefrologia.png";
 import pingoNutricionista from "@/assets/pingo-nutricionista.png";
 import pingoOtorrino from "@/assets/pingo-otorrino.png";
