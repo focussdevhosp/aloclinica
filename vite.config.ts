@@ -174,49 +174,12 @@ export default defineConfig(({ mode }) => ({
         );
       },
     },
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          // React core — ALWAYS loaded first
-          if (
-            id.includes("node_modules/react/") ||
-            id.includes("node_modules/react-dom/") ||
-            id.includes("node_modules/react/jsx-runtime")
-          ) {
-            return "vendor-react";
-          }
-          // Router
-          if (id.includes("node_modules/react-router-dom/")) return "vendor-router";
-          // Supabase
-          if (id.includes("node_modules/@supabase/")) return "vendor-supabase";
-          // TanStack Query
-          if (id.includes("node_modules/@tanstack/react-query")) return "vendor-query";
-          // Radix UI primitives
-          if (id.includes("node_modules/@radix-ui/")) return "vendor-radix";
-          // Charts
-          if (id.includes("node_modules/recharts/")) return "vendor-charts";
-          // Animations
-          if (id.includes("node_modules/framer-motion/")) return "vendor-motion";
-          // GSAP
-          if (id.includes("node_modules/gsap/") || id.includes("node_modules/@gsap/")) return "vendor-gsap";
-          // TipTap (depends on React — must load after vendor-react)
-          if (id.includes("node_modules/@tiptap/")) return "vendor-tiptap";
-          // Forms
-          if (
-            id.includes("node_modules/react-hook-form/") ||
-            id.includes("node_modules/@hookform/") ||
-            id.includes("node_modules/zod/")
-          ) {
-            return "vendor-forms";
-          }
-          // Date utilities
-          if (id.includes("node_modules/date-fns/") || id.includes("node_modules/react-day-picker/")) {
-            return "vendor-dates";
-          }
-          // PDF generation
-          if (id.includes("node_modules/jspdf/")) return "vendor-pdf";
-        },
-      },
-    },
+    // rollupOptions: {
+    //   output: {
+    //     manualChunks(id) {
+    //       // ...
+    //     },
+    //   },
+    // },
   },
 }));
