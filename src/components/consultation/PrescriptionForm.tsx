@@ -406,7 +406,8 @@ const PrescriptionForm = () => {
 
       store.clearDraft();
       toast.success("Receita salva com sucesso! ✅");
-      navigate("/dashboard/prescriptions");
+      if (!skipRedirect) navigate("/dashboard/prescriptions");
+      return insertedPrescription?.id;
     } finally {
       setSaving(false);
     }
