@@ -29,7 +29,12 @@ import pingoHomeopata from "@/assets/pingo-homeopata.png";
 import pingoInfectologista from "@/assets/pingo-infectologista.png";
 import pingoMedicoFamilia from "@/assets/pingo-medico-familia.png";
 import pingoClinicaMedica from "@/assets/pingo-clinica-medica.png";
-// Reuse some icons for remaining specialties that don't have unique ones yet
+import pingoNefrologia from "@/assets/pingo-nefrologia.png";
+import pingoNutricionista from "@/assets/pingo-nutricionista.png";
+import pingoOtorrino from "@/assets/pingo-otorrino.png";
+import pingoPneumologista from "@/assets/pingo-pneumologista.png";
+import pingoReumatologista from "@/assets/pingo-reumatologista.png";
+
 const topSpecialties = [
   { name: "Clínico geral", img: pingoClinicoGeral, desc: "Seu primeiro contato para qualquer sintoma. Eu te ajudo a começar!" },
   { name: "Dermatologista", img: pingoDermatologista, desc: "Cuidando da sua pele, cabelos e unhas com todo carinho." },
@@ -52,7 +57,7 @@ const moreSpecialties = [
   { name: "Cirurgião oncológico", img: pingoCirurgiaoOnco, desc: "Tratamento especializado e focado no combate ao câncer." },
   { name: "Cirurgião plástico", img: pingoCirurgiaoPlastico, desc: "Harmonia e estética com foco na sua autoestima." },
   { name: "Cirurgião vascular", img: pingoCirurgiaoVascular, desc: "Cuidando da sua circulação e saúde das veias e artérias." },
-  { name: "Clínica médica", img: pingoClinicoGeral, desc: "Visão integral da sua saúde para diagnósticos precisos." },
+  { name: "Clínica médica", img: pingoClinicaMedica, desc: "Visão integral da sua saúde para diagnósticos precisos." },
   { name: "Geriatra", img: pingoGeriatra, desc: "Cuidado dedicado e especializado para a melhor idade." },
   { name: "Homeopata", img: pingoHomeopata, desc: "Abordagem natural e holística para o seu equilíbrio." },
   { name: "Infectologista", img: pingoInfectologista, desc: "Prevenção e tratamento de doenças infecciosas." },
