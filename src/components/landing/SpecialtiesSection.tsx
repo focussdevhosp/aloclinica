@@ -91,7 +91,7 @@ const SpecialtyCard = ({ name, img, index }: { name: string; img: string; index:
           loading="lazy"
           width={80}
           height={80}
-          className="w-full h-full object-contain drop-shadow-sm"
+          className="w-full h-full object-contain drop-shadow-xl group-hover:scale-110 transition-transform duration-300"
         />
       </div>
       <span className="text-xs md:text-sm font-semibold text-foreground text-center leading-tight group-hover:text-primary transition-colors">

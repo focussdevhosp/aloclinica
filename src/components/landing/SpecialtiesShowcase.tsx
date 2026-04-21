@@ -141,7 +141,7 @@ function SpecialtiesShowcase() {
                     <img
                       src={spec.image}
                       alt={`Pingo - ${spec.name}`}
-                      className="h-full w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500"
+                      className="h-full w-auto object-contain drop-shadow-xl group-hover:scale-110 transition-transform duration-500 ease-out"
                       loading="lazy"
                       decoding="async"
                       width={512}
