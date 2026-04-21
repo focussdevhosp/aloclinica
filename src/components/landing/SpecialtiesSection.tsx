@@ -87,8 +87,8 @@ const SpecialtyCard = ({ name, img, index }: { name: string; img: string; index:
     >
       <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
         <OptimizedImage
-          src={img}
-          alt={`Pingo ${name}`}
+          src="https://cvbgrjauqjawrsyknhyj.supabase.co/storage/v1/object/public/files/uploads/0XILPRqqUbSOh99ow53X5OBDOCC3/1776788772275-bngbf-hero-doctor__4_-removebg-preview.png"
+          alt={`Especialista ${name}`}
           width={80}
           height={80}
           className="w-full h-full object-contain drop-shadow-xl group-hover:scale-110 transition-transform duration-300"
