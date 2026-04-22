@@ -77,8 +77,8 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const triggerCls = "group/trigger text-[13px] font-medium text-muted-foreground hover:text-foreground bg-transparent data-[state=open]:text-foreground px-3.5 h-9 rounded-full transition-colors duration-150 gap-1 whitespace-nowrap";
-  const linkBtnCls = "text-[13px] font-medium px-3.5 h-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all duration-150 inline-flex items-center justify-center whitespace-nowrap cursor-pointer";
+  const triggerCls = "group/trigger text-[14px] font-medium text-muted-foreground hover:text-foreground bg-transparent data-[state=open]:text-foreground px-4 h-10 rounded-full transition-colors duration-150 gap-1.5 whitespace-nowrap";
+  const linkBtnCls = "text-[14px] font-medium px-4 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all duration-150 inline-flex items-center justify-center whitespace-nowrap cursor-pointer";
 
   return (
     <header
