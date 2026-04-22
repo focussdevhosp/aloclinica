@@ -165,26 +165,27 @@ const Especialidades = forwardRef<HTMLDivElement>((_, ref) => {
                     <img 
                       src={specialty.image} 
                       alt={`Pingo ${specialty.name}`}
-                      className="w-full h-full object-contain pingo-float"
+                      className="w-full h-full object-contain pingo-float drop-shadow-sm group-hover:drop-shadow-md transition-all"
                       onError={(e) => {
-                        // Fallback to emoji if image fails to load
                         e.currentTarget.style.display = 'none';
-                        const emojiSpan = e.currentTarget.parentElement?.querySelector('.emoji-fallback');
-                        if (emojiSpan) emojiSpan.classList.remove('hidden');
+                        const fallbackIcon = e.currentTarget.parentElement?.querySelector('.fallback-icon');
+                        if (fallbackIcon) fallbackIcon.classList.remove('hidden');
                       }}
                     />
-                    <span className="emoji-fallback hidden text-4xl">{specialty.emoji}</span>
+                    <div className="fallback-icon hidden text-primary/40">
+                      <ArrowRight className="w-10 h-10" weight="thin" />
+                    </div>
                   </div>
                   <ArrowRight className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" weight="bold" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                <h3 className="font-bold text-foreground mb-1 group-hover:text-primary transition-colors text-lg">
                   {specialty.name}
                 </h3>
-                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                <p className="text-[13px] text-muted-foreground line-clamp-2 mb-4 leading-snug">
                   {specialty.desc}
                 </p>
-                <div className="inline-flex items-center gap-1 text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
-                  {specialty.doctors}+ médicos
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-wider">
+                  {specialty.doctors}+ especialistas
                 </div>
               </motion.button>
             ))}
