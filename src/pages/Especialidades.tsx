@@ -110,23 +110,31 @@ const Especialidades = forwardRef<HTMLDivElement>((_, ref) => {
       {/* Search & Filter */}
       <section className="py-12 px-4 bg-muted/30">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28">
-          <div className="max-w-2xl mx-auto">
-            <div className="relative mb-6">
-              <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" weight="bold" />
+          <div className="max-w-4xl mx-auto relative">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="absolute -right-20 -top-20 hidden 2xl:block pointer-events-none"
+            >
+              <img src="/src/assets/pingo-medico-teleconsulta.png" alt="Pingo Médico" className="w-32 h-32 object-contain pingo-float drop-shadow-xl" />
+            </motion.div>
+            
+            <div className="relative mb-8 shadow-sm">
+              <MagnifyingGlass className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground/60" weight="bold" />
               <Input
                 type="text"
                 placeholder="Procure por especialidade ou sintoma..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-12 rounded-xl text-base"
+                className="pl-14 h-16 rounded-2xl text-lg border-2 border-border/40 focus:border-primary transition-all shadow-subtle placeholder:text-muted-foreground/40"
               />
             </div>
 
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap gap-2.5 justify-center">
               <Button
-                variant={selectedCategory === null ? "default" : "outline"}
+                variant={selectedCategory === null ? "default" : "secondary"}
                 size="sm"
-                className="rounded-full"
+                className={`rounded-xl px-5 py-5 font-bold transition-all ${selectedCategory === null ? 'shadow-md scale-105' : 'hover:scale-105 opacity-60 hover:opacity-100'}`}
                 onClick={() => setSelectedCategory(null)}
               >
                 Todas ({specialties.length})
@@ -136,9 +144,9 @@ const Especialidades = forwardRef<HTMLDivElement>((_, ref) => {
                 .map((letter) => (
                   <Button
                     key={letter}
-                    variant="outline"
+                    variant={selectedCategory === letter ? "default" : "secondary"}
                     size="sm"
-                    className="rounded-full"
+                    className={`rounded-xl w-10 h-10 p-0 font-bold transition-all ${selectedCategory === letter ? 'shadow-md scale-110' : 'hover:scale-110 opacity-60 hover:opacity-100'}`}
                     onClick={() =>
                       setSelectedCategory(
                         selectedCategory === letter ? null : letter
