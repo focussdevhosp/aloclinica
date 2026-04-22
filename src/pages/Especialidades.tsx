@@ -79,21 +79,29 @@ const Especialidades = forwardRef<HTMLDivElement>((_, ref) => {
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28 relative">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-            className="text-center max-w-3xl mx-auto"
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="text-center max-w-4xl mx-auto"
           >
-            <span className="inline-block text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full mb-4">
-              30+ Especialidades
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight mb-6">
-              Encontre o <span className="text-primary">Especialista Ideal</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                30+ Especialidades Disponíveis
+              </span>
+            </div>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-foreground leading-[1.1] mb-8 tracking-tight">
+              O <span className="text-primary italic">Pingo</span> que faltava na sua <span className="relative">
+                saúde
+                <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 25 0, 50 5 T 100 5" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              De Cardiologia a Psicologia, temos médicos especializados em todas as áreas de saúde.
+            <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
+              Conectamos você aos melhores especialistas através de um atendimento humanizado e tecnologia de ponta.
             </p>
           </motion.div>
         </div>
