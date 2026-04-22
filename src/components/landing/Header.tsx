@@ -62,10 +62,9 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
 
   const logoUrl = config?.logo_url || mascot;
   const menuItems = config?.menu_items || [
-    { label: "Início", href: "/" },
-    { label: "Plantão", href: "/plantao" },
-    { label: "Teleconsulta", href: "/teleconsulta" },
-    { label: "Receita", href: "/receita" },
+    { label: "Especialidades", href: "/#especialidades" },
+    { label: "Para Médicos", href: "/#para-medicos" },
+    { label: "Ajuda", href: "/ajuda" },
   ];
 
   useEffect(() => {
@@ -78,8 +77,8 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const triggerCls = "group/trigger text-[12px] xl:text-[13px] font-medium text-muted-foreground hover:text-foreground bg-transparent data-[state=open]:text-foreground data-[state=open]:bg-muted/40 px-2.5 xl:px-3.5 h-9 rounded-full transition-colors duration-150 gap-1 xl:gap-1.5 whitespace-nowrap";
-  const linkBtnCls = "text-[12px] xl:text-[13px] font-medium px-3.5 xl:px-4 h-9 rounded-full border border-border/60 bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/60 hover:border-border transition-all duration-150 inline-flex items-center justify-center whitespace-nowrap cursor-pointer";
+  const triggerCls = "group/trigger text-[13px] font-medium text-muted-foreground hover:text-foreground bg-transparent data-[state=open]:text-foreground px-3.5 h-9 rounded-full transition-colors duration-150 gap-1 whitespace-nowrap";
+  const linkBtnCls = "text-[13px] font-medium px-3.5 h-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all duration-150 inline-flex items-center justify-center whitespace-nowrap cursor-pointer";
 
   return (
     <header
