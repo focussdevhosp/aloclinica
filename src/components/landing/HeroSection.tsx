@@ -28,7 +28,7 @@ const HeroSection = memo(
     const ctaText    = config?.cta_text || "Agendar consulta";
     const ctaUrl     = config?.cta_url || "/agendar";
     const badgeText  = config?.badge_text || "Médicos disponíveis agora";
-    const heroImgUrl = config?.image_url || "https://cvbgrjauqjawrsyknhyj.supabase.co/storage/v1/object/public/files/uploads/0XILPRqqUbSOh99ow53X5OBDOCC3/1776897657040-hrh37-image.png";
+    const heroImgUrl = config?.image_url || "https://cvbgrjauqjawrsyknhyj.supabase.co/storage/v1/object/public/files/uploads/0XILPRqqUbSOh99ow53X5OBDOCC3/1776900279622-idr4l-doctor-pacientes-removebg-preview.png";
 
     return (
       <section
@@ -112,7 +112,7 @@ const HeroSection = memo(
               >
                 <OptimizedImage
                   src={heroImgUrl}
-                  alt="Mascote Pingo"
+                  alt="Médico e pacientes"
                   className="w-full h-auto drop-shadow-[0_25px_50px_rgba(0,0,0,0.15)] max-w-[600px] mx-auto"
                 />
               </motion.div>
