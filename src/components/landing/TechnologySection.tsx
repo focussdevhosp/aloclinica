@@ -43,7 +43,7 @@ const TechnologySection = ({ config }: { config?: any }) => {
             >
               <div className="relative">
                 <img 
-                  src={pingoTecnologia} 
+                  src={technologyImage} 
                   alt="Pingo Tecnologia" 
                   className="w-full max-w-[450px] h-auto drop-shadow-2xl select-none" 
                 />
