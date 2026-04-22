@@ -44,7 +44,8 @@ const specialties = [
   { name: "Cirurgia Vascular", image: PINGO_SPECIALTIES["Cirurgia Vascular"], desc: "Tratamento cirúrgico de veias e artérias", doctors: 9 },
   { name: "Psicologia", image: PINGO_SPECIALTIES["Psiquiatria"], desc: "Saúde mental, terapia e bem-estar", doctors: 67 },
   { name: "Anestesiologia", image: PINGO_SPECIALTIES["Anestesiologia"], desc: "Controle de dor e sedação em cirurgias", doctors: 12 },
-  { name: "Cirurgião Dentista", image: "/src/assets/pingo-cirurgiao-dentista.png", desc: "Saúde bucal e procedimentos odontológicos", doctors: 24 },
+  { name: "Cirurgião Dentista", image: PINGO_SPECIALTIES["Cirurgião Dentista"], desc: "Saúde bucal e procedimentos odontológicos", doctors: 24 },
+  { name: "Fisiatra", image: PINGO_SPECIALTIES["Fisiatra"], desc: "Medicina física e reabilitação", doctors: 8 },
   { name: "Hepatologia", image: PINGO_SPECIALTIES["Gastroenterologia"], desc: "Diagnóstico e tratamento de doenças do fígado", doctors: 14 },
   { name: "Telemedicina 24h", image: "/src/assets/pingo-videocall.png", desc: "Atendimento imediato a qualquer hora", doctors: 150 },
 ];
