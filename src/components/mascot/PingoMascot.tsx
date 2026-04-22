@@ -11,7 +11,8 @@ import pingoPartner   from "@/assets/pingo-partner.png";
 import pingoSupport   from "@/assets/pingo-support.png";
 
 import pingoSolitario from "@/assets/pingo-solitario.png";
-import logo           from "@/assets/logo.png";
+import { PINGO_LOGO_URL } from "@/lib/constants";
+const logo = PINGO_LOGO_URL;
 
 export type PingoVariant =
   | "wave" | "welcome" | "thumbsup" | "reading"
