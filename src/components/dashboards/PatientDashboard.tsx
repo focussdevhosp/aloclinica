@@ -275,7 +275,7 @@ const PatientDashboard = () => {
 
   if (loading) {
     return (
-      <DashboardLayout title="Paciente" nav={getPatientNav("home")} role="patient">
+      <DashboardLayout title="Perfil do Paciente" nav={getPatientNav("home")} role="patient">
         <div className="space-y-6 pb-24 md:pb-8">
           <div className="-mx-4 -mt-5 md:-mx-6 md:-mt-5 lg:-mx-8 lg:-mt-6">
             <Skeleton className="h-56 rounded-b-[2rem] md:rounded-[2rem]" />
@@ -298,7 +298,7 @@ const PatientDashboard = () => {
   }
 
   return (
-    <DashboardLayout title="Paciente" nav={getPatientNav("home")} role="patient">
+    <DashboardLayout title="Perfil do Paciente" nav={getPatientNav("home")} role="patient">
       {showOnboarding && <PatientOnboarding onComplete={() => setShowOnboarding(false)} />}
 
       <div ref={scrollRef} className="space-y-5 pb-24 md:pb-8">
