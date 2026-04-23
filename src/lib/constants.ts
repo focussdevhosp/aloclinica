@@ -1,4 +1,4 @@
-import pingoLogo from "@/assets/logo-pingo.png";
+// import pingoLogo from "@/assets/logo-pingo.png";
 
 // ─── Financial ────────────────────────────────────────────────────────────────
 export const DEFAULT_CONSULTATION_PRICE = 89;
@@ -78,4 +78,4 @@ export const FEATURES = {
 } as const;
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
-export const PINGO_LOGO_URL = pingoLogo;
+export const PINGO_LOGO_URL = "https://cvbgrjauqjawrsyknhyj.supabase.co/storage/v1/object/public/files/uploads/0XILPRqqUbSOh99ow53X5OBDOCC3/1776904700670-og955-1776788772275-bngbf-hero-doctor__4_-removebg-preview.png";
