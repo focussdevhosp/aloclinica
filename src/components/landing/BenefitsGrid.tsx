@@ -2,11 +2,11 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, Lightning, Devices, Receipt, UsersFour, FirstAid } from "@phosphor-icons/react";
 
-import familyImg from "@/assets/section-family-telehealth.jpg";
-import doctorAppImg from "@/assets/section-doctor-app.jpg";
-import multiplatformImg from "@/assets/benefit-multiplatform.jpg";
-import familyPlanImg from "@/assets/benefit-family-plan.jpg";
-import medicalRecordsImg from "@/assets/benefit-medical-records.jpg";
+import familyImg from "@/assets/pingo-king-familia.png";
+import doctorAppImg from "@/assets/doctor-phone-teleconsulta.png";
+import multiplatformImg from "@/assets/devices-mascot.png";
+import familyPlanImg from "@/assets/pingo-mini-familia.png";
+import medicalRecordsImg from "@/assets/pingo-medico-ferramentas.png";
 
 const cardImages: Record<string, string> = {
   "Multiplataforma": multiplatformImg,

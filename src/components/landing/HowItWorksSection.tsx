@@ -5,10 +5,10 @@ gsap.registerPlugin(ScrollTrigger);
 import { motion } from "framer-motion";
 import { UserPlus, MagnifyingGlass, VideoCamera, FileText, Clock } from "@phosphor-icons/react";
 import { useSiteConfig } from "@/lib/site-config";
-import stepSignup from "@/assets/step-signup.png";
-import stepSearch from "@/assets/step-search.png";
-import stepVideocall from "@/assets/step-videocall.png";
-import stepPrescription from "@/assets/step-prescription.png";
+import stepSignup from "@/assets/pingo-cartao.png";
+import stepSearch from "@/assets/pingo-calendar.png";
+import stepVideocall from "@/assets/pingo-videocall.png";
+import stepPrescription from "@/assets/pingo-prescription.png";
 
 const steps = [
   { icon: UserPlus, title: "Cadastre-se", description: "Crie sua conta em menos de 2 minutos.", image: stepSignup, time: "2 min", accent: "from-primary/20 to-secondary/10" },
