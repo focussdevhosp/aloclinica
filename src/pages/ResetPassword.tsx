@@ -193,53 +193,73 @@ const ResetPassword = () => {
               </p>
 
               <div className="rounded-2xl bg-card border border-border/60 p-8 shadow-lg">
-                <form onSubmit={handleReset} className="space-y-4">
-                  <div>
-                    <Label htmlFor="new-password">Nova Senha</Label>
-                    <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="new-password"
-                        type="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        placeholder="Mínimo 6 caracteres"
-                        className="pl-10 h-12 rounded-xl"
-                        required
-                        minLength={6}
-                        autoFocus
-                      />
-                    </div>
-                    <PasswordStrength password={password} />
+                {sessionError ? (
+                  <div className="text-center space-y-4">
+                    <p className="text-sm text-destructive">{sessionError}</p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full h-12 rounded-full font-semibold"
+                    >
+                      <Link to="/forgot-password">Solicitar novo link</Link>
+                    </Button>
                   </div>
-                  <div>
-                    <Label htmlFor="confirm-password">Confirmar Senha</Label>
-                    <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="confirm-password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                        placeholder="Repita a senha"
-                        className="pl-10 h-12 rounded-xl"
-                        required
-                        minLength={6}
-                      />
-                    </div>
-                    {confirmPassword && password !== confirmPassword && (
-                      <p className="text-xs text-destructive mt-1">Senhas não conferem</p>
-                    )}
+                ) : !sessionReady ? (
+                  <div className="text-center py-8">
+                    <div className="w-10 h-10 mx-auto rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                    <p className="text-sm text-muted-foreground mt-4">
+                      Validando link de recuperação...
+                    </p>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full h-12 rounded-full font-bold"
-                    size="lg"
-                    disabled={loading}
-                  >
-                    {loading ? "Atualizando..." : "Redefinir Senha"}
-                  </Button>
-                </form>
+                ) : (
+                  <form onSubmit={handleReset} className="space-y-4">
+                    <div>
+                      <Label htmlFor="new-password">Nova Senha</Label>
+                      <div className="relative mt-1">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={password}
+                          onChange={e => setPassword(e.target.value)}
+                          placeholder="Mínimo 6 caracteres"
+                          className="pl-10 h-12 rounded-xl"
+                          required
+                          minLength={6}
+                          autoFocus
+                        />
+                      </div>
+                      <PasswordStrength password={password} />
+                    </div>
+                    <div>
+                      <Label htmlFor="confirm-password">Confirmar Senha</Label>
+                      <div className="relative mt-1">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={e => setConfirmPassword(e.target.value)}
+                          placeholder="Repita a senha"
+                          className="pl-10 h-12 rounded-xl"
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      {confirmPassword && password !== confirmPassword && (
+                        <p className="text-xs text-destructive mt-1">Senhas não conferem</p>
+                      )}
+                    </div>
+                    <Button
+                      type="submit"
+                      className="w-full h-12 rounded-full font-bold"
+                      size="lg"
+                      disabled={loading}
+                    >
+                      {loading ? "Atualizando..." : "Redefinir Senha"}
+                    </Button>
+                  </form>
+                )}
               </div>
             </motion.div>
           )}
