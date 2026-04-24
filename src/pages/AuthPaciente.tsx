@@ -143,6 +143,8 @@ const StepIndicator = ({ current }: { current: number }) => (
   </div>
 );
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 const AuthPaciente = () => {
   const [mode, setMode] = useState<"welcome" | "login" | "signup">("welcome");
   const [email, setEmail] = useState("");
@@ -158,16 +160,51 @@ const AuthPaciente = () => {
   const [attempts, setAttempts] = useState(0);
   const [shake, setShake] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const lockoutUntil = useRef<number>(0);
   const emailRef = useRef<HTMLInputElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { redirectAfterLogin } = useAuthRedirect();
+
+  // ── Real-time per-field validation ───────────────────────────────
+  const cleanCpf = useMemo(() => unmask(cpf), [cpf]);
+  const cleanPhone = useMemo(() => unmask(phone), [phone]);
+  const isFirstNameValid = firstName.trim().length >= 2;
+  const isLastNameValid = lastName.trim().length >= 2;
+  const isCpfValid = cleanCpf.length === 11 && validarCPF(cleanCpf);
+  const userAge = useMemo(() => {
+    if (!birthDate) return null;
+    const t = new Date();
+    const b = new Date(birthDate);
+    let a = t.getFullYear() - b.getFullYear();
+    const m = t.getMonth() - b.getMonth();
+    if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
+    return a;
+  }, [birthDate]);
+  const isBirthValid = userAge !== null && userAge >= 16 && userAge <= 120;
+  const isEmailValid = EMAIL_REGEX.test(email.trim());
+  const isPasswordValid = password.length >= 6;
+  const isPhoneValid = cleanPhone.length >= 10;
+
+  const isStep1Valid = isFirstNameValid && isLastNameValid && isCpfValid && isBirthValid;
+  const isStep2Valid = isEmailValid && isPasswordValid && isPhoneValid;
 
   // Auto-focus on mode change
   useEffect(() => {
     if (mode === "login") setTimeout(() => emailRef.current?.focus(), 100);
     if (mode === "signup") setTimeout(() => firstNameRef.current?.focus(), 100);
+  }, [mode]);
+
+  // Reset success state when leaving signup
+  useEffect(() => {
+    if (mode !== "signup") {
+      setSignupSuccess(false);
+      setSignupStep(1);
+    }
   }, [mode]);
 
   const handleLogin = async (e: React.FormEvent) => {
