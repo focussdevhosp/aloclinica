@@ -117,12 +117,9 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
       const monthDiff = today.getMonth() - birth.getMonth();
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
       if (age < 16) { toast.error("Idade mínima: 16 anos"); return; }
-      await saveProfile();
-    }
-    if (step.id === "health") {
       if (!bloodType) { toast.error("Tipo sanguíneo obrigatório", { description: "Selecione seu tipo sanguíneo." }); return; }
-      if (!allergies.length) { toast.error("Informe suas alergias", { description: "Adicione alergias ou marque 'Não tenho alergias'." }); return; }
-      if (!chronicConditions.length) { toast.error("Informe condições crônicas", { description: "Adicione condições ou marque 'Não tenho condições crônicas'." }); return; }
+      if (!allergies.length) { toast.error("Informe suas alergias", { description: "Selecione ou marque 'Não tenho alergias'." }); return; }
+      if (!chronicConditions.length) { toast.error("Informe condições crônicas", { description: "Selecione ou marque 'Não tenho condições crônicas'." }); return; }
       await saveProfile();
     }
     if (step.id === "kyc" && !kycCompleted) {
