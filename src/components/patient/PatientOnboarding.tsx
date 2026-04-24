@@ -181,15 +181,15 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
               </motion.div>
             </div>
 
-            {/* Speech bubble */}
+            {/* Speech bubble with name */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 6 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="relative bg-card rounded-2xl border border-border/60 px-4 py-2.5 max-w-[220px] mx-auto mb-5 shadow-md"
+              className="relative bg-card rounded-2xl border border-border/60 px-4 py-2.5 max-w-[260px] mx-auto mb-5 shadow-md"
             >
               <p className="text-[12px] text-foreground leading-snug font-medium">
-                Olá! Eu sou o <span className="text-primary font-bold">Pingo</span> 🐧
+                Olá{firstName ? <>, <span className="text-primary font-bold">{firstName.split(" ")[0]}</span></> : ""}! Eu sou o <span className="text-primary font-bold">Pingo</span> 🐧
               </p>
               <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-card border-l border-t border-border/60 rotate-45" />
             </motion.div>
@@ -210,10 +210,24 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="text-[13px] text-muted-foreground leading-relaxed max-w-[300px] mx-auto mb-5"
+              className="text-[13px] text-muted-foreground leading-relaxed max-w-[300px] mx-auto mb-4"
             >
-              Bem-vindo à <span className="font-semibold text-foreground">AloClínica</span>. O santuário digital para cuidar de você e de quem você ama.
+              Vamos configurar seu perfil em <span className="font-semibold text-foreground">2 minutos</span> para você começar a cuidar da saúde.
             </motion.p>
+
+            {/* Steps preview */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.5 }}
+              className="flex items-center justify-center gap-2 mb-4 text-[10px] text-muted-foreground"
+            >
+              <span className="inline-flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px]">1</span> Você</span>
+              <ArrowRight className="w-3 h-3 opacity-40" />
+              <span className="inline-flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px]">2</span> Identidade</span>
+              <ArrowRight className="w-3 h-3 opacity-40" />
+              <span className="inline-flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px]">3</span> Pronto!</span>
+            </motion.div>
 
             {/* Trust chips */}
             <motion.div
