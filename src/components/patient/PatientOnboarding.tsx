@@ -72,8 +72,7 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
 
   const STEPS = [
     { id: "welcome", title: "Bem-vindo(a)!" },
-    { id: "personal", title: "Dados Pessoais" },
-    { id: "health", title: "Informações de Saúde" },
+    { id: "personal", title: "Sobre você" },
     { id: "kyc", title: "Verificação de Identidade" },
     { id: "tour", title: "Como usar" },
     { id: "done", title: "Tudo pronto!" },
