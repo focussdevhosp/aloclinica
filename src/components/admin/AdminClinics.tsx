@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { getAdminNav } from "./adminNav";
-import { Search, Eye, Edit } from "lucide-react";
+import { AdminPageHeader } from "./AdminPageHeader";
+import { Search, Eye, Edit, Building2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 
 interface ClinicItem {

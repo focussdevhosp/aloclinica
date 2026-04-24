@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { getAdminNav } from "./adminNav";
+import { AdminPageHeader } from "./AdminPageHeader";
 import { Search, Eye, Edit, Download, ChevronLeft, ChevronRight, Users, Calendar, Filter } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 
