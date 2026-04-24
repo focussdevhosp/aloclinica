@@ -391,7 +391,7 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex flex-col">
+    <div className="fixed inset-0 z-[100] bg-gradient-to-b from-background via-background to-primary/5 flex flex-col">
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 pt-5 pb-2">
         <h2 className="text-lg font-extrabold text-primary italic">AloClínica</h2>
