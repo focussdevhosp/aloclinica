@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Smartphone, Monitor, ShieldCheck, CheckCircle2, RefreshCw, Loader2, Camera, Copy, Check } from "lucide-react";
+import { Monitor, ShieldCheck, CheckCircle2, RefreshCw, Loader2, Camera, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/integrations/supabase/untyped";
