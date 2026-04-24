@@ -224,7 +224,6 @@ const DoctorOnboarding = () => {
               }));
             }}
             variant="full"
-            tipo="medico"
           />
         </div>
       )}

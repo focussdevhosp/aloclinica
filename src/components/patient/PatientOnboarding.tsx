@@ -615,7 +615,6 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
               }
             }}
             variant="full"
-            tipo="paciente"
           />
         );
       }
