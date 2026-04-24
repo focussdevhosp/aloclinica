@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Pencil, Trash, Storefront, Users, TrendUp } from "@phosphor-icons/react";
-import { Heart } from "lucide-react";
+import { Plus, Pencil, Trash, Heart, Storefront, Users, TrendUp } from "@phosphor-icons/react";
+import { Heart as HeartIcon } from "lucide-react";
 import { db } from "@/integrations/supabase/untyped";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { getAdminNav } from "./adminNav";
@@ -164,7 +164,7 @@ const AdminPingoCard = () => {
     <DashboardLayout title="Pingo Card" nav={nav} role="admin">
       <div className="space-y-6">
         <AdminPageHeader
-          icon={Heart}
+          icon={HeartIcon}
           title="Pingo Card"
           description="Gestão completa do programa de cartão de benefícios"
         />
