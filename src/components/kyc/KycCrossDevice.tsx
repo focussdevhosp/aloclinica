@@ -99,21 +99,22 @@ const KycCrossDevice = ({ onComplete, variant = "full", className = "", tipo = "
 
   // Auto-create the session once when the desktop view mounts
   useEffect(() => {
+    if (useLocalFlow) return;
     if (!user || session || creating) return;
     createSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, useLocalFlow]);
 
   // Tick every second to update the countdown
   useEffect(() => {
-    if (!session) return;
+    if (useLocalFlow || !session) return;
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
-  }, [session]);
+  }, [session, useLocalFlow]);
 
   // Realtime subscription on this session row
   useEffect(() => {
-    if (!session?.id) return;
+    if (useLocalFlow || !session?.id) return;
 
     const channel = db
       .channel(`kyc_session_${session.id}`)
@@ -155,7 +156,7 @@ const KycCrossDevice = ({ onComplete, variant = "full", className = "", tipo = "
       db.removeChannel(channel);
       channelRef.current = null;
     };
-  }, [session?.id, onComplete]);
+  }, [session?.id, onComplete, useLocalFlow]);
 
   // Build the URL the QR points to
   const mobileUrl = useMemo(() => {
@@ -163,6 +164,11 @@ const KycCrossDevice = ({ onComplete, variant = "full", className = "", tipo = "
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     return `${origin}/kyc-mobile?token=${encodeURIComponent(session.token)}`;
   }, [session]);
+
+  // After all hooks are declared, render the local flow if needed.
+  if (useLocalFlow) {
+    return <BiometricKYC onComplete={onComplete} variant={variant} className={className} tipo={tipo} />;
+  }
 
   const expiresInSec = session ? Math.max(0, Math.floor((new Date(session.expires_at).getTime() - now) / 1000)) : 0;
   const expired = !!session && expiresInSec === 0 && session.status !== "completed";
