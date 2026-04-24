@@ -334,11 +334,12 @@ const AuthPaciente = () => {
         } catch {}
 
         if (signUpData.session) {
-          toast.success("Conta criada! ✅", { description: "Vamos completar seu perfil..." });
-          setTimeout(() => navigate("/dashboard?role=patient&onboarding=true"), 1500);
+          // Show celebration screen briefly, then redirect
+          setSignupSuccess(true);
+          setTimeout(() => navigate("/dashboard?role=patient&onboarding=true"), 2400);
         } else {
-          toast.success("Cadastro enviado! ✅", { description: "Confirme seu email para ativar a conta." });
-          setMode("login");
+          setSignupSuccess(true);
+          // Without immediate session, user must confirm email — keep success screen and offer login
         }
       }
     } catch (err) {
