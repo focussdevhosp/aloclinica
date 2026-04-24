@@ -57,12 +57,8 @@ const KycCrossDevice = ({ onComplete, variant = "full", className = "", tipo = "
   const [now, setNow] = useState(Date.now());
   const channelRef = useRef<ReturnType<typeof db.channel> | null>(null);
 
-  // Mobile -> just render the camera flow directly (no QR)
-  if (isMobile || forceLocal) {
-    return <BiometricKYC onComplete={onComplete} variant={variant} className={className} tipo={tipo} />;
-  }
-
-  // ---- Desktop QR flow ----
+  // Decide later (after all hooks) whether we render the camera flow directly.
+  const useLocalFlow = isMobile || forceLocal;
 
   const createSession = async () => {
     if (!user) return;
