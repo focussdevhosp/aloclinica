@@ -167,15 +167,33 @@ const ValidateDocument = () => {
         )}
 
         {result && (
-          <Card className="border-emerald-500/30 bg-emerald-500/5">
+          <Card className={result.is_valid === false ? "border-destructive/30 bg-destructive/5" : "border-emerald-500/30 bg-emerald-500/5"}>
             <CardContent className="p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-10 h-10 text-emerald-500 shrink-0" />
+                {result.is_valid === false ? (
+                  <XCircle className="w-10 h-10 text-destructive shrink-0" />
+                ) : (
+                  <CheckCircle2 className="w-10 h-10 text-emerald-500 shrink-0" />
+                )}
                 <div>
-                  <p className="font-bold text-emerald-600 text-sm">✅ Documento Autêntico</p>
-                  <p className="text-xs text-muted-foreground">Emitido pela plataforma AloClínica</p>
+                  <p className={`font-bold text-sm ${result.is_valid === false ? "text-destructive" : "text-emerald-600"}`}>
+                    {result.is_valid === false ? "⚠ Assinatura Revogada" : "✅ Documento Autêntico"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {result.icp_brasil ? "Assinado digitalmente com certificado ICP-Brasil (PAdES)" : "Emitido pela plataforma AloClínica"}
+                  </p>
                 </div>
               </div>
+
+              {result.icp_brasil && (
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/10 border border-primary/20">
+                  <Shield className="w-4 h-4 text-primary shrink-0" />
+                  <div className="text-[10px] text-foreground">
+                    <p className="font-semibold">ICP-Brasil • PAdES</p>
+                    <p className="text-muted-foreground">Conforme Resolução CFM nº 2.299/2021 e MP 2.200-2/2001</p>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between p-2 rounded-lg bg-background/60">
@@ -204,6 +222,24 @@ const ValidateDocument = () => {
                     {format(new Date(result.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                   </span>
                 </div>
+                {result.certificate_alias && (
+                  <div className="flex justify-between p-2 rounded-lg bg-background/60">
+                    <span className="text-muted-foreground">Certificado</span>
+                    <span className="font-medium text-foreground text-xs">{result.certificate_alias}</span>
+                  </div>
+                )}
+                {result.document_hash && (
+                  <div className="p-2 rounded-lg bg-background/60">
+                    <p className="text-muted-foreground text-xs mb-1">Hash de integridade (SHA-256)</p>
+                    <p className="font-mono text-[9px] text-foreground break-all">{result.document_hash}</p>
+                  </div>
+                )}
+                {result.revoked_at && (
+                  <div className="p-2 rounded-lg bg-destructive/10 border border-destructive/30">
+                    <p className="text-destructive text-xs font-semibold mb-1">Revogada em {format(new Date(result.revoked_at), "dd/MM/yyyy", { locale: ptBR })}</p>
+                    {result.revoke_reason && <p className="text-xs text-muted-foreground">{result.revoke_reason}</p>}
+                  </div>
+                )}
                 {result.diagnosis && (
                   <div className="flex justify-between p-2 rounded-lg bg-background/60">
                     <span className="text-muted-foreground">Diagnóstico</span>
