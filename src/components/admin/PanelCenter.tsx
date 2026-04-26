@@ -37,14 +37,14 @@ interface PanelInfo {
 }
 
 const PANELS: Omit<PanelInfo, "onlineCount" | "totalUsers" | "recentUsers">[] = [
-  { id: "patient",      label: "Paciente",      description: "Agendamentos e jornada de saúde",   icon: Users,        gradient: "from-blue-500 to-blue-600",      glow: "shadow-blue-500/25",      route: "/dashboard?role=patient",      roleKey: "patient" },
-  { id: "doctor",       label: "Médico",        description: "Consultas, prontuários e receitas", icon: Stethoscope,  gradient: "from-emerald-500 to-teal-600",   glow: "shadow-emerald-500/25",   route: "/dashboard?role=doctor",       roleKey: "doctor" },
-  { id: "clinic",       label: "Clínica",       description: "Gestão de médicos e afiliações",    icon: Building2,    gradient: "from-violet-500 to-purple-600",  glow: "shadow-violet-500/25",    route: "/dashboard?role=clinic",       roleKey: "clinic" },
-  { id: "receptionist", label: "Recepção",      description: "Agendas, check-in e cobranças",     icon: Monitor,      gradient: "from-amber-500 to-orange-600",   glow: "shadow-amber-500/25",     route: "/dashboard?role=receptionist", roleKey: "receptionist" },
-  { id: "support",      label: "Suporte",       description: "Tickets, logs e monitoramento",     icon: Headphones,   gradient: "from-rose-500 to-pink-600",      glow: "shadow-rose-500/25",      route: "/dashboard?role=support",      roleKey: "support" },
-  { id: "partner",      label: "Parceiro",      description: "Validações e integrações",          icon: Handshake,    gradient: "from-teal-500 to-emerald-600",   glow: "shadow-teal-500/25",      route: "/dashboard?role=partner",      roleKey: "partner" },
-  { id: "admin",        label: "Administração", description: "Controle total do sistema",         icon: ShieldCheck,  gradient: "from-primary to-blue-700",       glow: "shadow-primary/25",       route: "/dashboard?role=admin",        roleKey: "admin" },
-  { id: "ai-assistant", label: "Assistente IA", description: "Chat, triagem e documentos",        icon: Bot,          gradient: "from-purple-500 to-fuchsia-600", glow: "shadow-purple-500/25",    route: "/dashboard/ai-assistant",      roleKey: "ai-assistant" },
+  { id: "admin",        label: "Administração", description: "Controle total do sistema, permissões e auditoria", icon: ShieldCheck,  gradient: "from-primary to-blue-700",       glow: "shadow-primary/25",       route: "/dashboard?role=admin",        roleKey: "admin" },
+  { id: "clinic",       label: "Clínica",       description: "Gestão de médicos, afiliações e unidades",    icon: Building2,    gradient: "from-violet-500 to-purple-600",  glow: "shadow-violet-500/25",    route: "/dashboard?role=clinic",       roleKey: "clinic" },
+  { id: "doctor",       label: "Médico",        description: "Consultas, prontuários, receitas e telemedicina", icon: Stethoscope,  gradient: "from-emerald-500 to-teal-600",   glow: "shadow-emerald-500/25",   route: "/dashboard?role=doctor",       roleKey: "doctor" },
+  { id: "patient",      label: "Paciente",      description: "Agendamentos, histórico e jornada de saúde",   icon: Users,        gradient: "from-blue-500 to-blue-600",      glow: "shadow-blue-500/25",      route: "/dashboard?role=patient",      roleKey: "patient" },
+  { id: "receptionist", label: "Recepção",      description: "Agendas, check-in, faturamento e cobranças",     icon: Monitor,      gradient: "from-amber-500 to-orange-600",   glow: "shadow-amber-500/25",     route: "/dashboard?role=receptionist", roleKey: "receptionist" },
+  { id: "support",      label: "Suporte",       description: "Tickets, logs, monitoramento e auxílio",     icon: Headphones,   gradient: "from-rose-500 to-pink-600",      glow: "shadow-rose-500/25",      route: "/dashboard?role=support",      roleKey: "support" },
+  { id: "partner",      label: "Parceiro",      description: "Validações, integrações e API",          icon: Handshake,    gradient: "from-teal-500 to-emerald-600",   glow: "shadow-teal-500/25",      route: "/dashboard?role=partner",      roleKey: "partner" },
+  { id: "ai-assistant", label: "Assistente IA", description: "Chat, triagem inteligente e processamento",        icon: Bot,          gradient: "from-purple-500 to-fuchsia-600", glow: "shadow-purple-500/25",    route: "/dashboard/ai-assistant",      roleKey: "ai-assistant" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
@@ -364,7 +364,7 @@ const PanelCenter = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {panels.map((panel) => {
               const Icon = panel.icon;
               const hasOnline = panel.onlineCount > 0;
@@ -372,66 +372,76 @@ const PanelCenter = () => {
                 <motion.div
                   key={panel.id}
                   variants={fadeUp}
-                  whileHover={{ y: -4 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.97 }}
                   transition={{ duration: 0.2 }}
                 >
                   <Card
                     className={cn(
-                      "relative overflow-hidden cursor-pointer group h-full",
-                      "border-border/40 bg-gradient-to-br from-card via-card to-muted/30",
-                      "hover:shadow-xl hover:border-primary/40 transition-all duration-300",
+                      "relative overflow-hidden cursor-pointer group h-full border-border/40",
+                      "bg-gradient-to-br from-card via-card to-muted/30 hover:to-primary/[0.03]",
+                      "hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:border-primary/40 transition-all duration-500",
                       hasOnline && panel.glow
                     )}
                     onClick={() => navigate(panel.route)}
                   >
                     {/* Top gradient line */}
-                    <div className={cn("h-[3px] bg-gradient-to-r opacity-80 group-hover:opacity-100 transition-opacity", panel.gradient)} />
-                    {/* Decorative blob */}
-                    <div className={cn(
-                      "absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br opacity-10 blur-2xl pointer-events-none group-hover:opacity-20 transition-opacity",
-                      panel.gradient
-                    )} />
+                    <div className={cn("h-[3px] bg-gradient-to-r opacity-70 group-hover:opacity-100 transition-opacity", panel.gradient)} />
+                    
+                    {/* Background patterns */}
+                    <div className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none">
+                      <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-from),transparent_60%)]" />
+                    </div>
 
-                    <CardContent className="relative p-4">
-                      <div className="flex items-start justify-between gap-2 mb-3">
+                    <CardContent className="relative p-5">
+                      <div className="flex items-start justify-between gap-3 mb-4">
                         <div className={cn(
-                          "w-12 h-12 rounded-2xl bg-gradient-to-br flex items-center justify-center shrink-0 shadow-md ring-1 ring-white/20 dark:ring-white/10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300",
+                          "w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center shrink-0 shadow-lg ring-1 ring-white/20 dark:ring-white/10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500",
                           panel.gradient
                         )}>
-                          <Icon className="w-5 h-5 text-white" strokeWidth={2.2} />
+                          <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
                         </div>
-                        {hasOnline && (
-                          <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-full text-[10px] font-bold ring-1 ring-emerald-500/30 backdrop-blur-sm">
-                            <span className="relative flex h-1.5 w-1.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-                            </span>
-                            {panel.onlineCount} online
-                          </div>
-                        )}
+                        
+                        <div className="flex flex-col items-end gap-1.5">
+                          {hasOnline ? (
+                            <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ring-1 ring-emerald-500/30 backdrop-blur-sm animate-in fade-in zoom-in duration-500">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                              </span>
+                              {panel.onlineCount} Online
+                            </div>
+                          ) : (
+                            <div className="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-muted/50 text-muted-foreground ring-1 ring-border/50">
+                              Offline
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
-                        {panel.label}
-                      </h3>
-                      <p className="text-[11.5px] text-muted-foreground mt-1 leading-snug line-clamp-2 min-h-[2.4em]">
-                        {panel.description}
-                      </p>
+                      <div className="space-y-1.5">
+                        <h3 className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight">
+                          {panel.label}
+                        </h3>
+                        <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-2 min-h-[3em]">
+                          {panel.description}
+                        </p>
+                      </div>
 
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/40">
-                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                          <Users className="w-3 h-3" />
-                          <span className="font-bold text-foreground tabular-nums">{panel.totalUsers}</span>
-                          <span>cadastros</span>
+                      <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/40">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mb-0.5">Total Usuários</span>
+                          <div className="flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5 text-primary/60" />
+                            <span className="text-sm font-black text-foreground tabular-nums tracking-tight">{panel.totalUsers.toLocaleString()}</span>
+                          </div>
                         </div>
+                        
                         <div className={cn(
-                          "w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300",
-                          "bg-muted/60 group-hover:bg-gradient-to-br group-hover:shadow-md",
-                          `group-hover:${panel.gradient.split(" ")[0]}`,
-                          "group-hover:" + panel.gradient.split(" ")[1]
+                          "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-sm",
+                          "bg-muted/40 group-hover:bg-primary group-hover:shadow-primary/20",
                         )}>
-                          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-white group-hover:translate-x-0.5 transition-all duration-500" />
                         </div>
                       </div>
                     </CardContent>
@@ -561,23 +571,26 @@ const PanelCenter = () => {
             <h2 className="text-lg font-bold text-foreground tracking-tight">Ações Rápidas do Sistema</h2>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {[
               { label: "Logs de Erro", icon: ShieldAlert, color: "text-rose-500", bg: "bg-rose-500/10", route: "/dashboard/admin/logs?role=admin" },
-              { label: "Config. Site", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10", route: "/dashboard/admin/site-config?role=admin" },
+              { label: "Site Config", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10", route: "/dashboard/admin/site-config?role=admin" },
               { label: "Relatórios", icon: PieChart, color: "text-amber-500", bg: "bg-amber-500/10", route: "/dashboard/admin/reports?role=admin" },
-              { label: "Banco de Dados", icon: Database, color: "text-emerald-500", bg: "bg-emerald-500/10", route: "/dashboard/admin/system-health?role=admin" },
+              { label: "Banco Dados", icon: Database, color: "text-emerald-500", bg: "bg-emerald-500/10", route: "/dashboard/admin/system-health?role=admin" },
+              { label: "Auditoria", icon: ShieldCheck, color: "text-indigo-500", bg: "bg-indigo-500/10", route: "/dashboard/admin/audit?role=admin" },
+              { label: "Usuários", icon: UserPlus, color: "text-orange-500", bg: "bg-orange-500/10", route: "/dashboard/admin/users?role=admin" },
             ].map((action) => (
               <Button
                 key={action.label}
                 variant="outline"
-                className="h-auto flex flex-col items-center gap-3 p-4 border-border/40 bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-md transition-all group"
+                className="h-auto flex flex-col items-center gap-2 p-3 border-border/40 bg-card/40 hover:bg-card hover:border-primary/40 hover:shadow-lg transition-all group overflow-hidden relative"
                 onClick={() => navigate(action.route)}
               >
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", action.bg)}>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 relative z-10", action.bg)}>
                   <action.icon className={cn("w-5 h-5", action.color)} />
                 </div>
-                <span className="text-xs font-bold text-foreground">{action.label}</span>
+                <span className="text-[11px] font-black text-foreground relative z-10 tracking-tight">{action.label}</span>
               </Button>
             ))}
           </div>
