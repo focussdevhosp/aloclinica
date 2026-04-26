@@ -273,71 +273,12 @@ const DoctorConsultations = () => {
           </div>
         </div>
 
-        {/* List Content */}
-          <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
-            <div className="relative flex-1 min-w-[160px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar paciente..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-10 h-10 text-sm rounded-xl border-border/40"
-              />
-            </div>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full sm:w-40 h-10 rounded-xl border-border/40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos status</SelectItem>
-                <SelectItem value="scheduled">Agendada</SelectItem>
-                <SelectItem value="waiting">Esperando</SelectItem>
-                <SelectItem value="in_progress">Em andamento</SelectItem>
-                <SelectItem value="completed">Concluída</SelectItem>
-                <SelectItem value="cancelled">Cancelada</SelectItem>
-                <SelectItem value="no_show">Ausente</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={period} onValueChange={v => { setPeriod(v); if (v === "custom") setCalendarOpen(true); }}>
-              <SelectTrigger className="w-full sm:w-44 h-10 rounded-xl border-border/40">
-                <Filter className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
-                <SelectValue placeholder="Período" />
-              </SelectTrigger>
-              <SelectContent>
-                {PERIOD_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            {period === "custom" && (
-              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="h-10 text-xs rounded-xl">
-                    <CalendarIcon className="w-3.5 h-3.5 mr-1.5" />
-                    {customFrom && customTo
-                      ? `${format(customFrom, "dd/MM")} → ${format(customTo, "dd/MM")}`
-                      : calendarStep === "from" ? "Início" : "Fim"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <p className="text-xs text-muted-foreground px-3 pt-3 pb-1">
-                    {calendarStep === "from" ? "Data inicial" : "Data final"}
-                  </p>
-                  <Calendar
-                    mode="single"
-                    selected={calendarStep === "from" ? customFrom : customTo}
-                    onSelect={handleCalendarSelect}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-          {filtered.length !== appointments.length && (
-            <p className="text-xs text-muted-foreground mt-2">
-              Mostrando {filtered.length} de {appointments.length} consultas
-            </p>
-          )}
-        </div>
+        {/* Results Counter */}
+        {filtered.length !== appointments.length && (
+          <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest px-1">
+            Resultados: {filtered.length} de {appointments.length}
+          </p>
+        )}
 
         {/* List — mobile-friendly cards */}
         {loading ? (
