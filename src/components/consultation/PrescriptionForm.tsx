@@ -194,10 +194,7 @@ const PrescriptionForm = () => {
       y += 20;
     }
 
-    // ─── Separator ───
-    const primaryBlue = [21, 35, 75]; // #15234B
-    const accentGold = [197, 165, 114]; // #C5A572
-    
+    // ─── Separator ───    
     doc.setDrawColor(accentGold[0], accentGold[1], accentGold[2]);
     doc.setLineWidth(0.5);
     doc.line(15, y, pageWidth - 15, y);
