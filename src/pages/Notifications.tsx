@@ -6,12 +6,13 @@ import { getPatientNav } from "@/components/patient/patientNav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Bell, BellOff, CheckCheck, Calendar, CreditCard, FileText, MessageSquare, Heart, Stethoscope, ChevronRight, Sparkles, ArrowLeft } from "lucide-react";
+import { Bell, BellOff, CheckCheck, Calendar, CreditCard, FileText, MessageSquare, Heart, Stethoscope, ChevronRight, Sparkles, ArrowLeft, Settings2 } from "lucide-react";
 import { formatDistanceToNow, isToday, isYesterday, isThisWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import mascotWave from "@/assets/mascot-wave.png";
+import NotificationPreferences from "@/components/notifications/NotificationPreferences";
 
 interface Notification {
   id: string;
