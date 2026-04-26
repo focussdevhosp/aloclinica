@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import BiometricKYC from "./BiometricKYC";
 import { logError } from "@/lib/logger";
+import { IS_DEV } from "@/lib/constants";
 
 interface KYCResult {
   match: boolean;
