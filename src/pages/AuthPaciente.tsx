@@ -146,7 +146,7 @@ const StepIndicator = ({ current }: { current: number }) => (
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const AuthPaciente = () => {
-  const [mode, setMode] = useState<"welcome" | "login" | "signup">("welcome");
+  const [mode, setMode] = useState<"welcome" | "login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -373,44 +373,41 @@ const AuthPaciente = () => {
             Voltar ao início
           </Link>
 
-          <div>
+          <div className="text-center">
             <h2 className="text-[28px] font-extrabold text-foreground tracking-tight">Bem-vindo! 👋</h2>
             <p className="text-muted-foreground mt-1">Como deseja continuar?</p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Button
               onClick={() => setMode("login")}
-              variant="outline"
-              className="w-full h-14 rounded-2xl text-base font-semibold border-border/60 hover:bg-muted/50 transition-all active:scale-[0.98]"
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold text-base shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 active:scale-[0.98] transition-all"
               size="lg"
             >
               <SignIn className="w-5 h-5 mr-2.5" weight="bold" />
-              Entrar na minha conta
+              Já sou paciente
             </Button>
 
             <Button
               onClick={() => setMode("signup")}
-              className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-primary/90 text-primary-foreground font-bold text-base shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition-all"
+              variant="outline"
+              className="w-full h-14 rounded-2xl text-base font-semibold border-border/60 hover:bg-muted/50 transition-all active:scale-[0.98]"
               size="lg"
             >
               <UserPlus className="w-5 h-5 mr-2.5" weight="fill" />
-              Criar conta grátis
+              Criar nova conta
             </Button>
           </div>
 
-
-
-          {/* Trust items */}
-          <div className="flex items-center justify-center gap-6 pt-4">
+          <div className="flex items-center justify-center gap-6 pt-4 grayscale opacity-60">
             {[
               { icon: LockKey, label: "Criptografado" },
               { icon: ShieldCheck, label: "CFM" },
               { icon: Clock, label: "24h" },
             ].map((item) => (
               <div key={item.label} className="flex flex-col items-center gap-1.5">
-                <item.icon className="w-4 h-4 text-muted-foreground/40" weight="fill" />
-                <span className="text-[10px] text-muted-foreground/50 font-medium">{item.label}</span>
+                <item.icon className="w-4 h-4 text-muted-foreground" weight="fill" />
+                <span className="text-[10px] text-muted-foreground font-medium">{item.label}</span>
               </div>
             ))}
           </div>
@@ -436,12 +433,15 @@ const AuthPaciente = () => {
             Voltar
           </button>
 
-          <div className="mb-6">
-            <h2 className="text-[28px] font-extrabold text-foreground tracking-tight">
-              Entrar na sua conta
+          <div className="mb-8 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4 ring-1 ring-primary/20">
+              <SignIn className="w-8 h-8 text-primary" weight="bold" />
+            </div>
+            <h2 className="text-[32px] font-black text-foreground tracking-tight leading-tight">
+              Acesse sua conta
             </h2>
-            <p className="text-muted-foreground mt-1">
-              Digite suas credenciais para continuar
+            <p className="text-muted-foreground mt-2 text-base">
+              Bem-vindo de volta! Sentimos sua falta.
             </p>
           </div>
 
@@ -451,43 +451,43 @@ const AuthPaciente = () => {
             animate={shake ? { x: [0, -12, 12, -8, 8, 0] } : {}}
             transition={{ duration: 0.5 }}
           >
-            <div>
-              <Label className="text-sm font-semibold text-foreground">Email</Label>
-              <div className="relative mt-1.5">
-                <Envelope className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground/60" weight="fill" />
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-foreground ml-1">Email</Label>
+              <div className="relative group">
+                <Envelope className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/50 group-focus-within:text-primary transition-colors" weight="fill" />
                 <Input
                   ref={emailRef}
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="pl-11 h-[52px] rounded-2xl bg-card border-border/60 shadow-sm focus-visible:shadow-[0_0_0_3px_hsl(var(--primary)/0.15)] focus-visible:border-primary/40 text-[15px]"
+                  className="pl-12 h-14 rounded-2xl bg-muted/30 border-border/40 shadow-none focus-visible:bg-background focus-visible:ring-primary/20 focus-visible:border-primary/50 text-base transition-all"
                   required
                 />
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-semibold text-foreground">Senha</Label>
-                <Link to="/forgot-password" className="text-[13px] font-semibold text-primary hover:underline">
-                  Esqueci minha senha
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-1">
+                <Label className="text-sm font-bold text-foreground">Senha</Label>
+                <Link to="/forgot-password" className="text-[13px] font-bold text-primary hover:text-primary/80 transition-colors">
+                  Esqueceu a senha?
                 </Link>
               </div>
-              <div className="relative mt-1.5">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground/60" weight="fill" />
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/50 group-focus-within:text-primary transition-colors" weight="fill" />
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pl-11 pr-11 h-[52px] rounded-2xl bg-card border-border/60 shadow-sm focus-visible:shadow-[0_0_0_3px_hsl(var(--primary)/0.15)] focus-visible:border-primary/40 text-[15px]"
+                  className="pl-12 pr-12 h-14 rounded-2xl bg-muted/30 border-border/40 shadow-none focus-visible:bg-background focus-visible:ring-primary/20 focus-visible:border-primary/50 text-base transition-all"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/30 hover:text-foreground transition-colors p-1"
                 >
                   {showPassword ? <EyeSlash className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -496,15 +496,19 @@ const AuthPaciente = () => {
 
             <Button
               type="submit"
-              className="w-full h-[52px] rounded-2xl bg-gradient-to-r from-primary to-primary/90 text-primary-foreground font-bold text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition-all"
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-base shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all"
               size="lg"
               disabled={loading}
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <SpinnerGap className="w-5 h-5 animate-spin" /> Entrando...
+                  <SpinnerGap className="w-5 h-5 animate-spin" /> Acessando...
                 </span>
-              ) : "Entrar"}
+              ) : (
+                <span className="flex items-center gap-2">
+                  Entrar no portal <SignIn className="w-5 h-5" weight="bold" />
+                </span>
+              )}
             </Button>
           </motion.form>
 
@@ -522,12 +526,19 @@ const AuthPaciente = () => {
             ))}
           </div>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            Não tem conta?{" "}
-            <button type="button" onClick={() => setMode("signup")} className="text-primary font-bold hover:underline">
-              Cadastre-se grátis
-            </button>
-          </p>
+          <div className="text-center space-y-4 mt-10">
+            <p className="text-sm text-muted-foreground">
+              Ainda não tem uma conta?
+            </p>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setMode("signup")} 
+              className="w-full h-12 rounded-xl border-primary/20 text-primary font-bold hover:bg-primary/5 hover:border-primary/40 transition-all"
+            >
+              Começar agora — É grátis
+            </Button>
+          </div>
         </motion.div>
       )}
 
@@ -912,53 +923,49 @@ const AuthPaciente = () => {
       <LeftPanel />
 
       {/* Mobile hero — inline to avoid remount */}
-      <div className="lg:hidden relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-secondary px-5 pt-[max(env(safe-area-inset-top,16px),16px)] pb-6">
-        <div className="absolute top-[-30%] right-[-15%] w-[250px] h-[250px] rounded-full bg-white/[0.06] blur-[80px]" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[180px] h-[180px] rounded-full bg-secondary/20 blur-[60px]" />
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            {mode !== "welcome" && (
-              <button
-                type="button"
-                onClick={() => mode === "signup" && signupStep > 1 ? setSignupStep(s => s - 1) : setMode("welcome")}
-                className="text-white/70 hover:text-white transition-colors mr-1"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            )}
-            <img src={logo} alt="AloClínica" className="w-8 h-8 rounded-xl ring-2 ring-white/20" />
-            <div>
-              <h1 className="text-lg font-black text-white tracking-tight leading-none">AloClínica</h1>
-              <p className="text-[10px] text-white/50 mt-0.5">Telemedicina de excelência</p>
-            </div>
+      <div className="lg:hidden relative overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary px-6 pt-10 pb-10 rounded-b-[40px] shadow-2xl shadow-primary/20">
+        <div className="absolute top-[-30%] right-[-15%] w-[300px] h-[300px] rounded-full bg-white/[0.1] blur-[80px]" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-[200px] h-[200px] rounded-full bg-secondary/30 blur-[60px]" />
+        
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="flex items-center gap-3 mb-6">
+            <img src={logo} alt="AloClínica" className="w-10 h-10 rounded-xl ring-2 ring-white/30 shadow-lg" />
+            <h1 className="text-2xl font-black text-white tracking-tight">AloClínica</h1>
           </div>
+          
           <motion.img
             src={mascotWave}
             alt="Pingo"
-            className="w-[70px] h-[70px] object-contain select-none"
-            style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,50,.25))" }}
-            animate={{ y: [0, -4, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-32 h-32 object-contain select-none mb-4"
+            style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,50,.3))" }}
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
+          
+          <h2 className="text-xl font-bold text-white leading-tight">
+            Sua saúde em <br /> boas mãos
+          </h2>
+          <p className="text-white/60 text-sm mt-2 font-medium">
+            Telemedicina 24h sem filas
+          </p>
         </div>
-         {mode === "welcome" && (
-          <div className="relative z-10 mt-3 flex items-center justify-between">
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-white/70 text-sm"
-            >
-              Sua saúde em boas mãos 💙
-            </motion.p>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1 text-white/60 hover:text-white transition-colors text-xs font-medium"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Início
-            </Link>
-          </div>
+
+        {mode !== "welcome" && (
+          <button
+            type="button"
+            onClick={() => mode === "signup" && signupStep > 1 ? setSignupStep(s => s - 1) : setMode("welcome")}
+            className="absolute top-8 left-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20 active:scale-95 transition-all"
+          >
+            <ArrowLeft className="w-5 h-5" weight="bold" />
+          </button>
         )}
+        
+        <Link
+          to="/"
+          className="absolute top-8 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20 active:scale-95 transition-all"
+        >
+          <SignIn className="w-5 h-5" weight="bold" />
+        </Link>
       </div>
 
       {/* Right / main form area */}
