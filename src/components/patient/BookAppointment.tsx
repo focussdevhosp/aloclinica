@@ -106,6 +106,12 @@ const BookAppointment = () => {
   const [cardCvv, setCardCvv] = useState("");
   const [cardDiscount, setCardDiscount] = useState(0);
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponLoading, setCouponLoading] = useState(false);
+
   const currentStep = paymentStep ? 3 : !selectedDate ? 0 : !selectedTime ? 1 : 2;
 
   useEffect(() => {
