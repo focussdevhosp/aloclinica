@@ -78,6 +78,8 @@ export function PingoAssistantChat() {
     setInput("");
 
     const userMsg: Msg = { role: "user", content: text };
+    const currentMessages = [...messages, userMsg];
+
     setLastUserMessage(text);
     setHasError(false);
     setMessages(prev => [...prev, userMsg]);
@@ -95,7 +97,7 @@ export function PingoAssistantChat() {
       });
     };
 
-    const performRequest = async (retryCount = 0): Promise<void> => {
+    const performRequest = async (retryCount = 0, msgsToSend = currentMessages): Promise<void> => {
       try {
         const resp = await fetch(`${SUPABASE_FUNCTIONS_URL}/pingo-chat`, {
           method: "POST",
@@ -104,12 +106,16 @@ export function PingoAssistantChat() {
             Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            messages: [...messages, userMsg],
+            messages: msgsToSend,
             role: "patient",
           }),
         });
 
-        if (!resp.ok) throw new Error(resp.status === 429 ? "rate_limit" : "api_error");
+        if (!resp.ok) {
+          const errText = await resp.text().catch(() => "");
+          console.error(`Pingo Chat error: ${resp.status}`, errText);
+          throw new Error(resp.status === 429 ? "rate_limit" : "api_error");
+        }
 
         if (!resp.body) throw new Error("Sem resposta");
         const reader = resp.body.getReader();
@@ -126,10 +132,12 @@ export function PingoAssistantChat() {
             buffer = buffer.slice(idx + 1);
             if (line.endsWith("\r")) line = line.slice(0, -1);
             if (!line.startsWith("data: ")) continue;
-            const json = line.slice(6).trim();
-            if (json === "[DONE]") break;
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === "[DONE]") break;
+            if (!jsonStr) continue;
+
             try {
-              const parsed = JSON.parse(json);
+              const parsed = JSON.parse(jsonStr);
               const content = parsed.choices?.[0]?.delta?.content;
               if (content) upsert(content);
             } catch {
@@ -139,7 +147,7 @@ export function PingoAssistantChat() {
           }
         }
       } catch (e: any) {
-        if (retryCount < 1) return performRequest(retryCount + 1);
+        if (retryCount < 1) return performRequest(retryCount + 1, msgsToSend);
         setHasError(true);
         logError("Pingo Assistant Chat error", e);
       }
