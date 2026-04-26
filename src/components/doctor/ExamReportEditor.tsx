@@ -33,7 +33,8 @@ import {
   Info, Clipboard, ListChecks, GitBranch, ImageIcon
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { gerarHashDocumento, gerarCodigoVerificacao } from "@/lib/signature";
+ import { gerarHashDocumento, gerarCodigoVerificacao } from "@/lib/signature";
+ import { useDigitalSignature } from "@/hooks/useDigitalSignature";
 import { REPORT_MACROS, findMacro, applyMacro } from "@/lib/report-macros";
 const TipTapEditor = lazy(() => import("@/components/telelaudo/TipTapEditor"));
 import jsPDF from "jspdf";
