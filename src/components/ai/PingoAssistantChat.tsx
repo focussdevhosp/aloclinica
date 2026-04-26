@@ -78,6 +78,8 @@ export function PingoAssistantChat() {
     setInput("");
 
     const userMsg: Msg = { role: "user", content: text };
+    const currentMessages = [...messages, userMsg];
+
     setLastUserMessage(text);
     setHasError(false);
     setMessages(prev => [...prev, userMsg]);
@@ -104,7 +106,7 @@ export function PingoAssistantChat() {
             Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            messages: [...messages, userMsg],
+            messages: currentMessages,
             role: "patient",
           }),
         });
