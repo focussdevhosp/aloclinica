@@ -290,6 +290,28 @@ const PostConsultationSummary = ({
             </Button>
           )}
 
+          {!isDoctor && doctorIdRaw && (
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/dashboard/schedule/${doctorIdRaw}?return=true&original=${appointmentId}`)}
+              className="w-full h-12 rounded-xl font-semibold gap-2 border-warning/30 text-warning hover:bg-warning/5 hover:text-warning"
+            >
+              <CalendarPlus className="w-5 h-5" />
+              Agendar retorno (50% off)
+            </Button>
+          )}
+
+          {!isDoctor && hasPrescription && (
+            <Button
+              variant="ghost"
+              onClick={() => navigate(`/dashboard/patient/prescriptions?appt=${appointmentId}`)}
+              className="w-full h-11 rounded-xl text-sm gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Ver e baixar receita
+            </Button>
+          )}
+
           <Button
             onClick={onContinue}
             variant={(!isDoctor && !ratingDone) || (isDoctor && !hasPrescription) ? "outline" : "default"}
