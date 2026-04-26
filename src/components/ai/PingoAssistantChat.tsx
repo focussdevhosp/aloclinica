@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { PingoMascot } from "@/components/mascot/PingoMascot";
-import { AI_URL } from "@/lib/ai";
+import { SUPABASE_FUNCTIONS_URL } from "@/lib/supabase-config";
 import { SUPABASE_PUBLISHABLE_KEY } from "@/lib/supabase-config";
 import { logError } from "@/lib/logger";
 import { cn } from "@/lib/utils";
@@ -97,7 +97,7 @@ export function PingoAssistantChat() {
 
     const performRequest = async (retryCount = 0): Promise<void> => {
       try {
-        const resp = await fetch(AI_URL, {
+        const resp = await fetch(`${SUPABASE_FUNCTIONS_URL}/pingo-chat`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
