@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -17,6 +17,11 @@ import {
   Heart,
   QrCode,
   Gift,
+  Calculator,
+  Quotes,
+  Star,
+  Crown,
+  Rocket,
 } from "@phosphor-icons/react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -26,6 +31,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { Card, CardContent } from "@/components/ui/card";
 import { db } from "@/integrations/supabase/untyped";
 import pingoEmpresa from "@/assets/pingo-medico-ferramentas.png";
 import pingoCardHero from "@/assets/pingo-card-hero.png";
@@ -100,6 +107,110 @@ const ParaEmpresas = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [employees, setEmployees] = useState<number>(50);
+
+  const formatBRL = (v: number) =>
+    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+
+  const roi = useMemo(() => {
+    // estimativas conservadoras
+    const planoTradicionalPerHead = 280;
+    const aloPerHead = 49;
+    const traditional = employees * planoTradicionalPerHead;
+    const alo = employees * aloPerHead;
+    const monthlySaving = traditional - alo;
+    const yearlySaving = monthlySaving * 12;
+    const productivityGain = employees * 35; // R$/mês economizados em faltas
+    return {
+      traditional,
+      alo,
+      monthlySaving,
+      yearlySaving,
+      productivityGain,
+      total: yearlySaving + productivityGain * 12,
+    };
+  }, [employees]);
+
+  const corporatePlans = [
+    {
+      name: "Starter",
+      tagline: "Times pequenos",
+      icon: Rocket,
+      employees: "Até 30 colaboradores",
+      price: 49,
+      color: "from-emerald-500 to-teal-500",
+      ringColor: "ring-emerald-200",
+      features: [
+        "Teleconsulta 24h ilimitada",
+        "Pingo Card incluso",
+        "App mobile + painel RH",
+        "Suporte por chat",
+      ],
+    },
+    {
+      name: "Business",
+      tagline: "O mais escolhido",
+      icon: Star,
+      employees: "31 a 200 colaboradores",
+      price: 39,
+      color: "from-primary to-blue-600",
+      ringColor: "ring-primary/30",
+      highlight: true,
+      features: [
+        "Tudo do Starter +",
+        "30+ especialidades médicas",
+        "Dependentes inclusos",
+        "Gerente de conta dedicado",
+        "Relatórios avançados de ROI",
+      ],
+    },
+    {
+      name: "Enterprise",
+      tagline: "Grandes corporações",
+      icon: Crown,
+      employees: "200+ colaboradores",
+      price: null,
+      color: "from-violet-600 to-fuchsia-600",
+      ringColor: "ring-violet-200",
+      features: [
+        "Tudo do Business +",
+        "Integração com RH/folha",
+        "SLA personalizado",
+        "Programas de bem-estar",
+        "Atendimento white-label",
+      ],
+    },
+  ];
+
+  const cases = [
+    {
+      company: "TechHub Brasil",
+      logo: "TH",
+      employees: "180 colaboradores",
+      saved: "R$ 420 mil/ano",
+      text: "Reduzimos em 65% nossos custos com saúde e nossos colaboradores adoraram a praticidade do atendimento online.",
+      author: "Carla Mendes — Diretora de RH",
+      color: "from-emerald-500/15 to-teal-500/10",
+    },
+    {
+      company: "Logística Norte",
+      logo: "LN",
+      employees: "320 colaboradores",
+      saved: "R$ 780 mil/ano",
+      text: "Nossos motoristas conseguem atendimento médico em qualquer lugar do Brasil. Diminuímos em 40% as faltas por consulta.",
+      author: "Roberto Lima — CEO",
+      color: "from-amber-500/15 to-orange-500/10",
+    },
+    {
+      company: "Indústria Sul",
+      logo: "IS",
+      employees: "560 colaboradores",
+      saved: "R$ 1.2M/ano",
+      text: "O painel de gestão nos dá visibilidade total. O ROI no primeiro ano superou 380% — e a satisfação do time disparou.",
+      author: "Patrícia Souza — Gerente de Pessoas",
+      color: "from-violet-500/15 to-fuchsia-500/10",
+    },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -308,6 +419,193 @@ const ParaEmpresas = () => {
                 </div>
                 <h3 className="text-base font-bold text-foreground mb-1">{b.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CALCULADORA DE ROI */}
+      <section className="py-12 md:py-20 px-4 bg-gradient-to-br from-emerald-50 via-background to-primary/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full mb-4">
+              <Calculator className="w-3.5 h-3.5" weight="fill" /> SIMULADOR DE ROI
+            </span>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-foreground mb-3 tracking-tight">
+              Quanto sua empresa pode economizar?
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Compare o custo de um plano tradicional com a AloClínica e veja seu retorno em tempo real.
+            </p>
+          </div>
+
+          <Card className="border-2 shadow-2xl overflow-hidden">
+            <CardContent className="p-6 md:p-10">
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-sm font-bold flex items-center gap-2">
+                    <Users className="w-4 h-4 text-primary" weight="fill" />
+                    Número de colaboradores
+                  </Label>
+                  <span className="text-3xl font-extrabold text-primary tabular-nums">{employees}</span>
+                </div>
+                <Slider value={[employees]} onValueChange={([v]) => setEmployees(v)} min={10} max={1000} step={10} />
+                <div className="flex justify-between text-[10px] text-muted-foreground mt-2 font-medium">
+                  <span>10</span>
+                  <span>500</span>
+                  <span>1000+</span>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                <div className="rounded-2xl bg-muted/40 p-5 border-2 border-border">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">Plano tradicional</p>
+                  <p className="text-2xl font-extrabold text-foreground/70 line-through decoration-rose-500/60">{formatBRL(roi.traditional)}/mês</p>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-5 text-primary-foreground">
+                  <p className="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-1">Com AloClínica</p>
+                  <p className="text-2xl font-extrabold">{formatBRL(roi.alo)}/mês</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 md:p-8 text-white text-center">
+                <p className="text-xs uppercase tracking-widest opacity-80 font-bold mb-2">Economia estimada em 12 meses</p>
+                <p className="text-4xl md:text-6xl font-extrabold mb-2 tabular-nums">{formatBRL(roi.yearlySaving)}</p>
+                <p className="text-xs opacity-90">+ ganho de produtividade estimado em {formatBRL(roi.productivityGain * 12)}/ano</p>
+                <Button size="lg" className="mt-5 bg-white text-emerald-700 hover:bg-white/90 font-bold" asChild>
+                  <a href="#solicitar-proposta">
+                    Solicitar proposta com esses números <ArrowRight className="ml-2 w-4 h-4" weight="bold" />
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* PLANOS CORPORATIVOS */}
+      <section className="py-12 md:py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10 md:mb-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full mb-4">
+              <Buildings className="w-3.5 h-3.5" weight="fill" /> PLANOS CORPORATIVOS
+            </span>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-foreground mb-3 tracking-tight">
+              Um plano para cada tamanho de empresa
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Sem letras miúdas, sem fidelidade longa. Cresce com você.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
+            {corporatePlans.map((plan, i) => {
+              const Icon = plan.icon;
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={plan.highlight ? "md:-mt-4" : ""}
+                >
+                  <Card className={`h-full relative overflow-hidden border-2 transition-all hover:shadow-2xl ${plan.highlight ? "border-primary shadow-xl" : "hover:border-primary/30"}`}>
+                    {plan.highlight && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-r from-primary to-blue-600 text-primary-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-xl">
+                        Mais popular
+                      </div>
+                    )}
+                    <CardContent className="p-6 md:p-7">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-4 shadow-lg`}>
+                        <Icon className="w-6 h-6 text-white" weight="fill" />
+                      </div>
+                      <h3 className="text-xl font-extrabold mb-1">{plan.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-1">{plan.tagline}</p>
+                      <p className="text-[11px] font-semibold text-primary uppercase tracking-wider mb-5">{plan.employees}</p>
+
+                      <div className="mb-6 pb-5 border-b border-border/60">
+                        {plan.price ? (
+                          <>
+                            <span className="text-4xl font-extrabold tracking-tight">{formatBRL(plan.price)}</span>
+                            <span className="text-sm text-muted-foreground"> /colaborador/mês</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-3xl font-extrabold tracking-tight">Sob consulta</span>
+                            <p className="text-xs text-muted-foreground mt-1">Proposta personalizada</p>
+                          </>
+                        )}
+                      </div>
+
+                      <ul className="space-y-2.5 mb-6">
+                        {plan.features.map((f, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" weight="fill" />
+                            <span className="text-foreground/90">{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button asChild className={`w-full font-bold ${plan.highlight ? "" : ""}`} variant={plan.highlight ? "default" : "outline"}>
+                        <a href="#solicitar-proposta">{plan.price ? "Solicitar proposta" : "Falar com vendas"}</a>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CASOS DE EMPRESAS */}
+      <section className="py-12 md:py-20 px-4 bg-muted/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10 md:mb-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-700 bg-amber-100 px-3 py-1 rounded-full mb-4">
+              <Quotes className="w-3.5 h-3.5" weight="fill" /> CASOS REAIS
+            </span>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-foreground mb-3 tracking-tight">
+              Empresas que economizam com a gente
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Veja como times de todos os tamanhos transformaram a saúde corporativa.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
+            {cases.map((c, i) => (
+              <motion.div
+                key={c.company}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className={`h-full relative overflow-hidden border-2 hover:shadow-xl transition-all bg-gradient-to-br ${c.color}`}>
+                  <CardContent className="p-6 md:p-7">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-card border-2 border-border flex items-center justify-center font-extrabold text-foreground shadow-sm">
+                        {c.logo}
+                      </div>
+                      <div>
+                        <h3 className="font-extrabold text-base">{c.company}</h3>
+                        <p className="text-[11px] text-muted-foreground font-medium">{c.employees}</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-card rounded-xl p-3 mb-4 border border-border/50">
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Economia anual</p>
+                      <p className="text-xl font-extrabold text-emerald-600">{c.saved}</p>
+                    </div>
+
+                    <Quotes className="w-6 h-6 text-primary/30 mb-2" weight="fill" />
+                    <p className="text-sm text-foreground/85 leading-relaxed mb-4">"{c.text}"</p>
+                    <p className="text-xs font-semibold text-foreground/70 pt-3 border-t border-border/40">{c.author}</p>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
           </div>
