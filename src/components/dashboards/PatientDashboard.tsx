@@ -64,9 +64,6 @@ const getQuickActions = (serviceType: ServiceType) => {
   if (serviceType === "oftalmologia") {
     return [baseActions.agendar, baseActions.exames, baseActions.docs];
   }
-  if (serviceType === "cartao") {
-    return [baseActions.agendar];
-  }
   // "all" - show everything
   return [baseActions.agendar, baseActions.urgencia, baseActions.exames, baseActions.receitas, baseActions.docs];
 };
@@ -127,7 +124,6 @@ const SERVICE_SECTIONS = {
     returnAppts: true,
     healthMetrics: true,
     healthTip: true,
-    benefitsCard: false,
     activePrescriptions: true,
   },
   oftalmologia: {
@@ -139,19 +135,6 @@ const SERVICE_SECTIONS = {
     returnAppts: true,
     healthMetrics: false,
     healthTip: false,
-    benefitsCard: false,
-    activePrescriptions: false,
-  },
-  cartao: {
-    heroActions: true,
-    pendingAppt: false,
-    nextAppt: false,
-    quickActions: false,
-    kpis: false,
-    returnAppts: false,
-    healthMetrics: false,
-    healthTip: false,
-    benefitsCard: true,
     activePrescriptions: false,
   },
   all: {
@@ -163,7 +146,6 @@ const SERVICE_SECTIONS = {
     returnAppts: true,
     healthMetrics: true,
     healthTip: true,
-    benefitsCard: true,
     activePrescriptions: true,
   },
 };
