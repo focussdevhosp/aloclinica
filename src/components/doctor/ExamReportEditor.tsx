@@ -33,7 +33,8 @@ import {
   Info, Clipboard, ListChecks, GitBranch, ImageIcon
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { gerarHashDocumento, gerarCodigoVerificacao } from "@/lib/signature";
+ import { gerarHashDocumento, gerarCodigoVerificacao } from "@/lib/signature";
+ import { useDigitalSignature } from "@/hooks/useDigitalSignature";
 import { REPORT_MACROS, findMacro, applyMacro } from "@/lib/report-macros";
 const TipTapEditor = lazy(() => import("@/components/telelaudo/TipTapEditor"));
 import jsPDF from "jspdf";
@@ -1083,7 +1084,8 @@ const PacsViewer = ({
 // ==================== MAIN EDITOR ====================
 const ExamReportEditor = () => {
   const { examId } = useParams<{ examId: string }>();
-  const { user } = useAuth();
+   const { user, profile: userProfile } = useAuth();
+   const { signPrescription: signDocument, validateCertificateCPF, signing: signingDigital, isValidating, error: signError } = useDigitalSignature();
   const navigate = useNavigate();
   const location = useLocation();
   const isLaudista = location.pathname.includes("/laudista/");
@@ -1092,7 +1094,8 @@ const ExamReportEditor = () => {
 
   const [content, setContent] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [signing, setSigning] = useState(false);
+   const [localSigning, setLocalSigning] = useState(false);
+   const signing = localSigning || signingDigital || isValidating;
   const [fileUrls, setFileUrls] = useState<string[]>([]);
   const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1429,10 +1432,22 @@ const ExamReportEditor = () => {
   };
 
   // ---- Sign (actual logic, called from AlertDialog confirm) ----
-  const executeSignAndFinalize = async () => {
-    if (!doctorProfile?.id || !content.trim()) { toast.error("Preencha o laudo antes de assinar."); return; }
-
-    setSigning(true);
+   const executeSignAndFinalize = async () => {
+     if (!doctorProfile?.id || !content.trim()) { toast.error("Preencha o laudo antes de assinar."); return; }
+ 
+     // REGRA DE NEGÓCIO: Validar CPF do Certificado Digital (e-CPF) contra o CRM
+     if (userProfile?.cpf) {
+       const isCpfValid = await validateCertificateCPF(userProfile.cpf);
+       if (!isCpfValid) {
+         toast.error(signError || "CPF do certificado não confere com o CRM.");
+         return;
+       }
+     } else {
+       toast.error("CPF do médico não encontrado no CRM. Atualize seu perfil.");
+       return;
+     }
+ 
+     setLocalSigning(true);
     try {
       const contentForPdf = content
         .replace(/<h[1-3][^>]*>/gi, "\n")
@@ -1449,7 +1464,7 @@ const ExamReportEditor = () => {
         .replace(/\n{3,}/g, "\n\n").trim();
       const documentHash = await gerarHashDocumento(contentForPdf);
       const verificationCode = gerarCodigoVerificacao();
-      const doctorName = `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim();
+       const doctorName = `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`.trim();
       const patientDisplayName = examRequest?.patient_name || "Paciente";
 
       // ============ GENERATE PROFESSIONAL CLINICAL PDF ============
@@ -1826,7 +1841,7 @@ const ExamReportEditor = () => {
       navigate(backRoute);
     } catch (err: unknown) {
       toast.error("Erro ao assinar", { description: err instanceof Error ? err.message : "Erro desconhecido" });
-    } finally { setSigning(false); }
+     } finally { setLocalSigning(false); }
   };
 
   // ---- Keyboard shortcuts ----

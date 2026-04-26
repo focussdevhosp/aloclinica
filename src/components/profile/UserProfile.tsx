@@ -349,12 +349,21 @@ const UserProfile = () => {
                   <span className="text-xs font-semibold text-foreground font-mono">***.***.***-{cpf.replace(/\D/g, "").slice(-2)}</span>
                 </div>
               )}
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Status KYC</span>
-                <span className={`text-xs font-bold ${kycVerified ? "text-emerald-500" : "text-amber-500"}`}>
-                  {kycVerified ? "✓ Verificado" : "⚠ Pendente"}
-                </span>
-              </div>
+               <div className="flex items-center justify-between">
+                 <span className="text-xs text-muted-foreground">Status KYC</span>
+                 <span className={`text-xs font-bold ${kycVerified ? "text-emerald-500" : "text-amber-500"}`}>
+                   {kycVerified ? "✓ Verificado" : "⚠ Pendente"}
+                 </span>
+               </div>
+               {isDoctor && (
+                 <div className="flex items-center justify-between border-t border-border/10 pt-3 mt-1">
+                   <span className="text-xs text-muted-foreground">Assinatura Digital</span>
+                   <div className="flex items-center gap-1.5">
+                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                     <span className="text-xs font-bold text-emerald-500">e-CPF Ativo</span>
+                   </div>
+                 </div>
+               )}
             </div>
           </motion.div>
 
