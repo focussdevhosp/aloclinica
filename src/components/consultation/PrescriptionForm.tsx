@@ -111,7 +111,11 @@ const PrescriptionForm = () => {
     const prescriptionId = `RX-${format(now, "yyyyMMdd")}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     // ─── Header ───
-    doc.setFillColor(26, 111, 196);
+    // Cores AloClínica (Azul Marinho e Ouro Suave para acentos)
+    const primaryBlue = [21, 35, 75]; // #15234B
+    const accentGold = [197, 165, 114]; // #C5A572
+    
+    doc.setFillColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.rect(0, 0, pageWidth, 28, "F");
 
     doc.setFontSize(18);
@@ -139,33 +143,38 @@ const PrescriptionForm = () => {
      // ─── Platform ID ───
      doc.setFontSize(7);
      doc.setTextColor(200, 200, 200);
-     doc.text("Emitido por Aloclinica - CNPJ 42.123.456/0001-78", 15, 25);
+     doc.text("Documento médico oficial gerado via plataforma AloClínica", 15, 25);
+     
+     // Linha decorativa fina abaixo do header
+     doc.setDrawColor(accentGold[0], accentGold[1], accentGold[2]);
+     doc.setLineWidth(0.8);
+     doc.line(0, 28, pageWidth, 28);
  
     // ─── Doctor & Patient info boxes ───
     let y = 36;
 
     // Doctor box
-    doc.setFillColor(240, 246, 255);
+    doc.setFillColor(248, 250, 252);
     doc.roundedRect(15, y, pageWidth / 2 - 20, 28, 3, 3, "F");
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setTextColor(100, 100, 100);
     doc.text("MÉDICO RESPONSÁVEL", 19, y + 6);
-    doc.setFontSize(11);
-    doc.setTextColor(30, 30, 30);
-    doc.text(`Dr(a). ${doctorInfo?.first_name} ${doctorInfo?.last_name}`, 19, y + 14);
+    doc.setFontSize(10);
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.text(`${doctorInfo?.first_name} ${doctorInfo?.last_name}`, 19, y + 14);
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
     doc.text(`CRM: ${doctorInfo?.crm}/${doctorInfo?.crm_state}`, 19, y + 21);
 
     // Patient box
     const patientBoxX = pageWidth / 2 + 5;
-    doc.setFillColor(240, 255, 240);
+    doc.setFillColor(248, 250, 252);
     doc.roundedRect(patientBoxX, y, pageWidth / 2 - 20, 28, 3, 3, "F");
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setTextColor(100, 100, 100);
     doc.text("PACIENTE", patientBoxX + 4, y + 6);
-    doc.setFontSize(11);
-    doc.setTextColor(30, 30, 30);
+    doc.setFontSize(10);
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.text(patientName, patientBoxX + 4, y + 14);
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
