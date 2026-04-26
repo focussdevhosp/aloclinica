@@ -1085,7 +1085,7 @@ const PacsViewer = ({
 const ExamReportEditor = () => {
   const { examId } = useParams<{ examId: string }>();
    const { user, profile: userProfile } = useAuth();
-   const { signPrescription: signDocument, signing: signingDigital, isValidating, error: signError } = useDigitalSignature();
+   const { signPrescription: signDocument, validateCertificateCPF, signing: signingDigital, isValidating, error: signError } = useDigitalSignature();
   const navigate = useNavigate();
   const location = useLocation();
   const isLaudista = location.pathname.includes("/laudista/");
