@@ -187,98 +187,29 @@ const DoctorDashboard = () => {
 
       <motion.div variants={fadeUp} className="mt-5 md:mt-5 space-y-5 pb-24 md:pb-8">
 
-        {/* Online Status Toggle */}
-        <motion.div
-          variants={fadeUp}
-          className="rounded-2xl border border-border/20 bg-gradient-to-r from-card to-muted/20 p-4 flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "relative flex h-12 w-12 items-center justify-center rounded-xl",
-              isOnline
-                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                : "bg-muted text-muted-foreground"
-            )}>
-              <div className={cn(
-                "h-2.5 w-2.5 rounded-full",
-                isOnline && "bg-emerald-500 animate-pulse"
-              )} />
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Status de Plantão</p>
-              <p className="font-bold text-foreground">{isOnline ? "🟢 Online" : "🔴 Offline"}</p>
-            </div>
-          </div>
-          <Button
-            size="sm"
-            onClick={handleToggleOnline}
-            disabled={onlineLoading}
-            className={cn(
-              "rounded-full h-9 px-4 font-bold text-xs",
-              isOnline
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : "bg-muted text-foreground hover:bg-muted"
-            )}
-          >
-            {onlineLoading ? "Atualizando..." : isOnline ? "🟢 Online" : "🔴 Ativar"}
-          </Button>
+        {/* Command Center: Plantão + Próxima + Fila */}
+        <motion.div variants={fadeUp}>
+          <DoctorCommandCenter
+            isOnline={isOnline}
+            onlineLoading={onlineLoading}
+            onToggleOnline={handleToggleOnline}
+            waitingCount={waitingCount}
+            nextAppt={upcomingAppts[0] ?? (todayAppts.find(a => a.status === "scheduled" || a.status === "waiting"))}
+            onEnterRoom={(id) => navigate(`/dashboard/doctor/waiting-room?appt=${id}`)}
+            onSeeQueue={() => navigate("/dashboard/doctor/waiting-room")}
+          />
         </motion.div>
 
-        {/* Next Appointment Card with Countdown */}
-        {upcomingAppts.length > 0 && (
-          <motion.div
-            variants={fadeUp}
-            className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-primary/3 to-transparent p-5 overflow-hidden relative"
-          >
-            <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-primary/10 blur-3xl opacity-40" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Clock className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Próxima Consulta</span>
-                </div>
-              </div>
-              {(() => {
-                const nextAppt = upcomingAppts[0];
-                const scheduledTime = new Date(nextAppt.scheduled_at);
-                const now = new Date();
-                const hoursUntil = differenceInHours(scheduledTime, now);
-                const minutesUntil = differenceInMinutes(scheduledTime, now);
-
-                return (
-                  <div className="space-y-3">
-                    <div>
-                      <p className="font-bold text-lg text-foreground">{nextAppt.patient_name}</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {format(scheduledTime, "dd 'de' MMMM · HH:mm", { locale: ptBR })} ({nextAppt.duration_minutes || 30}min)
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-primary/10 rounded-lg p-2 text-center">
-                        <p className="text-xs text-muted-foreground font-medium">Começará em</p>
-                        <p className="text-lg font-bold text-primary">
-                          {minutesUntil < 60 ? `${minutesUntil}min` : `${hoursUntil}h`}
-                        </p>
-                      </div>
-                      <div className="bg-emerald-500/10 rounded-lg p-2 text-center">
-                        <p className="text-xs text-muted-foreground font-medium">Status</p>
-                        <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">Pronta</p>
-                      </div>
-                    </div>
-                    <Button
-                      className="w-full rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90"
-                      onClick={() => navigate(`/dashboard/doctor/waiting-room?appt=${nextAppt.id}`)}
-                    >
-                      <Video className="h-4 w-4 mr-2" /> Preparar Sala
-                    </Button>
-                  </div>
-                );
-              })()}
-            </div>
-          </motion.div>
-        )}
+        {/* Smart Insights */}
+        <motion.div variants={fadeUp}>
+          <DoctorSmartInsights
+            waitingCount={waitingCount}
+            todayTotal={todayAppts.length}
+            done={done}
+            inProgress={inProg}
+            rating={data?.rating}
+          />
+        </motion.div>
 
         {/* Action pills */}
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-1.5 border border-border/10 shadow-sm">
@@ -314,6 +245,13 @@ const DoctorDashboard = () => {
 
           {/* LEFT */}
           <div className="space-y-5">
+            {/* Weekly pulse */}
+            <DoctorWeeklyPulse
+              series={(data as any)?.weekSeries ?? []}
+              loading={loading}
+              onClick={() => navigate("/dashboard/doctor/analytics")}
+            />
+
             {/* Stats bento */}
             <StatBento loading={loading} stats={[
               { label: "Consultas hoje",  value: stats.today,          icon: "🩺", iconBg: "bg-emerald-50 dark:bg-emerald-950/30", valueClass: "text-emerald-700 dark:text-emerald-400",  accentClass: "bg-emerald-500", trend: 8 },
