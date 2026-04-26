@@ -6,6 +6,7 @@ import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { getDoctorNav } from "./doctorNav";
 import { Users, FileText, ArrowLeft, Search, MoreVertical } from "lucide-react";
 
