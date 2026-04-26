@@ -246,58 +246,112 @@ const DoctorAvailability = () => {
           </CardContent>
         </Card>
 
-        {/* Day-off / Absence management */}
-        <Card className="border-border mb-6">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <CalendarOff className="w-4 h-4 text-destructive" /> Folgas e Ausências
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-3 items-end mb-4">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Data</p>
-                <Input
-                  type="date"
-                  value={absenceDate}
-                  onChange={e => setAbsenceDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  className="h-11"
-                />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Motivo (opcional)</p>
-                <Input
-                  placeholder="Ex: Feriado, Congresso..."
-                  value={absenceReason}
-                  onChange={e => setAbsenceReason(e.target.value)}
-                  className="h-11"
-                />
-              </div>
-              <Button onClick={addAbsence} variant="outline" className="gap-1 h-11 border-destructive/30 text-destructive hover:bg-destructive/10">
-                <CalendarOff className="w-4 h-4" /> Marcar Folga
-              </Button>
+               {/* Day-off / Absence management */}
+               <div className="rounded-[28px] border border-border/40 bg-card/60 backdrop-blur-sm p-6">
+                 <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 mb-5 px-1 flex items-center gap-2">
+                   <CalendarOff className="w-3 h-3 text-destructive" /> Folgas e Ausências
+                 </p>
+                 <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-4 items-end mb-6">
+                   <div>
+                     <label className="text-[11px] font-bold text-muted-foreground px-1 mb-1.5 block uppercase">DATA</label>
+                     <Input
+                       type="date"
+                       value={absenceDate}
+                       onChange={e => setAbsenceDate(e.target.value)}
+                       min={new Date().toISOString().split("T")[0]}
+                       className="h-12 rounded-2xl border-border/50 bg-muted/30"
+                     />
+                   </div>
+                   <div className="flex-1">
+                     <label className="text-[11px] font-bold text-muted-foreground px-1 mb-1.5 block uppercase">MOTIVO</label>
+                     <Input
+                       placeholder="Ex: Feriado, Congresso..."
+                       value={absenceReason}
+                       onChange={e => setAbsenceReason(e.target.value)}
+                       className="h-12 rounded-2xl border-border/50 bg-muted/30"
+                     />
+                   </div>
+                   <Button onClick={addAbsence} variant="outline" className="h-12 rounded-2xl border-destructive/30 text-destructive hover:bg-destructive/10 font-bold text-[11px] px-6 gap-2">
+                     <CalendarOff className="w-4 h-4" /> MARCAR FOLGA
+                   </Button>
+                 </div>
+ 
+                 <div className="flex flex-wrap gap-2">
+                   <AnimatePresence>
+                     {absences.map((a, idx) => (
+                       <motion.div 
+                        key={a.id} 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="flex items-center gap-2 py-1.5 px-3.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-[11px] font-bold"
+                       >
+                         <CalendarOff className="w-3 h-3" />
+                         {format(parseISO(a.absence_date), "dd MMM", { locale: ptBR })}
+                         {a.reason && <span className="text-destructive/60 font-medium">({a.reason})</span>}
+                         <button onClick={() => removeAbsence(a.id)} className="ml-1 hover:scale-125 transition-transform">
+                           <Trash2 className="w-3 h-3" />
+                         </button>
+                       </motion.div>
+                     ))}
+                   </AnimatePresence>
+                   {absences.length === 0 && (
+                     <div className="w-full py-4 text-center border-2 border-dashed border-border/20 rounded-2xl">
+                        <p className="text-[11px] font-bold text-muted-foreground/50 uppercase tracking-widest">Nenhuma folga registrada</p>
+                     </div>
+                   )}
+                 </div>
+               </div>
             </div>
-
-            {absences.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {absences.map(a => (
-                  <Badge key={a.id} variant="outline" className="flex items-center gap-2 py-1.5 px-3 border-destructive/20 text-destructive">
-                    <CalendarOff className="w-3 h-3" />
-                    {format(parseISO(a.absence_date), "dd/MM/yyyy", { locale: ptBR })}
-                    {a.reason && <span className="text-muted-foreground font-normal">({a.reason})</span>}
-                    <button onClick={() => removeAbsence(a.id)} className="ml-1 hover:text-destructive">
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </Badge>
+ 
+            {/* RIGHT SIDE: Slots list */}
+            <div className="space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 px-1 flex items-center gap-2">
+                <CalendarDays className="w-3 h-3" /> Horários Ativos
+              </p>
+              
+              <AnimatePresence mode="popLayout">
+                {grouped.filter(g => g.slots.length > 0).map((g, gi) => (
+                  <motion.div 
+                    key={g.index}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: gi * 0.05 }}
+                    className="rounded-[24px] border border-border/40 bg-card/60 backdrop-blur-sm p-5 shadow-sm"
+                  >
+                    <h3 className="text-[12px] font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      {g.day}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {g.slots.map(s => (
+                        <div key={s.id} className="group flex items-center gap-2 py-1.5 px-3.5 rounded-xl border border-emerald-500/10 bg-emerald-500/5 text-emerald-700 dark:text-emerald-400 text-[11px] font-black shadow-sm">
+                          <Clock className="w-3 h-3 opacity-60" />
+                          {s.start_time.slice(0, 5)} — {s.end_time.slice(0, 5)}
+                          <button onClick={() => removeSlot(s.id)} className="ml-1 opacity-0 group-hover:opacity-100 hover:text-destructive hover:scale-125 transition-all">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
                 ))}
-              </div>
-            )}
-            {absences.length === 0 && (
-              <p className="text-xs text-muted-foreground">Nenhuma folga registrada.</p>
-            )}
-          </CardContent>
-        </Card>
+              </AnimatePresence>
+ 
+              {slots.length === 0 && !loading && (
+                <div className="rounded-[28px] border-2 border-dashed border-border/30 bg-muted/5 p-12 text-center">
+                  <Clock className="w-12 h-12 mx-auto text-muted-foreground/20 mb-4" />
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
+                    Clique em adicionar para<br />configurar seus horários
+                  </p>
+                </div>
+              )}
+            </div>
+         </div>
+       </div>
+     </DashboardLayout>
+   );
+ };
 
         {/* Slots list */}
         <div className="space-y-4">
