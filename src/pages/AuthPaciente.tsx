@@ -433,12 +433,15 @@ const AuthPaciente = () => {
             Voltar
           </button>
 
-          <div className="mb-6">
-            <h2 className="text-[28px] font-extrabold text-foreground tracking-tight">
-              Entrar na sua conta
+          <div className="mb-8 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4 ring-1 ring-primary/20">
+              <SignIn className="w-8 h-8 text-primary" weight="bold" />
+            </div>
+            <h2 className="text-[32px] font-black text-foreground tracking-tight leading-tight">
+              Acesse sua conta
             </h2>
-            <p className="text-muted-foreground mt-1">
-              Digite suas credenciais para continuar
+            <p className="text-muted-foreground mt-2 text-base">
+              Bem-vindo de volta! Sentimos sua falta.
             </p>
           </div>
 
