@@ -373,44 +373,41 @@ const AuthPaciente = () => {
             Voltar ao início
           </Link>
 
-          <div>
+          <div className="text-center">
             <h2 className="text-[28px] font-extrabold text-foreground tracking-tight">Bem-vindo! 👋</h2>
             <p className="text-muted-foreground mt-1">Como deseja continuar?</p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Button
               onClick={() => setMode("login")}
-              variant="outline"
-              className="w-full h-14 rounded-2xl text-base font-semibold border-border/60 hover:bg-muted/50 transition-all active:scale-[0.98]"
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold text-base shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 active:scale-[0.98] transition-all"
               size="lg"
             >
               <SignIn className="w-5 h-5 mr-2.5" weight="bold" />
-              Entrar na minha conta
+              Já sou paciente
             </Button>
 
             <Button
               onClick={() => setMode("signup")}
-              className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-primary/90 text-primary-foreground font-bold text-base shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition-all"
+              variant="outline"
+              className="w-full h-14 rounded-2xl text-base font-semibold border-border/60 hover:bg-muted/50 transition-all active:scale-[0.98]"
               size="lg"
             >
               <UserPlus className="w-5 h-5 mr-2.5" weight="fill" />
-              Criar conta grátis
+              Criar nova conta
             </Button>
           </div>
 
-
-
-          {/* Trust items */}
-          <div className="flex items-center justify-center gap-6 pt-4">
+          <div className="flex items-center justify-center gap-6 pt-4 grayscale opacity-60">
             {[
               { icon: LockKey, label: "Criptografado" },
               { icon: ShieldCheck, label: "CFM" },
               { icon: Clock, label: "24h" },
             ].map((item) => (
               <div key={item.label} className="flex flex-col items-center gap-1.5">
-                <item.icon className="w-4 h-4 text-muted-foreground/40" weight="fill" />
-                <span className="text-[10px] text-muted-foreground/50 font-medium">{item.label}</span>
+                <item.icon className="w-4 h-4 text-muted-foreground" weight="fill" />
+                <span className="text-[10px] text-muted-foreground font-medium">{item.label}</span>
               </div>
             ))}
           </div>
