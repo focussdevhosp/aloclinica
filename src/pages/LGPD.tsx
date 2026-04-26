@@ -1,7 +1,18 @@
-import { Shield, Lock, Eye, FileCheck, UserCheck, Database } from "lucide-react";
+import { Shield, Lock, Eye, FileCheck, UserCheck, Database, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import SEOHead from "@/components/SEOHead";
 import InstitutionalHero from "@/components/landing/InstitutionalHero";
+
+const tocItems = [
+  { id: "compromisso", label: "1. Compromisso com a LGPD" },
+  { id: "dpo", label: "2. Encarregado de Dados (DPO)" },
+  { id: "bases-legais", label: "3. Bases Legais" },
+  { id: "seguranca", label: "4. Medidas de Segurança" },
+  { id: "direitos", label: "5. Seus Direitos" },
+  { id: "incidentes", label: "6. Incidentes" },
+  { id: "ripd", label: "7. RIPD" },
+  { id: "contato", label: "8. Contato" },
+];
 
 const LGPD = () => (
   <div className="min-h-screen relative">
@@ -10,7 +21,29 @@ const LGPD = () => (
     
     <InstitutionalHero title="Conformidade LGPD" subtitle="Lei nº 13.709/2018" icon={Shield} lastUpdate="Fevereiro de 2026" />
 
-    <div className="container mx-auto px-4 py-12 max-w-3xl">
+    <div className="container mx-auto px-4 py-12 max-w-6xl grid lg:grid-cols-[240px_1fr] gap-10">
+      {/* Sticky Table of Contents */}
+      <aside className="hidden lg:block">
+        <div className="sticky top-24 rounded-2xl border border-border/50 bg-card/70 backdrop-blur-sm p-4">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-3">
+            <BookOpen className="w-3.5 h-3.5" />
+            Sumário
+          </p>
+          <nav className="space-y-1">
+            {tocItems.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className="block text-xs text-muted-foreground hover:text-primary py-1.5 px-2 rounded-md hover:bg-primary/5 transition-colors leading-snug"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <div className="max-w-3xl">
       <div className="grid sm:grid-cols-2 gap-3 mb-8">
         {[
           { icon: Shield, title: "Segurança", desc: "Criptografia AES-256 em repouso e TLS 1.3 em trânsito" },
@@ -36,10 +69,10 @@ const LGPD = () => (
 
       <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
 
-        <h2 className="text-xl font-bold text-foreground">1. Compromisso com a LGPD</h2>
+        <h2 id="compromisso" className="text-xl font-bold text-foreground scroll-mt-24">1. Compromisso com a LGPD</h2>
         <p>A AloClinica está plenamente comprometida com o cumprimento da Lei Geral de Proteção de Dados Pessoais (LGPD). Implementamos um programa abrangente de governança de dados que abrange todos os aspectos do tratamento de informações pessoais em nossa plataforma.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">2. Encarregado de Dados (DPO)</h2>
+        <h2 id="dpo" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">2. Encarregado de Dados (DPO)</h2>
         <p>Nomeamos um Encarregado de Proteção de Dados (DPO) conforme Art. 41 da LGPD:</p>
         <div className="p-4 bg-muted rounded-xl">
           <p className="text-sm text-foreground font-medium">Encarregado de Dados – AloClinica</p>
@@ -48,7 +81,7 @@ const LGPD = () => (
           <p className="text-xs mt-2 italic">O DPO é responsável por receber reclamações, comunicar-se com a ANPD e orientar funcionários e contratados sobre práticas de proteção de dados.</p>
         </div>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">3. Bases Legais para Tratamento</h2>
+        <h2 id="bases-legais" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">3. Bases Legais para Tratamento</h2>
         <p>Todo tratamento de dados pessoais na AloClinica está fundamentado em uma das bases legais previstas nos Arts. 7º e 11 da LGPD:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li><strong>Consentimento (Art. 7º, I):</strong> marketing, cookies analíticos, pesquisas de satisfação;</li>
@@ -58,7 +91,7 @@ const LGPD = () => (
           <li><strong>Tutela da saúde (Art. 11, II, f):</strong> tratamento de dados sensíveis de saúde durante consultas.</li>
         </ul>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">4. Medidas Técnicas de Segurança</h2>
+        <h2 id="seguranca" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">4. Medidas Técnicas de Segurança</h2>
         <h3 className="text-base font-semibold text-foreground">4.1. Criptografia</h3>
         <ul className="list-disc pl-6 space-y-1">
           <li>Dados em trânsito: TLS 1.3 (HTTPS obrigatório);</li>
@@ -79,7 +112,7 @@ const LGPD = () => (
           <li>Monitoramento contínuo de segurança com alertas automáticos.</li>
         </ul>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">5. Seus Direitos (Arts. 17-22 da LGPD)</h2>
+        <h2 id="direitos" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">5. Seus Direitos (Arts. 17-22 da LGPD)</h2>
         <p>Como titular de dados pessoais, você tem os seguintes direitos:</p>
         <div className="space-y-3">
           {[
@@ -101,7 +134,7 @@ const LGPD = () => (
         </div>
         <p className="mt-3">Para exercer qualquer desses direitos, envie um e-mail para <strong>privacidade@aloclinica.com.br</strong>. O prazo para resposta é de até 15 dias úteis conforme Art. 18, §5º da LGPD.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">6. Incidentes de Segurança</h2>
+        <h2 id="incidentes" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">6. Incidentes de Segurança</h2>
         <p>Em caso de incidente de segurança que possa acarretar risco ou dano relevante aos titulares, a AloClinica se compromete a:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li>Comunicar a ANPD e os titulares afetados em prazo razoável (Art. 48 da LGPD);</li>
@@ -110,10 +143,10 @@ const LGPD = () => (
           <li>Informar as medidas adotadas para reverter ou mitigar os efeitos do incidente.</li>
         </ul>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">7. Relatório de Impacto (RIPD)</h2>
+        <h2 id="ripd" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">7. Relatório de Impacto (RIPD)</h2>
         <p>A AloClinica elabora e mantém atualizado o Relatório de Impacto à Proteção de Dados Pessoais (RIPD) conforme Art. 38 da LGPD, considerando especialmente o tratamento de dados sensíveis de saúde. O RIPD poderá ser disponibilizado à ANPD quando solicitado.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">8. Contato e Reclamações</h2>
+        <h2 id="contato" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">8. Contato e Reclamações</h2>
         <p>Se você tiver dúvidas ou deseja apresentar reclamação sobre o tratamento de seus dados:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li><strong>DPO AloClinica:</strong> privacidade@aloclinica.com.br</li>
@@ -123,6 +156,7 @@ const LGPD = () => (
         <div className="mt-10 p-4 rounded-xl bg-muted text-xs text-muted-foreground">
           <p>Este documento foi elaborado em conformidade com a Lei nº 13.709/2018 (LGPD), regulamentações da ANPD e melhores práticas de proteção de dados pessoais aplicáveis ao setor de saúde digital.</p>
         </div>
+      </div>
       </div>
     </div>
   </div>

@@ -261,7 +261,7 @@ const Contato = forwardRef<HTMLDivElement>((_, ref) => {
               },
               {
                 q: "Qual é o horário de funcionamento?",
-                a: "Disponemos de consultasanças 24 horas por dia, 7 dias por semana.",
+                a: "Disponibilizamos consultas 24 horas por dia, 7 dias por semana.",
               },
               {
                 q: "Como me tornar um médico parceiro?",

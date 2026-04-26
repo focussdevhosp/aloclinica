@@ -123,6 +123,34 @@ const ComoFunciona = forwardRef<HTMLDivElement>((_, ref) => {
               Conheça o fluxo simples e intuitivo da AloClínica. Consulta agendada em menos de 2 minutos.
             </p>
           </motion.div>
+
+          {/* Metrics strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-12"
+          >
+            {[
+              { value: "2 min", label: "para agendar" },
+              { value: "10 min", label: "tempo médio de espera" },
+              { value: "500+", label: "médicos verificados" },
+              { value: "4.9★", label: "avaliação dos pacientes" },
+            ].map((m, i) => (
+              <motion.div
+                key={m.label}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.05 * i }}
+                className="text-center p-4 rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm"
+              >
+                <div className="text-2xl sm:text-3xl font-black text-primary">{m.value}</div>
+                <div className="text-xs text-muted-foreground mt-1">{m.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
