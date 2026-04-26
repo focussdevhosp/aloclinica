@@ -291,7 +291,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
   const SidebarContent = ({ onItemClick, collapsed = false }: { onItemClick?: () => void; collapsed?: boolean }) => {
     const service = SERVICE_MAP[role] || SERVICE_MAP.patient;
     return (
-    <div ref={sidebarRef} className="flex flex-col h-full min-h-0">
+    <div ref={sidebarRef} className="flex flex-col flex-1 min-h-0 w-full">
       {/* Spacer top */}
       <div className="h-4 shrink-0" />
 
@@ -598,14 +598,12 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
       </header>
 
       {/* Body */}
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 relative">
         {nav && nav.length > 0 && (
-          <aside className={`hidden md:flex shrink-0 flex-col bg-background border-r border-sidebar-border shadow-[2px_0_12px_rgba(0,0,0,.06)] sticky top-14 h-[calc(100vh-3.5rem)] min-h-0 overflow-hidden transition-all duration-200 ${
+          <aside className={`hidden md:flex shrink-0 flex-col bg-background border-r border-sidebar-border shadow-[2px_0_12px_rgba(0,0,0,.06)] self-stretch sticky top-14 h-[calc(100vh-3.5rem)] min-h-[calc(100vh-3.5rem)] overflow-hidden transition-all duration-200 ${
             sidebarCollapsed ? "w-[52px]" : "w-56 lg:w-64 xl:w-72"
           }`}>
-            <div className="flex-1 min-h-0 flex flex-col">
-              <SidebarContent collapsed={sidebarCollapsed} />
-            </div>
+            <SidebarContent collapsed={sidebarCollapsed} />
             {/* Collapse toggle */}
             <div className={`shrink-0 border-t border-border/10 ${sidebarCollapsed ? "p-1.5" : "px-2.5 py-1.5"}`}>
               <button
