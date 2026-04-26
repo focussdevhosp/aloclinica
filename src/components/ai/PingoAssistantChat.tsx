@@ -111,7 +111,11 @@ export function PingoAssistantChat() {
           }),
         });
 
-        if (!resp.ok) throw new Error(resp.status === 429 ? "rate_limit" : "api_error");
+        if (!resp.ok) {
+          const errText = await resp.text().catch(() => "");
+          console.error(`Pingo Chat error: ${resp.status}`, errText);
+          throw new Error(resp.status === 429 ? "rate_limit" : "api_error");
+        }
 
         if (!resp.body) throw new Error("Sem resposta");
         const reader = resp.body.getReader();
