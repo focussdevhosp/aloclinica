@@ -144,12 +144,36 @@ const Notifications = () => {
         </div>
 
         {unreadCount > 0 && (
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end gap-2 mb-4">
+            <Button variant="ghost" size="sm" className="text-xs gap-1.5" onClick={() => setShowPrefs(s => !s)}>
+              <Settings2 className="w-4 h-4" /> Preferências
+            </Button>
             <Button variant="ghost" size="sm" className="text-xs gap-1.5" onClick={markAllRead}>
               <CheckCheck className="w-4 h-4" /> Marcar tudo como lido
             </Button>
           </div>
         )}
+        {unreadCount === 0 && (
+          <div className="flex justify-end mb-4">
+            <Button variant="ghost" size="sm" className="text-xs gap-1.5" onClick={() => setShowPrefs(s => !s)}>
+              <Settings2 className="w-4 h-4" /> Preferências
+            </Button>
+          </div>
+        )}
+
+        <AnimatePresence>
+          {showPrefs && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <NotificationPreferences />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Section label */}
         <h4 className="font-[Manrope] font-bold text-muted-foreground text-xs uppercase tracking-[0.2em] px-2 mb-4">Recentes</h4>
