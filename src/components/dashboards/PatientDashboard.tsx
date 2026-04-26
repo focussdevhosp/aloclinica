@@ -49,24 +49,12 @@ const HEALTH_TIPS = [
  * Get quick actions based on service type
  * Different services show different quick action buttons
  */
-const getQuickActions = (serviceType: ServiceType) => {
-  const baseActions = {
-    agendar: { label: "Agendar", icon: CalendarCheck, path: "/dashboard/schedule?role=patient", color: "hsl(var(--p-primary))", bg: "hsl(var(--p-primary) / 0.08)" },
-    urgencia: { label: "Urgência", icon: Lightning, path: "/dashboard/urgent-care?role=patient", color: "hsl(var(--destructive))", bg: "hsl(var(--destructive) / 0.08)" },
-    exames: { label: "Exames", icon: ClipboardText, path: "/dashboard/patient/exam-results?role=patient", color: "hsl(var(--secondary))", bg: "hsl(var(--secondary) / 0.08)" },
-    receitas: { label: "Receitas", icon: FileText, path: "/dashboard/history?role=patient", color: "hsl(var(--p-primary-mid))", bg: "hsl(var(--p-primary-mid) / 0.08)" },
-    docs: { label: "Docs", icon: UploadSimple, path: "/dashboard/patient/documents?role=patient", color: "hsl(var(--warning))", bg: "hsl(var(--warning) / 0.08)" },
-  };
-
-  if (serviceType === "telemedicina") {
-    return [baseActions.agendar, baseActions.urgencia, baseActions.receitas, baseActions.docs];
-  }
-  if (serviceType === "oftalmologia") {
-    return [baseActions.agendar, baseActions.exames, baseActions.docs];
-  }
-  // "all" - show everything
-  return [baseActions.agendar, baseActions.urgencia, baseActions.exames, baseActions.receitas, baseActions.docs];
-};
+ const getQuickActions = (serviceType: ServiceType) => [
+   { label: "Agendar", icon: CalendarCheck, path: "/dashboard/schedule?role=patient", color: "#3b82f6", bg: "#f0f7ff" },
+   { label: "Urgência", icon: Lightning, path: "/dashboard/urgent-care?role=patient", color: "#ef4444", bg: "#fef2f2" },
+   { label: "Chat", icon: ChatCircleDots, path: "/dashboard/chat?role=patient", color: "#10b981", bg: "#ecfdf5" },
+   { label: "Exames", icon: ClipboardText, path: "/dashboard/patient/exam-results?role=patient", color: "#8b5cf6", bg: "#f5f3ff" },
+ ];
 
 const getGreeting = () => {
   const h = new Date().getHours();
