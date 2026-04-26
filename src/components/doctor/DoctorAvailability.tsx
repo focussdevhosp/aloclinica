@@ -347,45 +347,10 @@ const DoctorAvailability = () => {
                 </div>
               )}
             </div>
-         </div>
-       </div>
-     </DashboardLayout>
-   );
- };
-
-        {/* Slots list */}
-        <div className="space-y-4">
-          {grouped.filter(g => g.slots.length > 0).map(g => (
-            <Card key={g.index} className="border-border">
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-foreground mb-3">{g.day}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {g.slots.map(s => (
-                    <Badge key={s.id} variant="secondary" className="flex items-center gap-2 py-1.5 px-3">
-                      <Clock className="w-3 h-3" />
-                      {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
-                      <button onClick={() => removeSlot(s.id)} className="ml-1 hover:text-destructive">
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-
-          {slots.length === 0 && !loading && (
-            <Card className="border-border">
-              <CardContent className="py-8 text-center">
-                <Clock className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
-                <p className="text-muted-foreground">Nenhum horário configurado ainda.</p>
-              </CardContent>
-            </Card>
-          )}
+          </div>
         </div>
-      </div>
-    </DashboardLayout>
-  );
-};
-
-export default DoctorAvailability;
+      </DashboardLayout>
+    );
+ };
+ 
+ export default DoctorAvailability;
