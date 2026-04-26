@@ -1084,7 +1084,7 @@ const PacsViewer = ({
 // ==================== MAIN EDITOR ====================
 const ExamReportEditor = () => {
   const { examId } = useParams<{ examId: string }>();
-   const { user, profile } = useAuth();
+   const { user, profile: userProfile } = useAuth();
    const { signPrescription: signDocument, signing: signingDigital, isValidating, error: signError } = useDigitalSignature();
   const navigate = useNavigate();
   const location = useLocation();
@@ -1435,7 +1435,7 @@ const ExamReportEditor = () => {
   const executeSignAndFinalize = async () => {
     if (!doctorProfile?.id || !content.trim()) { toast.error("Preencha o laudo antes de assinar."); return; }
 
-    setSigning(true);
+     setLocalSigning(true);
     try {
       const contentForPdf = content
         .replace(/<h[1-3][^>]*>/gi, "\n")
@@ -1452,7 +1452,7 @@ const ExamReportEditor = () => {
         .replace(/\n{3,}/g, "\n\n").trim();
       const documentHash = await gerarHashDocumento(contentForPdf);
       const verificationCode = gerarCodigoVerificacao();
-      const doctorName = `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim();
+       const doctorName = `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`.trim();
       const patientDisplayName = examRequest?.patient_name || "Paciente";
 
       // ============ GENERATE PROFESSIONAL CLINICAL PDF ============
@@ -1829,7 +1829,7 @@ const ExamReportEditor = () => {
       navigate(backRoute);
     } catch (err: unknown) {
       toast.error("Erro ao assinar", { description: err instanceof Error ? err.message : "Erro desconhecido" });
-    } finally { setSigning(false); }
+     } finally { setLocalSigning(false); }
   };
 
   // ---- Keyboard shortcuts ----
