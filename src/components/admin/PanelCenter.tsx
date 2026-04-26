@@ -571,23 +571,26 @@ const PanelCenter = () => {
             <h2 className="text-lg font-bold text-foreground tracking-tight">Ações Rápidas do Sistema</h2>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {[
               { label: "Logs de Erro", icon: ShieldAlert, color: "text-rose-500", bg: "bg-rose-500/10", route: "/dashboard/admin/logs?role=admin" },
-              { label: "Config. Site", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10", route: "/dashboard/admin/site-config?role=admin" },
+              { label: "Site Config", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10", route: "/dashboard/admin/site-config?role=admin" },
               { label: "Relatórios", icon: PieChart, color: "text-amber-500", bg: "bg-amber-500/10", route: "/dashboard/admin/reports?role=admin" },
-              { label: "Banco de Dados", icon: Database, color: "text-emerald-500", bg: "bg-emerald-500/10", route: "/dashboard/admin/system-health?role=admin" },
+              { label: "Banco Dados", icon: Database, color: "text-emerald-500", bg: "bg-emerald-500/10", route: "/dashboard/admin/system-health?role=admin" },
+              { label: "Auditoria", icon: ShieldCheck, color: "text-indigo-500", bg: "bg-indigo-500/10", route: "/dashboard/admin/audit?role=admin" },
+              { label: "Usuários", icon: UserPlus, color: "text-orange-500", bg: "bg-orange-500/10", route: "/dashboard/admin/users?role=admin" },
             ].map((action) => (
               <Button
                 key={action.label}
                 variant="outline"
-                className="h-auto flex flex-col items-center gap-3 p-4 border-border/40 bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-md transition-all group"
+                className="h-auto flex flex-col items-center gap-2 p-3 border-border/40 bg-card/40 hover:bg-card hover:border-primary/40 hover:shadow-lg transition-all group overflow-hidden relative"
                 onClick={() => navigate(action.route)}
               >
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", action.bg)}>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 relative z-10", action.bg)}>
                   <action.icon className={cn("w-5 h-5", action.color)} />
                 </div>
-                <span className="text-xs font-bold text-foreground">{action.label}</span>
+                <span className="text-[11px] font-black text-foreground relative z-10 tracking-tight">{action.label}</span>
               </Button>
             ))}
           </div>
