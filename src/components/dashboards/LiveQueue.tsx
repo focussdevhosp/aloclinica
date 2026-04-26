@@ -55,12 +55,10 @@ export function LiveQueue({ items, title, linkLabel, onLinkClick }: {
                    qi.status === "urgent" && "bg-rose-50/30 dark:bg-rose-950/10"
                  )}
                >
-                 <div className={cn(
-                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-transform duration-300 group-hover/item:scale-110 shadow-sm",
-                   qi.avatarBg, qi.avatarColor
-                 )}>
-              >
-                <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold", qi.avatarBg, qi.avatarColor)}>
+                  <div className={cn(
+                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-transform duration-300 group-hover/item:scale-110 shadow-sm",
+                    qi.avatarBg, qi.avatarColor
+                  )}>
                   {qi.initials}
                 </div>
                 <div className="min-w-0 flex-1">

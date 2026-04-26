@@ -42,13 +42,10 @@ export function TimelineSchedule({ items, onSeeAll }: { items: ScheduleItem[]; o
                )}
              >
                {/* Time block */}
-               <div className={cn(
-                 "flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl transition-transform duration-300 group-hover/item:scale-110 shadow-sm",
-                 s.timeBg
-               )}>
-            >
-              {/* Time block */}
-              <div className={cn("flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl", s.timeBg)}>
+                <div className={cn(
+                  "flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl transition-transform duration-300 group-hover/item:scale-110 shadow-sm",
+                  s.timeBg
+                )}>
                 <span className={cn("text-[15px] font-black leading-none", s.timeText)}>{item.time.split(":")[0]}</span>
                 <span className={cn("text-[8px] font-bold", s.timeText)}>:{item.time.split(":")[1]}</span>
               </div>
