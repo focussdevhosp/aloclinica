@@ -83,60 +83,79 @@ export function PingoAssistantChat() {
       });
     };
 
-    try {
-      const resp = await fetch(AI_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMsg],
-          role: "patient",
-        }),
-      });
+    const performRequest = async (retryCount = 0): Promise<void> => {
+      try {
+        const resp = await fetch(AI_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            messages: [...messages, userMsg],
+            role: "patient",
+          }),
+        });
 
-      if (!resp.ok) {
-        const data = await resp.json().catch(() => ({}));
-        const errorMsg = resp.status === 429
-          ? "⏳ Muitas requisições. Aguarde um momento."
-          : data.error || "Erro ao conectar com a IA";
-        setMessages(prev => [...prev, { role: "assistant", content: `😕 ${errorMsg}` }]);
-        setIsLoading(false);
-        return;
-      }
+        if (!resp.ok) {
+          const data = await resp.json().catch(() => ({}));
+          
+          if (resp.status === 429) {
+            setMessages(prev => [...prev, { role: "assistant", content: "⏳ Muitas requisições. Por favor, aguarde um momento antes de tentar novamente." }]);
+            return;
+          }
 
-      if (!resp.body) throw new Error("Sem resposta");
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
+          if (retryCount < 2) {
+            await new Promise(r => setTimeout(r, 2000));
+            return performRequest(retryCount + 1);
+          }
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buffer.indexOf("\n")) !== -1) {
-          let line = buffer.slice(0, idx);
-          buffer = buffer.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const json = line.slice(6).trim();
-          if (json === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(json);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) upsert(content);
-          } catch {
-            buffer = line + "\n" + buffer;
-            break;
+          const errorMsg = data.error || "Não consegui me conectar aos meus servidores agora.";
+          setMessages(prev => [...prev, { 
+            role: "assistant", 
+            content: `😕 **Ops!** ${errorMsg}\n\nSe o problema persistir, você pode tentar atualizar a página ou entrar em contato com nosso suporte.` 
+          }]);
+          return;
+        }
+
+        if (!resp.body) throw new Error("Sem resposta");
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let idx: number;
+          while ((idx = buffer.indexOf("\n")) !== -1) {
+            let line = buffer.slice(0, idx);
+            buffer = buffer.slice(idx + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (!line.startsWith("data: ")) continue;
+            const json = line.slice(6).trim();
+            if (json === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(json);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) upsert(content);
+            } catch {
+              buffer = line + "\n" + buffer;
+              break;
+            }
           }
         }
+      } catch (e) {
+        logError("Pingo Assistant Chat error", e);
+        if (retryCount < 2) {
+          await new Promise(r => setTimeout(r, 2000));
+          return performRequest(retryCount + 1);
+        }
+        setMessages(prev => [...prev, { role: "assistant", content: "😕 Ocorreu um erro de conexão. Verifique sua internet e tente novamente em instantes." }]);
       }
-    } catch (e) {
-      logError("Pingo Assistant Chat error", e);
-      setMessages(prev => [...prev, { role: "assistant", content: "😕 Ocorreu um erro. Tente novamente." }]);
-    }
+    };
+
+    await performRequest();
     setIsLoading(false);
   }, [input, isLoading, messages]);
 
