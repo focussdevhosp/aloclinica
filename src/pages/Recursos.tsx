@@ -118,6 +118,45 @@ const Recursos = forwardRef<HTMLDivElement>((_, ref) => {
               Artigos, guias e dicas de especialistas sobre saúde, bem-estar e tecnologia em medicina.
             </p>
           </motion.div>
+
+          {/* Featured article */}
+          <motion.button
+            type="button"
+            onClick={() => navigate(`/artigo/${articles[0].id}`)}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.55 }}
+            whileHover={{ y: -4 }}
+            className="block w-full max-w-5xl mx-auto mt-12 rounded-3xl overflow-hidden border border-border bg-card shadow-lg hover:shadow-2xl transition-all text-left"
+          >
+            <div className="grid md:grid-cols-2 items-stretch">
+              <div className="relative h-56 md:h-full bg-gradient-to-br from-primary/15 via-primary/8 to-secondary/15 flex items-center justify-center">
+                <span className="text-8xl md:text-9xl">{articles[0].image}</span>
+                <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full bg-primary text-primary-foreground shadow-lg">
+                  ⭐ Em destaque
+                </span>
+              </div>
+              <div className="p-6 md:p-10 flex flex-col justify-center">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
+                  {articles[0].category} · {articles[0].readTime} de leitura
+                </span>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-3 leading-tight">
+                  {articles[0].title}
+                </h2>
+                <p className="text-muted-foreground mb-6">{articles[0].excerpt}</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm">
+                    <p className="font-semibold text-foreground">{articles[0].author}</p>
+                    <p className="text-xs text-muted-foreground">{articles[0].date}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-sm font-bold text-primary">
+                    Ler artigo <ArrowRight className="w-4 h-4" weight="bold" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.button>
         </div>
       </section>
 

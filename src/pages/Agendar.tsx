@@ -247,6 +247,44 @@ const Agendar = () => {
                     </p>
                   </div>
 
+                  {/* Live availability strip */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-6"
+                  >
+                    <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      </span>
+                      48 médicos online agora
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-card border border-border/60 text-muted-foreground text-xs font-medium">
+                      <Clock className="w-3.5 h-3.5 text-primary" />
+                      Atendimento médio: <strong className="text-foreground">8 min</strong>
+                    </span>
+                  </motion.div>
+
+                  {/* Popular searches */}
+                  <div className="max-w-3xl mx-auto mb-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center mb-2.5">
+                      Buscas populares
+                    </p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {["Clínico Geral", "Psicologia", "Pediatria", "Dermatologia", "Cardiologia", "Ginecologia"].map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => handleSelectSpecialty(s)}
+                          className="text-xs font-medium px-3 py-1.5 rounded-full border border-border/60 bg-card hover:bg-primary/5 hover:border-primary/30 hover:text-primary text-muted-foreground transition-all"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Specialty Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl mx-auto">
                     {visibleSpecs.map((spec, i) => (
