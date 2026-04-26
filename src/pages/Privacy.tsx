@@ -1,7 +1,20 @@
 import { Link } from "react-router-dom";
-import { Shield } from "lucide-react";
+import { Shield, BookOpen } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import InstitutionalHero from "@/components/landing/InstitutionalHero";
+
+const tocItems = [
+  { id: "dados-coletados", label: "1. Dados Coletados" },
+  { id: "finalidades", label: "2. Finalidades" },
+  { id: "compartilhamento", label: "3. Compartilhamento" },
+  { id: "seguranca", label: "4. Segurança" },
+  { id: "retencao", label: "5. Retenção" },
+  { id: "direitos", label: "6. Seus Direitos" },
+  { id: "transferencia", label: "7. Transferência Internacional" },
+  { id: "cookies", label: "8. Cookies" },
+  { id: "alteracoes", label: "9. Alterações" },
+  { id: "contato", label: "10. Contato do DPO" },
+];
 
 const Privacy = () => (
   <div className="min-h-screen relative">
@@ -10,12 +23,33 @@ const Privacy = () => (
     
     <InstitutionalHero title="Política de Privacidade" subtitle="Proteção de dados é prioridade" icon={Shield} lastUpdate="Fevereiro de 2026" />
 
-    <div className="container mx-auto px-4 py-12 max-w-3xl">
+    <div className="container mx-auto px-4 py-12 max-w-6xl grid lg:grid-cols-[240px_1fr] gap-10">
+      <aside className="hidden lg:block">
+        <div className="sticky top-24 rounded-2xl border border-border/50 bg-card/70 backdrop-blur-sm p-4">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-3">
+            <BookOpen className="w-3.5 h-3.5" />
+            Sumário
+          </p>
+          <nav className="space-y-1">
+            {tocItems.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className="block text-xs text-muted-foreground hover:text-primary py-1.5 px-2 rounded-md hover:bg-primary/5 transition-colors leading-snug"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <div className="max-w-3xl">
       <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
 
         <p>A AloClinica Tecnologia em Saúde Ltda. ("AloClinica", "nós") está comprometida com a proteção da sua privacidade e dos seus dados pessoais. Esta Política descreve como coletamos, usamos, armazenamos, compartilhamos e protegemos suas informações em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-8">1. Dados Pessoais Coletados</h2>
+        <h2 id="dados-coletados" className="text-xl font-bold text-foreground mt-8 scroll-mt-24">1. Dados Pessoais Coletados</h2>
         <p>Coletamos diferentes categorias de dados pessoais dependendo da sua interação com a Plataforma:</p>
         <h3 className="text-base font-semibold text-foreground mt-4">1.1. Dados de Cadastro</h3>
         <ul className="list-disc pl-6 space-y-1">
@@ -47,7 +81,7 @@ const Privacy = () => (
           <li>Nota: não armazenamos números de cartão de crédito diretamente em nossos servidores.</li>
         </ul>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">2. Finalidades do Tratamento</h2>
+        <h2 id="finalidades" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">2. Finalidades do Tratamento</h2>
         <table className="w-full text-xs border-collapse mt-2">
           <thead>
             <tr className="bg-muted">
@@ -69,7 +103,7 @@ const Privacy = () => (
           </tbody>
         </table>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">3. Compartilhamento de Dados</h2>
+        <h2 id="compartilhamento" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">3. Compartilhamento de Dados</h2>
         <p>Seus dados pessoais poderão ser compartilhados nas seguintes situações:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li><strong>Médico ↔ Paciente:</strong> dados de saúde são compartilhados exclusivamente entre o paciente e o médico responsável pelo atendimento;</li>
@@ -80,7 +114,7 @@ const Privacy = () => (
         </ul>
         <p className="font-medium text-foreground">Jamais vendemos, alugamos ou comercializamos dados pessoais a terceiros para fins de marketing.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">4. Segurança dos Dados</h2>
+        <h2 id="seguranca" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">4. Segurança dos Dados</h2>
         <p>Adotamos medidas técnicas e organizacionais rigorosas para proteger seus dados:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li>Criptografia em trânsito (TLS/HTTPS) e em repouso;</li>
@@ -92,7 +126,7 @@ const Privacy = () => (
           <li>Monitoramento contínuo de vulnerabilidades.</li>
         </ul>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">5. Retenção de Dados</h2>
+        <h2 id="retencao" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">5. Retenção de Dados</h2>
         <table className="w-full text-xs border-collapse mt-2">
           <thead>
             <tr className="bg-muted">
@@ -111,7 +145,7 @@ const Privacy = () => (
           </tbody>
         </table>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">6. Direitos do Titular dos Dados</h2>
+        <h2 id="direitos" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">6. Direitos do Titular dos Dados</h2>
         <p>Nos termos da LGPD, você tem direito a:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li><strong>Confirmação e acesso:</strong> saber se tratamos seus dados e acessá-los;</li>
@@ -124,16 +158,16 @@ const Privacy = () => (
         </ul>
         <p>Para exercer seus direitos, entre em contato com nosso Encarregado de Dados (DPO) pelo e-mail: <strong>privacidade@aloclinica.com.br</strong>. As solicitações serão atendidas em até 15 dias úteis.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">7. Transferência Internacional de Dados</h2>
+        <h2 id="transferencia" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">7. Transferência Internacional de Dados</h2>
         <p>Alguns de nossos prestadores de serviço (infraestrutura em nuvem, processamento de pagamentos) podem estar localizados fora do Brasil. Nestes casos, garantimos que a transferência ocorre com proteções adequadas conforme Art. 33 da LGPD.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">8. Cookies</h2>
+        <h2 id="cookies" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">8. Cookies</h2>
         <p>Utilizamos cookies essenciais e analíticos conforme descrito em nossa <Link to="/cookies" className="text-primary hover:underline">Política de Cookies</Link>.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">9. Alterações nesta Política</h2>
+        <h2 id="alteracoes" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">9. Alterações nesta Política</h2>
         <p>Quaisquer alterações significativas serão comunicadas com antecedência de 30 dias. A versão mais atual estará sempre disponível em <Link to="/privacy" className="text-primary hover:underline">aloclinica.com.br/privacy</Link>.</p>
 
-        <h2 className="text-xl font-bold text-foreground mt-6">10. Contato do DPO</h2>
+        <h2 id="contato" className="text-xl font-bold text-foreground mt-6 scroll-mt-24">10. Contato do DPO</h2>
         <ul className="list-disc pl-6 space-y-1">
           <li><strong>Encarregado de Dados (DPO):</strong> privacidade@aloclinica.com.br</li>
           <li><strong>Telefone:</strong> 0800 123 4567</li>
@@ -143,6 +177,7 @@ const Privacy = () => (
         <div className="mt-10 p-4 rounded-xl bg-muted text-xs text-muted-foreground">
           <p>Esta Política foi elaborada em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), Marco Civil da Internet (Lei nº 12.965/2014), Resolução CFM nº 2.314/2022 e as melhores práticas internacionais de proteção de dados (GDPR como referência).</p>
         </div>
+      </div>
       </div>
     </div>
   </div>
