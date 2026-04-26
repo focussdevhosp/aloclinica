@@ -57,44 +57,53 @@ const benefits = [
 
 /* ═══ LEFT PANEL (Desktop only) — extracted outside to avoid remount on every keystroke ═══ */
 const LeftPanel = () => (
-  <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-primary via-primary/90 to-secondary flex-col justify-between p-12 xl:p-16 overflow-hidden">
+  <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[hsl(220,75%,38%)] via-[hsl(200,70%,45%)] to-[hsl(165,65%,50%)] flex-col justify-between p-12 xl:p-16 overflow-hidden">
     {/* Ambient orbs */}
-    <div className="absolute top-[-20%] right-[-15%] w-[400px] h-[400px] rounded-full bg-white/[0.06] blur-[120px]" />
-    <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] rounded-full bg-secondary/30 blur-[80px]" />
+    <div className="absolute top-[-20%] right-[-15%] w-[400px] h-[400px] rounded-full bg-white/[0.08] blur-[120px]" />
+    <div className="absolute bottom-[-10%] left-[-10%] w-[320px] h-[320px] rounded-full bg-emerald-400/20 blur-[80px]" />
     <div className="absolute top-[50%] left-[60%] w-[150px] h-[150px] rounded-full bg-white/[0.04] blur-[60px]" />
     {/* Dot pattern */}
-    <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 1.5px 1.5px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+    <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(circle at 1.5px 1.5px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
 
     {/* Top — back link */}
     <div className="relative z-10">
-      <Link to="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white/80 transition-colors text-sm font-medium group">
+      <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm font-semibold group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" weight="bold" />
         Voltar ao início
       </Link>
     </div>
 
     {/* Center content */}
-    <div className="relative z-10 flex flex-col items-center text-center max-w-md mx-auto">
-      <img src={logo} alt="AloClínica" className="w-12 h-12 rounded-2xl shadow-lg ring-2 ring-white/20 mb-8" />
-      <motion.img
-        src={mascotWave}
-        alt="Pingo"
-        className="w-[180px] h-[180px] xl:w-[210px] xl:h-[210px] object-contain select-none mb-8"
-        style={{ filter: "drop-shadow(0 12px 40px rgba(0,0,50,.35))" }}
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <h1 className="text-[36px] xl:text-[42px] font-extrabold text-white leading-[1.1] tracking-tight">
-        Sua saúde em{" "}
-        <span className="relative inline-block">
-          <span className="relative z-10">boas mãos</span>
-          <span className="absolute inset-0 bg-white/15 rounded-xl -skew-x-2 scale-x-105 scale-y-125" />
-        </span>
+    <div className="relative z-10 flex flex-col items-start text-left max-w-md">
+      {/* Mascot with floating heart badge */}
+      <div className="relative w-full flex justify-center mb-10">
+        <div className="absolute inset-x-0 top-6 h-[220px] bg-white/[0.07] rounded-[50%] blur-2xl" />
+        <motion.img
+          src={mascotWave}
+          alt="Pingo"
+          className="relative w-[220px] h-[220px] xl:w-[250px] xl:h-[250px] object-contain select-none"
+          style={{ filter: "drop-shadow(0 18px 50px rgba(0,0,50,.45))" }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-4 right-12 xl:right-16 w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-xl"
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+        >
+          <Heartbeat className="w-6 h-6 text-white" weight="fill" />
+        </motion.div>
+      </div>
+
+      <h1 className="text-[42px] xl:text-[52px] font-extrabold text-white leading-[1.05] tracking-tight">
+        Sua saúde<br />em boas{" "}
+        <span className="text-emerald-300">mãos</span>
       </h1>
-      <p className="text-white/65 mt-4 text-base leading-relaxed max-w-sm">
-        Consulte médicos online 24h, em qualquer lugar do Brasil.
+      <p className="text-white/70 mt-4 text-[15px] leading-relaxed max-w-sm">
+        Consulte médicos online 24h, em qualquer<br />lugar do Brasil.
       </p>
-      <div className="mt-10 space-y-4 w-full max-w-xs">
+
+      <div className="mt-8 space-y-3.5 w-full max-w-sm">
         {benefits.map((b, i) => (
           <motion.div
             key={b.text}
@@ -103,20 +112,46 @@ const LeftPanel = () => (
             transition={{ delay: 0.3 + i * 0.12 }}
             className="flex items-center gap-3 text-left"
           >
-            <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/[0.08]">
+            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/[0.1]">
               <b.icon className="w-5 h-5 text-white" weight="fill" />
             </div>
-            <span className="text-sm text-white/85 font-medium">{b.text}</span>
+            <span className="text-[14px] text-white/90 font-medium">{b.text}</span>
           </motion.div>
         ))}
       </div>
     </div>
 
-    {/* Bottom — social proof */}
-    <div className="relative z-10 flex items-center justify-center gap-2 text-white/60 text-sm pt-6 border-t border-white/10">
-      <Star className="w-4 h-4 text-yellow-300" weight="fill" />
-      <span className="font-semibold text-white/80">4.9</span>
-      <span>— mais de 12.000 avaliações</span>
+    {/* Bottom — rating card with avatars */}
+    <div className="relative z-10 w-full max-w-sm">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/[0.12] shadow-xl">
+        <div className="w-10 h-10 rounded-xl bg-yellow-400/20 flex items-center justify-center shrink-0">
+          <Star className="w-5 h-5 text-yellow-300" weight="fill" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-extrabold text-white">4.9</span>
+            <span className="text-[11px] text-white/70 truncate">— mais de 12.000 avaliações</span>
+          </div>
+        </div>
+        <div className="flex -space-x-2 shrink-0">
+          {[
+            "https://i.pravatar.cc/40?img=1",
+            "https://i.pravatar.cc/40?img=5",
+            "https://i.pravatar.cc/40?img=12",
+          ].map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt=""
+              loading="lazy"
+              className="w-7 h-7 rounded-full border-2 border-primary/40 object-cover"
+            />
+          ))}
+          <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-sm border-2 border-primary/40 flex items-center justify-center text-[9px] font-bold text-white">
+            +12k
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -496,7 +531,7 @@ const AuthPaciente = () => {
 
             <Button
               type="submit"
-              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-base shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all"
+              className="w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(220,75%,42%)] via-[hsl(195,72%,48%)] to-[hsl(165,65%,48%)] text-white font-black text-base shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all border-0"
               size="lg"
               disabled={loading}
             >
