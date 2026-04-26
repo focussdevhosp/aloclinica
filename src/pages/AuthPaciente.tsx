@@ -923,53 +923,49 @@ const AuthPaciente = () => {
       <LeftPanel />
 
       {/* Mobile hero — inline to avoid remount */}
-      <div className="lg:hidden relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-secondary px-5 pt-[max(env(safe-area-inset-top,16px),16px)] pb-6">
-        <div className="absolute top-[-30%] right-[-15%] w-[250px] h-[250px] rounded-full bg-white/[0.06] blur-[80px]" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[180px] h-[180px] rounded-full bg-secondary/20 blur-[60px]" />
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            {mode !== "welcome" && (
-              <button
-                type="button"
-                onClick={() => mode === "signup" && signupStep > 1 ? setSignupStep(s => s - 1) : setMode("welcome")}
-                className="text-white/70 hover:text-white transition-colors mr-1"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            )}
-            <img src={logo} alt="AloClínica" className="w-8 h-8 rounded-xl ring-2 ring-white/20" />
-            <div>
-              <h1 className="text-lg font-black text-white tracking-tight leading-none">AloClínica</h1>
-              <p className="text-[10px] text-white/50 mt-0.5">Telemedicina de excelência</p>
-            </div>
+      <div className="lg:hidden relative overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary px-6 pt-10 pb-10 rounded-b-[40px] shadow-2xl shadow-primary/20">
+        <div className="absolute top-[-30%] right-[-15%] w-[300px] h-[300px] rounded-full bg-white/[0.1] blur-[80px]" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-[200px] h-[200px] rounded-full bg-secondary/30 blur-[60px]" />
+        
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="flex items-center gap-3 mb-6">
+            <img src={logo} alt="AloClínica" className="w-10 h-10 rounded-xl ring-2 ring-white/30 shadow-lg" />
+            <h1 className="text-2xl font-black text-white tracking-tight">AloClínica</h1>
           </div>
+          
           <motion.img
             src={mascotWave}
             alt="Pingo"
-            className="w-[70px] h-[70px] object-contain select-none"
-            style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,50,.25))" }}
-            animate={{ y: [0, -4, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-32 h-32 object-contain select-none mb-4"
+            style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,50,.3))" }}
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
+          
+          <h2 className="text-xl font-bold text-white leading-tight">
+            Sua saúde em <br /> boas mãos
+          </h2>
+          <p className="text-white/60 text-sm mt-2 font-medium">
+            Telemedicina 24h sem filas
+          </p>
         </div>
-         {mode === "welcome" && (
-          <div className="relative z-10 mt-3 flex items-center justify-between">
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-white/70 text-sm"
-            >
-              Sua saúde em boas mãos 💙
-            </motion.p>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1 text-white/60 hover:text-white transition-colors text-xs font-medium"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Início
-            </Link>
-          </div>
+
+        {mode !== "welcome" && (
+          <button
+            type="button"
+            onClick={() => mode === "signup" && signupStep > 1 ? setSignupStep(s => s - 1) : setMode("welcome")}
+            className="absolute top-8 left-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20 active:scale-95 transition-all"
+          >
+            <ArrowLeft className="w-5 h-5" weight="bold" />
+          </button>
         )}
+        
+        <Link
+          to="/"
+          className="absolute top-8 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20 active:scale-95 transition-all"
+        >
+          <SignIn className="w-5 h-5" weight="bold" />
+        </Link>
       </div>
 
       {/* Right / main form area */}
