@@ -603,9 +603,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
           <aside className={`hidden md:flex shrink-0 flex-col bg-background border-r border-sidebar-border shadow-[2px_0_12px_rgba(0,0,0,.06)] self-stretch sticky top-14 h-[calc(100vh-3.5rem)] min-h-[calc(100vh-3.5rem)] overflow-hidden transition-all duration-200 ${
             sidebarCollapsed ? "w-[52px]" : "w-56 lg:w-64 xl:w-72"
           }`}>
-            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-              <SidebarContent collapsed={sidebarCollapsed} />
-            </div>
+            <SidebarContent collapsed={sidebarCollapsed} />
             {/* Collapse toggle */}
             <div className={`shrink-0 border-t border-border/10 ${sidebarCollapsed ? "p-1.5" : "px-2.5 py-1.5"}`}>
               <button
