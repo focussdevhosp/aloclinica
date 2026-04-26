@@ -87,9 +87,8 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Base — pílula sólida estilo "Pingo Card" para todos (responsivo)
-  // lg: compacto (px-2.5, label oculto exceto Pingo Card) | xl: médio | 2xl: completo
-  const linkBtnBase = "text-[12px] xl:text-[13px] font-bold px-2.5 xl:px-3.5 2xl:px-4 h-9 rounded-full transition-all duration-200 inline-flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer border hover:-translate-y-0.5 active:translate-y-0";
+  // Base — pílula sólida estilo "Pingo Card" para todos (sempre com nome + ícone)
+  const linkBtnBase = "text-[11px] xl:text-[12px] 2xl:text-[13px] font-bold px-2.5 xl:px-3 2xl:px-4 h-9 rounded-full transition-all duration-200 inline-flex items-center justify-center gap-1 xl:gap-1.5 whitespace-nowrap cursor-pointer border hover:-translate-y-0.5 active:translate-y-0";
 
   // Cada item: gradiente sólido próprio + ícone branco/escuro + sombra colorida
   const itemColorMap: Record<string, { cls: string; icon: React.ElementType }> = {
@@ -133,9 +132,9 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
                     const s = getItemStyle("Início");
                     const I = s.icon;
                     return (
-                      <Link to="/" aria-label="Início" title="Início" className={cn(linkBtnBase, s.cls)}>
-                        <I className="w-3.5 h-3.5 shrink-0" weight="fill" />
-                        <span className="hidden xl:inline">Início</span>
+                      <Link to="/" className={cn(linkBtnBase, s.cls)}>
+                        <I className="w-3 h-3 xl:w-3.5 xl:h-3.5 shrink-0" weight="fill" />
+                        Início
                       </Link>
                     );
                   })()}
@@ -143,9 +142,9 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger className={triggerCls} aria-label="Sobre Nós" title="Sobre Nós">
-                  <Info className="w-3.5 h-3.5 shrink-0" weight="fill" />
-                  <span className="hidden xl:inline">Sobre Nós</span>
+                <NavigationMenuTrigger className={triggerCls}>
+                  <Info className="w-3 h-3 xl:w-3.5 xl:h-3.5 shrink-0" weight="fill" />
+                  Sobre Nós
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-2 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-popover/95 backdrop-blur-xl rounded-2xl border border-border/20 shadow-elevated">
@@ -184,21 +183,15 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
                 {menuItems.filter((item: any) => item.label !== "Início").map((item: any, idx: number) => {
                   const style = getItemStyle(item.label);
                   const Icon = style.icon;
-                  // Pingo Card sempre mostra o texto (é o destaque)
-                  const alwaysShowLabel = item.label === "Pingo Card";
                   return (
                     <NavigationMenuItem key={idx}>
                       <NavigationMenuLink asChild>
                         <Link 
                           to={item.href || item.url} 
-                          aria-label={item.label}
-                          title={item.label}
                           className={cn(linkBtnBase, style.cls)}
                         >
-                          <Icon className="w-3.5 h-3.5 shrink-0" weight="fill" />
-                          <span className={cn(alwaysShowLabel ? "inline" : "hidden xl:inline")}>
-                            {item.label}
-                          </span>
+                          <Icon className="w-3 h-3 xl:w-3.5 xl:h-3.5 shrink-0" weight="fill" />
+                          {item.label}
                         </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
