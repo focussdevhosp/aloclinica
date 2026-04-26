@@ -864,10 +864,83 @@ const BookAppointment = () => {
                   <div className="flex items-center gap-2 text-sm text-foreground">
                     <Check className="w-4 h-4 text-primary shrink-0" /> {selectedTime}h
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-foreground font-semibold">
-                    <Check className="w-4 h-4 text-primary shrink-0" /> R$ {totalPrice.toFixed(2)}
-                    {cardDiscount > 0 && <Badge variant="secondary" className="text-[10px] ml-1">-{cardDiscount}%</Badge>}
+                  <div className="pt-2 border-t border-border/60 space-y-1 text-[12px]">
+                    <div className="flex items-center justify-between text-muted-foreground">
+                      <span>Subtotal</span>
+                      <span className="tabular-nums">R$ {basePrice.toFixed(2)}</span>
+                    </div>
+                    {cardDiscount > 0 && (
+                      <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+                        <span>Cartão Pingo (-{cardDiscount}%)</span>
+                        <span className="tabular-nums">- R$ {discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {couponCode && couponDiscount > 0 && (
+                      <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+                        <span className="inline-flex items-center gap-1">
+                          <Tag className="w-3 h-3" /> Cupom {couponCode} (-{couponDiscount}%)
+                        </span>
+                        <span className="tabular-nums">- R$ {couponAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-1 mt-1 border-t border-border/40 text-sm font-bold text-foreground">
+                      <span>Total</span>
+                      <span className="tabular-nums">R$ {totalPrice.toFixed(2)}</span>
+                    </div>
                   </div>
+                </div>
+
+                {/* Coupon */}
+                <div className="mb-4">
+                  <p className="text-xs text-muted-foreground mb-1.5 inline-flex items-center gap-1.5">
+                    <Tag className="w-3.5 h-3.5" /> Cupom de desconto
+                  </p>
+                  {couponCode ? (
+                    <div className="flex items-center justify-between gap-2 h-11 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400 truncate">
+                          {couponCode}
+                        </span>
+                        <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[10px] border-0">
+                          -{couponDiscount}%
+                        </Badge>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeCoupon}
+                        aria-label="Remover cupom"
+                        className="text-muted-foreground hover:text-destructive transition-colors p-1 rounded-md"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                        placeholder="Digite o código"
+                        className="h-11 rounded-xl font-mono uppercase tracking-wider"
+                        maxLength={20}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            applyCoupon();
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={applyCoupon}
+                        disabled={couponLoading || !couponInput.trim()}
+                        className="h-11 rounded-xl px-4 font-semibold shrink-0"
+                      >
+                        {couponLoading ? "..." : "Aplicar"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Recurrence */}
