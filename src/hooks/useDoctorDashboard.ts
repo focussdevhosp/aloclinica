@@ -22,8 +22,11 @@ export const useDoctorStats = () => {
       todayStart.setHours(0, 0, 0, 0);
       const todayEnd = new Date();
       todayEnd.setHours(23, 59, 59, 999);
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
 
-      const [todayRes, totalPatientsRes, prescriptionsRes, completedRes, upcomingRes] = await Promise.all([
+      const [todayRes, totalPatientsRes, prescriptionsRes, completedRes, upcomingRes, weekRes] = await Promise.all([
         db.from("appointments")
           .select("id, scheduled_at, status, patient_id, duration_minutes")
           .eq("doctor_id", doctorId)
@@ -39,10 +42,35 @@ export const useDoctorStats = () => {
           .eq("doctor_id", doctorId).eq("status", "scheduled")
           .gt("scheduled_at", todayEnd.toISOString())
           .order("scheduled_at", { ascending: true }).limit(5),
+        db.from("appointments")
+          .select("scheduled_at, status")
+          .eq("doctor_id", doctorId)
+          .gte("scheduled_at", sevenDaysAgo.toISOString())
+          .lte("scheduled_at", todayEnd.toISOString()),
       ]);
 
       const uniquePatients = new Set(totalPatientsRes.data?.map(a => a.patient_id) ?? []);
       const completedCount = completedRes.count ?? 0;
+
+      // Build last-7-days series
+      const weekSeries: { day: string; label: string; count: number; completed: number }[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        d.setHours(0, 0, 0, 0);
+        const next = new Date(d);
+        next.setDate(next.getDate() + 1);
+        const dayItems = (weekRes.data ?? []).filter(a => {
+          const t = new Date(a.scheduled_at).getTime();
+          return t >= d.getTime() && t < next.getTime();
+        });
+        weekSeries.push({
+          day: d.toISOString().slice(0, 10),
+          label: ["D", "S", "T", "Q", "Q", "S", "S"][d.getDay()],
+          count: dayItems.length,
+          completed: dayItems.filter(a => a.status === "completed").length,
+        });
+      }
 
       // Resolve patient names
       const allAppts = [...(todayRes.data ?? []), ...(upcomingRes.data ?? [])];
@@ -77,6 +105,7 @@ export const useDoctorStats = () => {
         },
         todayAppts,
         upcomingAppts: upcoming,
+        weekSeries,
       };
     },
     enabled: !!user,
