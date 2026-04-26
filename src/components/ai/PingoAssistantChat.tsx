@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Bot, Sparkles, Trash2, Copy, Check, MessageSquare, Maximize2, Minimize2, Mic, MicOff } from "lucide-react";
+import { X, Send, Bot, Sparkles, Trash2, Copy, Check, MessageSquare, Maximize2, Minimize2, Mic, MicOff, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,9 +17,13 @@ type Msg = { role: "user" | "assistant"; content: string };
 export function PingoAssistantChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>([
+    { role: "assistant", content: "Olá! Eu sou o **Pingo** 🐧, seu assistente inteligente da AloClínica. Como posso ajudar você hoje?" }
+  ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [lastUserMessage, setLastUserMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   
@@ -68,6 +72,8 @@ export function PingoAssistantChat() {
     setInput("");
 
     const userMsg: Msg = { role: "user", content: text };
+    setLastUserMessage(text);
+    setHasError(false);
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
 
@@ -97,26 +103,7 @@ export function PingoAssistantChat() {
           }),
         });
 
-        if (!resp.ok) {
-          const data = await resp.json().catch(() => ({}));
-          
-          if (resp.status === 429) {
-            setMessages(prev => [...prev, { role: "assistant", content: "⏳ Muitas requisições. Por favor, aguarde um momento antes de tentar novamente." }]);
-            return;
-          }
-
-          if (retryCount < 2) {
-            await new Promise(r => setTimeout(r, 2000));
-            return performRequest(retryCount + 1);
-          }
-
-          const errorMsg = data.error || "Não consegui me conectar aos meus servidores agora.";
-          setMessages(prev => [...prev, { 
-            role: "assistant", 
-            content: `😕 **Ops!** ${errorMsg}\n\nSe o problema persistir, você pode tentar atualizar a página ou entrar em contato com nosso suporte.` 
-          }]);
-          return;
-        }
+        if (!resp.ok) throw new Error(resp.status === 429 ? "rate_limit" : "api_error");
 
         if (!resp.body) throw new Error("Sem resposta");
         const reader = resp.body.getReader();
@@ -145,13 +132,10 @@ export function PingoAssistantChat() {
             }
           }
         }
-      } catch (e) {
+      } catch (e: any) {
+        if (retryCount < 1) return performRequest(retryCount + 1);
+        setHasError(true);
         logError("Pingo Assistant Chat error", e);
-        if (retryCount < 2) {
-          await new Promise(r => setTimeout(r, 2000));
-          return performRequest(retryCount + 1);
-        }
-        setMessages(prev => [...prev, { role: "assistant", content: "😕 Ocorreu um erro de conexão. Verifique sua internet e tente novamente em instantes." }]);
       }
     };
 
@@ -221,36 +205,9 @@ export function PingoAssistantChat() {
               </div>
             </div>
 
-            {/* Messages Area */}
-            <ScrollArea ref={scrollRef} className="flex-1 p-4 bg-muted/5">
-              <div className="space-y-4">
-                {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
-                    <PingoMascot variant="welcome" size={100} animate bounce />
-                    <div className="space-y-1">
-                      <p className="font-bold text-foreground">Olá! Eu sou o Pingo 🐧</p>
-                      <p className="text-xs text-muted-foreground max-w-[200px]">
-                        Como posso ajudar você hoje? Tire dúvidas sobre agendamentos, especialidades ou exames.
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-2 mt-2 px-4">
-                      {[
-                        "Como agendar consulta?",
-                        "Quais as especialidades?",
-                        "Preço da consulta?",
-                      ].map((hint) => (
-                        <button
-                          key={hint}
-                          onClick={() => send(hint)}
-                          className="text-[11px] px-3 py-1.5 rounded-full border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all"
-                        >
-                          {hint}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  messages.map((msg, i) => (
+            <ScrollArea ref={scrollRef} className="flex-1 p-4 bg-muted/5 scrollbar-hide">
+              <div className="space-y-5">
+                {messages.map((msg, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -290,6 +247,32 @@ export function PingoAssistantChat() {
                       </div>
                     </motion.div>
                   ))
+                }
+                {hasError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4 flex flex-col items-center text-center gap-3"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-destructive" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-bold text-foreground">Conexão instável</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Não foi possível processar sua mensagem devido a uma instabilidade momentânea.
+                      </p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="rounded-full h-8 px-4 gap-2 text-xs border-destructive/30 hover:bg-destructive/5"
+                      onClick={() => send(lastUserMessage)}
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Tentar novamente
+                    </Button>
+                  </motion.div>
                 )}
                 {isLoading && (
                   <div className="flex gap-3 justify-start">
@@ -306,16 +289,24 @@ export function PingoAssistantChat() {
               </div>
             </ScrollArea>
 
-            {/* Input Area */}
-            <div className="p-4 bg-background border-t border-border shrink-0">
+            <div className="p-4 bg-background border-t border-border shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+              {messages.length === 1 && !isLoading && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {["Como agendar?", "Especialidades", "Valor consulta"].map(h => (
+                    <button key={h} onClick={() => send(h)} className="text-[10px] font-semibold px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+                      {h}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="relative flex items-end gap-2">
                 <Textarea
                   ref={textareaRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Pergunte algo ao Pingo..."
-                  className="min-h-[44px] max-h-32 pr-20 py-3 rounded-2xl resize-none bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/20 text-xs scrollbar-hide"
+                  placeholder="Como posso te ajudar hoje?"
+                  className="min-h-[46px] max-h-32 pr-20 py-3 rounded-2xl resize-none bg-muted/40 border-none focus-visible:ring-1 focus-visible:ring-primary/20 text-xs scrollbar-hide transition-all"
                   rows={1}
                 />
                 <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
@@ -332,25 +323,28 @@ export function PingoAssistantChat() {
                   </Button>
                   <Button
                     size="icon"
-                    className="w-8 h-8 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 transition-transform active:scale-90"
+                    className={cn(
+                      "w-8 h-8 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-90",
+                      (!input.trim() || isLoading) && "opacity-50 grayscale"
+                    )}
                     disabled={!input.trim() || isLoading}
                     onClick={() => send()}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-3 px-1">
-                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-primary" /> 
-                  AI da AloClínica
+                <p className="text-[9px] text-muted-foreground flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-primary" /> 
+                  IA da AloClínica
                 </p>
-                {messages.length > 0 && (
+                {messages.length > 1 && (
                   <button 
-                    onClick={() => setMessages([])}
-                    className="text-[10px] text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors"
+                    onClick={() => setMessages([messages[0]])}
+                    className="text-[9px] text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors"
                   >
-                    <Trash2 className="w-3 h-3" /> Limpar
+                    <Trash2 className="w-2.5 h-2.5" /> Limpar conversa
                   </button>
                 )}
               </div>
