@@ -24,10 +24,8 @@ import { LiveQueue, QueueItem } from "./LiveQueue";
 import { cn } from "@/lib/utils";
 import { GoalProgressCard } from "./GoalProgressCard";
 import { DashboardShortcuts } from "./DashboardShortcuts";
-import { PingoBannerCard } from "@/components/mascot/PingoBannerCard";
 import SectionErrorBoundary from "@/components/ui/section-error-boundary";
 import mascotWave from "@/assets/mascot-wave.png";
-import mascotReading from "@/assets/mascot-reading.png";
 import mascotWelcome from "@/assets/mascot-welcome.png";
 
 const statusColor: Record<string, string> = {
