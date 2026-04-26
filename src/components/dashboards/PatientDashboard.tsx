@@ -13,7 +13,7 @@ import { ptBR } from "date-fns/locale";
 import {
   CalendarCheck, VideoCamera, Clock, Gift, ArrowRight,
   Heart, Lightning, ClipboardText, FileText, UploadSimple,
-  Sparkle, Stethoscope, MagnifyingGlass, Plus, Warning,
+  Sparkle, Stethoscope, MagnifyingGlass, Plus, Warning, Robot,
   Pill, Heartbeat, TrendUp, ChatCircleDots, DotsThreeVertical,
 } from "@phosphor-icons/react";
 import { AlertTriangle, RefreshCw, ShieldCheck, Lock } from "lucide-react";
