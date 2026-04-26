@@ -226,6 +226,32 @@ const PatientDashboard = () => {
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">Baixe um PDF com consultas, receitas e exames recentes para levar a outros médicos.</p>
               <PatientHealthReport variant="default" className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90" />
             </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05 }}
+              className="rounded-3xl border border-border/40 bg-card p-5 shadow-sm"
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 shrink-0">
+                  <Headset size={22} weight="fill" className="text-blue-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-base font-bold text-foreground mb-1">Precisa de ajuda?</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Nossa equipe está pronta para te atender.
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/dashboard/chat?role=patient")}
+                className="w-full rounded-xl border-border/60 font-bold text-sm gap-2"
+              >
+                <ChatCircleDots size={16} weight="fill" className="text-blue-500" />
+                Abrir chat de suporte
+              </Button>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -315,10 +341,25 @@ const NextAppointmentCard = ({ appt, navigate }: any) => {
 };
 
 const EmptyAppointmentCard = ({ navigate }: any) => (
-  <div className="rounded-[32px] border-2 border-dashed border-border/40 bg-muted/20 p-8 flex flex-col items-center text-center">
-    <div className="p-4 rounded-full bg-primary/10 mb-4"><CalendarCheck size={32} weight="fill" className="text-primary opacity-40" /></div>
-    <p className="text-lg font-bold text-foreground mb-2">Sem consultas agendadas</p><p className="text-sm text-muted-foreground max-w-xs mb-6">Você ainda não tem nenhuma consulta para os próximos dias.</p>
-    <Button onClick={() => navigate("/dashboard/schedule?role=patient")} className="rounded-2xl px-8 h-12 font-bold bg-primary text-white shadow-lg hover:shadow-xl">Agendar primeira consulta</Button>
+  <div className="relative rounded-[32px] border border-border/40 bg-gradient-to-br from-card via-card to-blue-500/[0.04] p-6 md:p-8 overflow-hidden flex flex-col md:flex-row items-center gap-6">
+    <div className="flex-1 text-center md:text-left">
+      <div className="inline-flex p-3 rounded-2xl bg-primary/10 mb-3">
+        <CalendarCheck size={24} weight="fill" className="text-primary" />
+      </div>
+      <p className="text-lg md:text-xl font-bold text-foreground mb-2">Sem consultas agendadas</p>
+      <p className="text-sm text-muted-foreground max-w-md mb-5 mx-auto md:mx-0">
+        Você ainda não tem nenhuma consulta para os próximos dias.
+      </p>
+      <Button
+        onClick={() => navigate("/dashboard/schedule?role=patient")}
+        className="rounded-2xl px-8 h-12 font-bold bg-primary text-primary-foreground shadow-lg hover:shadow-xl"
+      >
+        Agendar primeira consulta
+      </Button>
+    </div>
+    <div className="shrink-0 hidden md:block">
+      <PingoMascot variant="laptop" size={160} animate className="drop-shadow-[0_12px_28px_rgba(15,42,90,0.18)]" />
+    </div>
   </div>
 );
 
