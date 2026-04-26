@@ -24,10 +24,8 @@ import { LiveQueue, QueueItem } from "./LiveQueue";
 import { cn } from "@/lib/utils";
 import { GoalProgressCard } from "./GoalProgressCard";
 import { DashboardShortcuts } from "./DashboardShortcuts";
-import { PingoBannerCard } from "@/components/mascot/PingoBannerCard";
 import SectionErrorBoundary from "@/components/ui/section-error-boundary";
 import mascotWave from "@/assets/mascot-wave.png";
-import mascotReading from "@/assets/mascot-reading.png";
 import mascotWelcome from "@/assets/mascot-welcome.png";
 
 const statusColor: Record<string, string> = {
@@ -333,20 +331,6 @@ const DoctorDashboard = () => {
               </div>
             )}
 
-            {/* Pingo Memed banner */}
-            <PingoBannerCard
-              pingImg={mascotReading}
-              pingAlt="Pingo com receita"
-              pingSize={82}
-              bgClass="bg-blue-50 dark:bg-blue-950/30"
-              borderClass="border-blue-100 dark:border-blue-900/30"
-              label="Receitas Memed"
-              labelColor="text-blue-600 dark:text-blue-400"
-              title="Prescreva digitalmente"
-              subtitle="+60.000 medicamentos · Assinatura digital válida"
-              ctaLabel="Acessar Memed"
-              onCta={() => window.open("https://memed.com.br/login", "_blank")}
-            />
           </div>
 
           {/* RIGHT */}
