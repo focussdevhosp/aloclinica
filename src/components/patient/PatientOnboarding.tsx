@@ -121,7 +121,7 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
     setSaving(false);
   };
 
-  const handleNext = async () => {
+   const handleNext = async () => {
     if (step.id === "personal") {
       if (!firstName.trim() || !lastName.trim()) { toast.error("Preencha nome e sobrenome"); return; }
       const rawCpf = cpf.replace(/\D/g, "");
@@ -143,7 +143,17 @@ const PatientOnboarding = ({ onComplete }: PatientOnboardingProps) => {
       toast.error("Verificação obrigatória", { description: "Complete a verificação de identidade para continuar." });
       return;
     }
-    if (isLast) { localStorage.setItem(ONBOARDING_KEY, "true"); localStorage.removeItem(KYC_PENDING_KEY); onComplete(); }
+     if (isLast) {
+       localStorage.setItem(ONBOARDING_KEY, "true");
+       localStorage.removeItem(KYC_PENDING_KEY);
+       // Mark onboarding as completed in Supabase metadata for cross-device persistence
+       if (user) {
+         await db.auth.updateUser({
+           data: { onboarding_completed: true }
+         });
+       }
+       onComplete();
+     }
     else setCurrentStep(prev => prev + 1);
   };
 
