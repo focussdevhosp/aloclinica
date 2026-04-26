@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Video, Star } from "lucide-react";
 import { useSiteSections } from "@/lib/site-sections";
 import { motion } from "framer-motion";
-import { PingoAssistantChat } from "@/components/ai/PingoAssistantChat";
 import doctorTeleconsulta from "@/assets/doctor-phone-teleconsulta.png";
 import pingoCalendar from "@/assets/pingo-calendar.png";
 import pingoVideocall from "@/assets/pingo-videocall.png";
@@ -165,8 +164,6 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
       {isOn("cta_banner") !== false && <CTABanner />}
 
       {isOn("footer") && <Footer config={sectionData.footer} />}
-      
-      <PingoAssistantChat />
     </div>
   );
 });
