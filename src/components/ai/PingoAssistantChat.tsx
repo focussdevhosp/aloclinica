@@ -289,16 +289,24 @@ export function PingoAssistantChat() {
               </div>
             </ScrollArea>
 
-            {/* Input Area */}
-            <div className="p-4 bg-background border-t border-border shrink-0">
+            <div className="p-4 bg-background border-t border-border shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+              {messages.length === 1 && !isLoading && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {["Como agendar?", "Especialidades", "Valor consulta"].map(h => (
+                    <button key={h} onClick={() => send(h)} className="text-[10px] font-semibold px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+                      {h}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="relative flex items-end gap-2">
                 <Textarea
                   ref={textareaRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Pergunte algo ao Pingo..."
-                  className="min-h-[44px] max-h-32 pr-20 py-3 rounded-2xl resize-none bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/20 text-xs scrollbar-hide"
+                  placeholder="Como posso te ajudar hoje?"
+                  className="min-h-[46px] max-h-32 pr-20 py-3 rounded-2xl resize-none bg-muted/40 border-none focus-visible:ring-1 focus-visible:ring-primary/20 text-xs scrollbar-hide transition-all"
                   rows={1}
                 />
                 <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
@@ -315,25 +323,28 @@ export function PingoAssistantChat() {
                   </Button>
                   <Button
                     size="icon"
-                    className="w-8 h-8 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 transition-transform active:scale-90"
+                    className={cn(
+                      "w-8 h-8 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-90",
+                      (!input.trim() || isLoading) && "opacity-50 grayscale"
+                    )}
                     disabled={!input.trim() || isLoading}
                     onClick={() => send()}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-3 px-1">
-                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-primary" /> 
-                  AI da AloClínica
+                <p className="text-[9px] text-muted-foreground flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-primary" /> 
+                  IA da AloClínica
                 </p>
-                {messages.length > 0 && (
+                {messages.length > 1 && (
                   <button 
-                    onClick={() => setMessages([])}
-                    className="text-[10px] text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors"
+                    onClick={() => setMessages([messages[0]])}
+                    className="text-[9px] text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors"
                   >
-                    <Trash2 className="w-3 h-3" /> Limpar
+                    <Trash2 className="w-2.5 h-2.5" /> Limpar conversa
                   </button>
                 )}
               </div>
