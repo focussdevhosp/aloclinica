@@ -668,7 +668,94 @@ const PatientDashboard = () => {
             </div>
 
             {nextAppt ? (
-              <NextAppointmentCard appt={nextAppt} daysUntilNext={daysUntilNext} minutesUntil={minutesUntilNext} navigate={navigate} />
+                   <NextAppointmentCard appt={nextAppt} navigate={navigate} />
+ /* ── Helper Components ── */
+ 
+ const HeroSection = ({ firstName, nextAppt, upcoming, stats, typedMetrics, getGreeting, getAvatarRingColor, getContextualSubtitle, profile }: any) => (
+   <section
+     className={cn(
+       "patient-hero relative -mx-4 -mt-5 overflow-hidden rounded-b-[32px] md:-mx-6 md:-mt-5 md:rounded-[2rem] lg:-mx-8 lg:-mt-6",
+       "bg-gradient-to-br from-white via-[hsl(210_60%_97%)] to-[hsl(210_70%_94%)] border border-[hsl(215_30%_90%)]/60",
+       "dark:border-white/5 dark:bg-[radial-gradient(ellipse_at_top_right,hsl(215_70%_18%)_0%,hsl(220_30%_8%)_55%,hsl(220_25%_6%)_100%)]"
+     )}
+     style={{ boxShadow: "0 12px 40px -12px rgba(15, 42, 90, 0.18), inset 0 1px 0 rgba(255,255,255,0.6)" }}
+   >
+     <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-[hsl(215_85%_60%)]/10 blur-[80px] hidden md:block dark:bg-[hsl(215_85%_55%)]/20" />
+     <div className="pointer-events-none absolute -left-8 bottom-4 h-48 w-48 rounded-full bg-[hsl(168_60%_55%)]/10 blur-[60px] hidden md:block dark:bg-[hsl(215_85%_55%)]/15" />
+     <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[hsl(215_30%_70%)]/30 to-transparent dark:via-white/20" />
+ 
+     <svg className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-3/5 md:block opacity-60 dark:opacity-90" viewBox="0 0 600 240" fill="none" preserveAspectRatio="none">
+       <defs>
+         <linearGradient id="patientHeroLine" x1="0" y1="0" x2="1" y2="0">
+           <stop offset="0%" stopColor="hsl(215 85% 55%)" stopOpacity="0" />
+           <stop offset="40%" stopColor="hsl(215 85% 55%)" stopOpacity="1" />
+           <stop offset="100%" stopColor="hsl(215 95% 65%)" stopOpacity="1" />
+         </linearGradient>
+         <linearGradient id="patientHeroFill" x1="0" y1="0" x2="0" y2="1">
+           <stop offset="0%" stopColor="hsl(215 85% 55%)" stopOpacity="0.18" />
+           <stop offset="100%" stopColor="hsl(215 85% 55%)" stopOpacity="0" />
+         </linearGradient>
+       </defs>
+       <path d="M0,180 C80,160 130,120 200,110 C260,102 300,150 360,130 C420,110 460,60 520,50 L600,40" stroke="url(#patientHeroLine)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+       <path d="M0,180 C80,160 130,120 200,110 C260,102 300,150 360,130 C420,110 460,60 520,50 L600,40 L600,240 L0,240 Z" fill="url(#patientHeroFill)" />
+     </svg>
+ 
+     <div className="relative z-10 px-5 pt-8 pb-7 md:px-8 md:pt-12 md:pb-9">
+       <div className="flex items-start gap-4">
+         <motion.div initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}>
+           <div className={cn("ring-[3px] ring-offset-2 ring-offset-transparent rounded-full", getAvatarRingColor(nextAppt))}>
+             <LazyAvatar src={profile?.avatar_url} name={firstName} className="h-16 w-16 md:h-[72px] md:w-[72px] border-2 border-[hsl(215_30%_90%)] dark:border-white/20 shadow-lg" fallbackClassName="bg-[hsl(215_80%_28%)]/10 text-[hsl(215_80%_28%)] dark:bg-white/15 dark:text-white" />
+           </div>
+         </motion.div>
+         <div className="flex-1 min-w-0">
+           <motion.h1 initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} className="font-[Manrope] text-[26px] font-extrabold leading-[1.1] tracking-tight md:text-[38px] text-[hsl(215_80%_18%)] dark:text-white">
+             <span className="block text-[11px] md:text-[13px] font-bold uppercase tracking-[0.18em] text-[hsl(215_85%_45%)] dark:text-[hsl(215_90%_70%)] mb-2">{getGreeting()}, {firstName}! 👋</span>
+             Sua saúde em um só lugar
+           </motion.h1>
+           <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-[13px] font-medium leading-relaxed md:text-[15px] text-[hsl(215_30%_35%)] dark:text-white/70">
+             {getContextualSubtitle(upcoming, stats)}
+           </motion.p>
+         </div>
+         <div className="shrink-0 -mt-2 hidden sm:block relative">
+           <PingoMascot variant="wave" size={120} animate bounce className="drop-shadow-[0_12px_32px_rgba(15,42,90,0.18)] dark:drop-shadow-[0_12px_32px_rgba(0,0,0,0.45)] sm:!w-[130px] sm:!h-[130px]" />
+         </div>
+       </div>
+       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2 mt-5 flex-wrap">
+         {[
+           { icon: CalendarCheck, label: `${stats?.total ?? 0} consultas` },
+           { icon: FileText, label: `${stats?.prescriptions ?? 0} receitas` },
+           { icon: Heart, label: `${typedMetrics.length} métricas` },
+         ].map((pill, i) => (
+           <span key={pill.label} className="inline-flex items-center gap-1.5 rounded-full bg-card/80 backdrop-blur-md border border-border/40 px-3.5 py-1.5 text-[11px] font-bold text-foreground/80 shadow-sm dark:bg-white/[0.08] dark:border-white/[0.1] dark:text-white/80">
+             <pill.icon size={12} weight="fill" className="text-primary dark:text-[hsl(215_90%_70%)]" /> {pill.label}
+           </span>
+         ))}
+       </motion.div>
+     </div>
+   </section>
+ );
+ 
+ const UrgentAlerts = ({ nextAppt, minutesUntilNext, waitingAppt, sections, navigate }: any) => (
+   <div className="space-y-4">
+     <AnimatePresence>
+       {nextAppt && minutesUntilNext !== null && minutesUntilNext > 0 && minutesUntilNext <= 60 && (
+         <motion.div initial={{ opacity: 0, y: -8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }} className="rounded-2xl bg-emerald-500 text-white p-4 flex items-center gap-3 shadow-lg">
+           <div className="animate-pulse w-3 h-3 rounded-full bg-white shrink-0" />
+           <div className="flex-1 min-w-0">
+             <p className="font-bold text-[14px]">Sua consulta começa em breve!</p>
+             <p className="text-[12px] opacity-90">{nextAppt.doctor_name} · às {format(new Date(nextAppt.scheduled_at), "HH:mm")}</p>
+           </div>
+           <Button size="sm" onClick={() => navigate(`/dashboard/consultation/${nextAppt.id}`)} className="shrink-0 rounded-full bg-white text-emerald-700 font-bold text-[12px] hover:bg-white/90 shadow-sm">Entrar</Button>
+         </motion.div>
+       )}
+     </AnimatePresence>
+     {sections.pendingAppt && waitingAppt && (
+       <SectionErrorBoundary fallbackTitle="Erro na sala de espera">
+         <PatientWaitingCard appointment={waitingAppt} />
+       </SectionErrorBoundary>
+     )}
+   </div>
+ );
             ) : (
               <EmptyAppointmentCard navigate={navigate} />
             )}
