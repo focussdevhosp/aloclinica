@@ -265,10 +265,11 @@ const PrescriptionForm = () => {
       }
 
       y += 4;
-      doc.setFillColor(255, 250, 240);
+      doc.setFillColor(254, 254, 250);
+      doc.setDrawColor(245, 240, 230);
       const obsLines = doc.splitTextToSize(observations, pageWidth - 40);
       const obsHeight = Math.max(18, obsLines.length * 5 + 12);
-      doc.roundedRect(15, y, pageWidth - 30, obsHeight, 3, 3, "F");
+      doc.roundedRect(15, y, pageWidth - 30, obsHeight, 2, 2, "FD");
       doc.setFontSize(8);
       doc.setTextColor(100, 100, 100);
       doc.text("OBSERVAÇÕES", 19, y + 6);
@@ -288,7 +289,7 @@ const PrescriptionForm = () => {
         width: 150,
         margin: 1,
         color: {
-          dark: "#1a6fc4",
+          dark: "#15234B",
           light: "#ffffff"
         }
       });
@@ -303,23 +304,24 @@ const PrescriptionForm = () => {
     }
 
     // Digital signature line
-    doc.setDrawColor(200, 200, 200);
+    doc.setDrawColor(accentGold[0], accentGold[1], accentGold[2]);
     doc.setLineWidth(0.5);
     doc.line(pageWidth / 2 - 40, footerY + 12, pageWidth / 2 + 40, footerY + 12);
-    doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Dr(a). ${doctorInfo?.first_name} ${doctorInfo?.last_name}`, pageWidth / 2, footerY + 18, { align: "center" });
+    doc.setFontSize(8);
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.text(`ASSINADO DIGITALMENTE POR`, pageWidth / 2, footerY + 8, { align: "center" });
+    doc.text(`${doctorInfo?.first_name} ${doctorInfo?.last_name}`, pageWidth / 2, footerY + 18, { align: "center" });
     doc.setFontSize(7);
     doc.setTextColor(120, 120, 120);
     doc.text(`CRM ${doctorInfo?.crm}/${doctorInfo?.crm_state}`, pageWidth / 2, footerY + 23, { align: "center" });
 
     // Bottom bar
-    doc.setFillColor(240, 243, 247);
+    doc.setFillColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.rect(0, pageHeight - 12, pageWidth, 12, "F");
     doc.setFontSize(7);
-     doc.setTextColor(100, 100, 100);
+     doc.setTextColor(255, 255, 255);
     doc.text(
-       "Esta é uma receita digital assinada eletronicamente (ICP-Brasil). Valide em: assinaturadigital.iti.gov.br ou via QR Code.",
+       "Esta é uma receita digital assinada eletronicamente (PAdES/ICP-Brasil). Valide em: aloclinica.com.br/validar ou via QR Code.",
       pageWidth / 2, pageHeight - 5, { align: "center" }
     );
 
