@@ -7,6 +7,7 @@ import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { IS_DEV } from "@/lib/constants";
 
 type Step = "intro" | "document" | "selfie" | "analyzing" | "result";
 
