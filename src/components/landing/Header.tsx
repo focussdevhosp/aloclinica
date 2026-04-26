@@ -87,23 +87,23 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Base — pílula refinada, sutil, com microinteração de hover
-  const linkBtnBase = "group/link relative text-[13px] font-semibold px-3.5 h-9 rounded-full transition-all duration-200 inline-flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer border border-transparent hover:-translate-y-0.5 active:translate-y-0";
+  // Base — pílula sólida estilo "Pingo Card" para todos
+  const linkBtnBase = "text-[13px] font-bold px-4 h-9 rounded-full transition-all duration-200 inline-flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer border hover:-translate-y-0.5 active:translate-y-0";
 
-  // Paleta sofisticada: ícone colorido + texto neutro escuro + fundo translúcido no hover
-  // Cada item tem sua "cor de assinatura" (na bolinha do ícone), mantendo coesão visual
-  const itemColorMap: Record<string, { iconBg: string; iconColor: string; hoverBg: string; hoverBorder: string; icon: React.ElementType }> = {
-    "Início":            { iconBg: "bg-sky-500/10",     iconColor: "text-sky-600",     hoverBg: "hover:bg-sky-50",     hoverBorder: "hover:border-sky-200",     icon: House },
-    "Sobre Nós":         { iconBg: "bg-violet-500/10",  iconColor: "text-violet-600",  hoverBg: "hover:bg-violet-50",  hoverBorder: "hover:border-violet-200",  icon: Info },
-    "Especialidades":    { iconBg: "bg-emerald-500/10", iconColor: "text-emerald-600", hoverBg: "hover:bg-emerald-50", hoverBorder: "hover:border-emerald-200", icon: FirstAidKit },
-    "Para Médicos":      { iconBg: "bg-rose-500/10",    iconColor: "text-rose-600",    hoverBg: "hover:bg-rose-50",    hoverBorder: "hover:border-rose-200",    icon: Stethoscope },
-    "Saúde Corporativa": { iconBg: "bg-indigo-500/10",  iconColor: "text-indigo-600",  hoverBg: "hover:bg-indigo-50",  hoverBorder: "hover:border-indigo-200",  icon: Buildings },
-    "Ajuda":             { iconBg: "bg-teal-500/10",    iconColor: "text-teal-600",    hoverBg: "hover:bg-teal-50",    hoverBorder: "hover:border-teal-200",    icon: Question },
+  // Cada item: gradiente sólido próprio + ícone branco/escuro + sombra colorida
+  const itemColorMap: Record<string, { cls: string; icon: React.ElementType }> = {
+    "Início":            { cls: "bg-gradient-to-r from-sky-400 to-sky-500 text-white hover:from-sky-300 hover:to-sky-400 shadow-md shadow-sky-500/30 border-sky-500/40",                        icon: House },
+    "Sobre Nós":         { cls: "bg-gradient-to-r from-violet-400 to-violet-500 text-white hover:from-violet-300 hover:to-violet-400 shadow-md shadow-violet-500/30 border-violet-500/40",     icon: Info },
+    "Pingo Card":        { cls: "bg-gradient-to-r from-amber-400 via-amber-400 to-orange-400 text-amber-950 hover:from-amber-300 hover:to-orange-300 shadow-md shadow-amber-500/30 border-amber-500/40", icon: CreditCard },
+    "Especialidades":    { cls: "bg-gradient-to-r from-emerald-400 to-emerald-500 text-white hover:from-emerald-300 hover:to-emerald-400 shadow-md shadow-emerald-500/30 border-emerald-500/40", icon: FirstAidKit },
+    "Para Médicos":      { cls: "bg-gradient-to-r from-rose-400 to-rose-500 text-white hover:from-rose-300 hover:to-rose-400 shadow-md shadow-rose-500/30 border-rose-500/40",                  icon: Stethoscope },
+    "Saúde Corporativa": { cls: "bg-gradient-to-r from-indigo-400 to-indigo-500 text-white hover:from-indigo-300 hover:to-indigo-400 shadow-md shadow-indigo-500/30 border-indigo-500/40",     icon: Buildings },
+    "Ajuda":             { cls: "bg-gradient-to-r from-teal-400 to-teal-500 text-white hover:from-teal-300 hover:to-teal-400 shadow-md shadow-teal-500/30 border-teal-500/40",                  icon: Question },
   };
   const getItemStyle = (label: string) =>
-    itemColorMap[label] || { iconBg: "bg-muted", iconColor: "text-muted-foreground", hoverBg: "hover:bg-muted/40", hoverBorder: "hover:border-border", icon: CaretRight };
+    itemColorMap[label] || { cls: "bg-muted text-foreground hover:bg-muted/70 border-transparent", icon: CaretRight };
 
-  const triggerCls = "group/trigger text-[13px] font-semibold text-foreground/80 hover:text-foreground bg-transparent hover:bg-violet-50 hover:border-violet-200 data-[state=open]:bg-violet-50 data-[state=open]:border-violet-200 px-3.5 h-9 rounded-full transition-all duration-200 gap-1.5 whitespace-nowrap border border-transparent hover:-translate-y-0.5";
+  const triggerCls = cn(linkBtnBase, itemColorMap["Sobre Nós"].cls, "data-[state=open]:from-violet-300 data-[state=open]:to-violet-400");
 
   return (
     <header
@@ -132,10 +132,8 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
                     const s = getItemStyle("Início");
                     const I = s.icon;
                     return (
-                      <Link to="/" className={cn(linkBtnBase, "text-foreground/80 hover:text-foreground", s.hoverBg, s.hoverBorder)}>
-                        <span className={cn("w-5 h-5 rounded-md flex items-center justify-center", s.iconBg)}>
-                          <I className={cn("w-3 h-3", s.iconColor)} weight="fill" />
-                        </span>
+                      <Link to="/" className={cn(linkBtnBase, s.cls)}>
+                        <I className="w-3.5 h-3.5" weight="fill" />
                         Início
                       </Link>
                     );
@@ -145,9 +143,7 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={triggerCls}>
-                  <span className="w-5 h-5 rounded-md bg-violet-500/10 flex items-center justify-center">
-                    <Info className="w-3 h-3 text-violet-600" weight="fill" />
-                  </span>
+                  <Info className="w-3.5 h-3.5" weight="fill" />
                   Sobre Nós
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -185,28 +181,16 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
               </NavigationMenuItem>
 
                 {menuItems.filter((item: any) => item.label !== "Início").map((item: any, idx: number) => {
-                  const isPingoCard = item.label === "Pingo Card";
                   const style = getItemStyle(item.label);
-                  const Icon = isPingoCard ? CreditCard : style.icon;
+                  const Icon = style.icon;
                   return (
                     <NavigationMenuItem key={idx}>
                       <NavigationMenuLink asChild>
                         <Link 
                           to={item.href || item.url} 
-                          className={cn(
-                            linkBtnBase,
-                            isPingoCard
-                              ? "bg-gradient-to-r from-amber-400 via-amber-400 to-orange-400 text-amber-950 hover:from-amber-300 hover:to-orange-300 shadow-md shadow-amber-500/30 font-bold border-amber-500/40 px-4"
-                              : cn("text-foreground/80 hover:text-foreground", style.hoverBg, style.hoverBorder)
-                          )}
+                          className={cn(linkBtnBase, style.cls)}
                         >
-                          {isPingoCard ? (
-                            <Icon className="w-3.5 h-3.5" weight="fill" />
-                          ) : (
-                            <span className={cn("w-5 h-5 rounded-md flex items-center justify-center", style.iconBg)}>
-                              <Icon className={cn("w-3 h-3", style.iconColor)} weight="fill" />
-                            </span>
-                          )}
+                          <Icon className="w-3.5 h-3.5" weight="fill" />
                           {item.label}
                         </Link>
                       </NavigationMenuLink>
