@@ -548,6 +548,8 @@ const AuthPaciente = () => {
             </Button>
           </motion.form>
 
+          <SocialAuthButtons redirectTo="/dashboard?role=patient" />
+
           {/* Trust row */}
           <div className="flex items-center justify-center gap-6 mt-8">
             {[
