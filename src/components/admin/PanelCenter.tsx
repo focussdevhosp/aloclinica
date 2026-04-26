@@ -112,6 +112,7 @@ const PanelCenter = () => {
         else if (page.includes("role=support")) panelId = "support";
         else if (page.includes("role=clinic") || page.includes("/clinic/")) panelId = "clinic";
         else if (page.includes("role=partner")) panelId = "partner";
+        else if (page.includes("role=cartao_beneficios") || page.includes("/cartao/")) panelId = "cartao_beneficios";
         else if (roles.includes("doctor")) panelId = "doctor";
         else if (roles.includes("admin")) panelId = "admin";
 
