@@ -470,7 +470,7 @@ const AuthPaciente = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-1">
                 <Label className="text-sm font-bold text-foreground">Senha</Label>
-                <Link to="/forgot-password" size="sm" className="text-[13px] font-bold text-primary hover:text-primary/80 transition-colors">
+                <Link to="/forgot-password" className="text-[13px] font-bold text-primary hover:text-primary/80 transition-colors">
                   Esqueceu a senha?
                 </Link>
               </div>
