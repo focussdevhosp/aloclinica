@@ -18,6 +18,16 @@ const ReceptionDashboard = lazy(() => import("@/components/dashboards/ReceptionD
 const SupportDashboard = lazy(() => import("@/components/dashboards/SupportDashboard"));
 const PartnerDashboard = lazy(() => import("@/components/dashboards/PartnerDashboard")); // kept for admin view-as
 const LaudistaDashboard = lazy(() => import("@/components/dashboards/LaudistaDashboard"));
+const CartaoDashboard = lazy(() => import("@/components/dashboards/CartaoDashboard"));
+
+// ── Cartão Benefícios sub-pages ──
+const CarteirinhaDigital = lazy(() => import("@/components/cartao/CarteirinhaDigital"));
+const RedeCredenciada = lazy(() => import("@/components/cartao/RedeCredenciada"));
+const MeuPlano = lazy(() => import("@/components/cartao/MeuPlano"));
+const FaturasCartao = lazy(() => import("@/components/cartao/FaturasCartao"));
+const DependentesCartao = lazy(() => import("@/components/cartao/DependentesCartao"));
+const SuporteCartao = lazy(() => import("@/components/cartao/SuporteCartao"));
+const LgpdCartao = lazy(() => import("@/components/cartao/LgpdCartao"));
 
 // ── LAZY imports: sub-pages ──
 const UserProfile = lazy(() => import("@/components/profile/UserProfile"));
@@ -194,7 +204,7 @@ const Dashboard = () => {
   if (!user) return <Navigate to="/paciente" replace />;
 
   const isAdmin = roles.includes("admin");
-  const validForceRoles = ["patient", "doctor", "support", "admin", "laudista", "ophthalmologist"];
+  const validForceRoles = ["patient", "doctor", "support", "admin", "laudista", "ophthalmologist", "cartao_beneficios"];
 
   // Allow any user to use ?role= IF they actually have that role (not just admins)
   const primaryRole = (() => {
@@ -215,6 +225,7 @@ const Dashboard = () => {
     if (roles.includes("support")) return "support";
     if (roles.includes("clinic")) return "clinic";
     if (roles.includes("partner")) return "partner";
+    if (roles.includes("cartao_beneficios")) return "cartao_beneficios";
     return "patient";
   })();
 
@@ -229,6 +240,7 @@ const Dashboard = () => {
       case "support": return <SupportDashboard />;
       case "clinic": return <ClinicDashboard />;
       case "partner": return <PartnerDashboard />;
+      case "cartao_beneficios": return <CartaoDashboard />;
       default: return <PatientDashboard />;
     }
   };
