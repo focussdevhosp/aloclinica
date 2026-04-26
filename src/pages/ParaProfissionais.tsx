@@ -597,6 +597,105 @@ const ParaProfissionais = forwardRef<HTMLDivElement>((_, ref) => {
         </div>
       </section>
 
+      {/* Earnings Calculator (médicos) */}
+      <EarningsCalculator />
+
+      {/* Doctor Testimonials */}
+      <section className="py-20 px-4 bg-muted/20">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28">
+          <motion.div
+            className="text-center max-w-3xl mx-auto mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+          >
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full mb-4">
+              <Quotes className="w-3.5 h-3.5" weight="fill" />
+              Depoimentos
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
+              Médicos que já mudaram a renda
+            </h2>
+            <p className="text-muted-foreground">
+              Histórias reais de profissionais que cresceram com a AloClínica.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {doctorTestimonials.map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                whileHover={{ y: -6 }}
+                className="relative p-6 rounded-2xl border border-border bg-card hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
+              >
+                <Quotes className="absolute top-5 right-5 w-8 h-8 text-primary/10" weight="fill" />
+                <div className="flex items-center gap-1 mb-3">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className="w-4 h-4 text-amber-400" weight="fill" />
+                  ))}
+                </div>
+                <p className="text-foreground leading-relaxed mb-5 text-sm">"{t.text}"</p>
+                <div className="flex items-center justify-between gap-3 pt-4 border-t border-border/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-secondary text-primary-foreground flex items-center justify-center text-sm font-extrabold">
+                      {t.name.split(" ")[1]?.[0] ?? t.name[0]}
+                    </div>
+                    <div className="leading-tight">
+                      <p className="text-sm font-bold text-foreground">{t.name}</p>
+                      <p className="text-[11px] text-muted-foreground">{t.role}</p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Ganha</p>
+                    <p className="text-sm font-extrabold text-success">{t.earning}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Profissionais */}
+      <section className="py-20 px-4">
+        <div className="max-w-3xl mx-auto px-4">
+          <motion.div
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
+              Perguntas frequentes
+            </h2>
+            <p className="text-muted-foreground">
+              Tudo o que você precisa saber antes de se cadastrar.
+            </p>
+          </motion.div>
+
+          <Accordion type="single" collapsible className="w-full space-y-3">
+            {doctorFaq.map((item, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border border-border rounded-2xl bg-card px-5 hover:border-primary/40 transition-colors"
+              >
+                <AccordionTrigger className="text-left font-bold text-foreground hover:no-underline py-5">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed pb-5">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28">
