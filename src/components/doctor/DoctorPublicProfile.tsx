@@ -4,7 +4,7 @@ import { db } from "@/integrations/supabase/untyped";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, GraduationCap, Clock, Calendar, ArrowLeft, Award, ShieldCheck, ShieldAlert } from "lucide-react";
+import { Star, GraduationCap, Clock, Calendar, ArrowLeft, Award, ShieldCheck, ShieldAlert, Video, Lock, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface DoctorPublicData {
@@ -216,6 +216,19 @@ const DoctorPublicProfile = () => {
                         {doctor.education}
                       </div>
                     )}
+                  </div>
+
+                  {/* Trust strip */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-4 justify-center sm:justify-start text-[11px] font-semibold">
+                    <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                      <Video className="w-3.5 h-3.5" /> Atende em telemedicina
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                      <Zap className="w-3.5 h-3.5" /> Resposta rápida
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-muted-foreground">
+                      <Lock className="w-3.5 h-3.5" /> Consulta criptografada
+                    </span>
                   </div>
                 </div>
 

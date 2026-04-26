@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { Calendar as CalendarIcon, Clock, FileText, Video, Search, Download, Filter, ArrowLeft, MoreHorizontal, CreditCard } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, FileText, Video, Search, Download, Filter, ArrowLeft, MoreHorizontal, CreditCard, CheckCircle2, AlertCircle } from "lucide-react";
 import { format, isWithinInterval, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getPatientNav } from "./patientNav";
@@ -217,6 +217,9 @@ const AppointmentsList = () => {
 
   const upcoming = filtered.filter(a => ["scheduled", "waiting", "in_progress", "payment_pending"].includes(a.status));
   const past = filtered.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
+  const completedCount = past.filter(a => a.status === "completed").length;
+  const paymentPendingCount = appointments.filter(a => a.status === "payment_pending").length;
+  const nextAppt = upcoming.sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())[0];
 
   const activeFilterCount = (filterStatus !== "all" ? 1 : 0) + (period !== "all" ? 1 : 0) + (search ? 1 : 0);
 
@@ -355,6 +358,38 @@ const AppointmentsList = () => {
             </SheetContent>
           </Sheet>
         </div>
+
+        {/* KPI strip */}
+        {!loading && appointments.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 mb-5">
+            <div className="rounded-2xl border border-border/30 bg-card p-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[hsl(var(--p-primary))]">
+                <Clock className="w-3 h-3" /> Próxima
+              </div>
+              <p className="text-sm font-extrabold text-foreground mt-1 truncate">
+                {nextAppt ? format(new Date(nextAppt.scheduled_at), "dd/MM HH:mm", { locale: ptBR }) : "—"}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border/30 bg-card p-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+                <CheckCircle2 className="w-3 h-3" /> Concluídas
+              </div>
+              <p className="text-sm font-extrabold text-foreground mt-1">{completedCount}</p>
+            </div>
+            <div className={cn(
+              "rounded-2xl border p-3",
+              paymentPendingCount > 0 ? "border-warning/40 bg-warning/5" : "border-border/30 bg-card"
+            )}>
+              <div className={cn(
+                "flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider",
+                paymentPendingCount > 0 ? "text-warning" : "text-muted-foreground"
+              )}>
+                <AlertCircle className="w-3 h-3" /> Pagto. pendente
+              </div>
+              <p className="text-sm font-extrabold text-foreground mt-1">{paymentPendingCount}</p>
+            </div>
+          </div>
+        )}
 
         {/* Search */}
         <div className="flex gap-2 mb-4">
