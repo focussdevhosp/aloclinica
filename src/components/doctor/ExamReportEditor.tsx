@@ -1432,9 +1432,21 @@ const ExamReportEditor = () => {
   };
 
   // ---- Sign (actual logic, called from AlertDialog confirm) ----
-  const executeSignAndFinalize = async () => {
-    if (!doctorProfile?.id || !content.trim()) { toast.error("Preencha o laudo antes de assinar."); return; }
-
+   const executeSignAndFinalize = async () => {
+     if (!doctorProfile?.id || !content.trim()) { toast.error("Preencha o laudo antes de assinar."); return; }
+ 
+     // REGRA DE NEGÓCIO: Validar CPF do Certificado Digital (e-CPF) contra o CRM
+     if (userProfile?.cpf) {
+       const isCpfValid = await validateCertificateCPF(userProfile.cpf);
+       if (!isCpfValid) {
+         toast.error(signError || "CPF do certificado não confere com o CRM.");
+         return;
+       }
+     } else {
+       toast.error("CPF do médico não encontrado no CRM. Atualize seu perfil.");
+       return;
+     }
+ 
      setLocalSigning(true);
     try {
       const contentForPdf = content
