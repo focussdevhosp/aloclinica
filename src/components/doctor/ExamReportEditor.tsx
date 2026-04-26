@@ -1084,7 +1084,8 @@ const PacsViewer = ({
 // ==================== MAIN EDITOR ====================
 const ExamReportEditor = () => {
   const { examId } = useParams<{ examId: string }>();
-  const { user } = useAuth();
+   const { user, profile } = useAuth();
+   const { signPrescription: signDocument, signing: signingDigital, isValidating, error: signError } = useDigitalSignature();
   const navigate = useNavigate();
   const location = useLocation();
   const isLaudista = location.pathname.includes("/laudista/");
@@ -1093,7 +1094,8 @@ const ExamReportEditor = () => {
 
   const [content, setContent] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [signing, setSigning] = useState(false);
+   const [localSigning, setLocalSigning] = useState(false);
+   const signing = localSigning || signingDigital || isValidating;
   const [fileUrls, setFileUrls] = useState<string[]>([]);
   const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
