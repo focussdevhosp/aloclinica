@@ -14,7 +14,7 @@ import {
   CalendarCheck, VideoCamera, Clock, Gift, ArrowRight,
   Heart, Lightning, ClipboardText, FileText, UploadSimple,
   Sparkle, Stethoscope, MagnifyingGlass, Plus, Warning, Robot,
-  Pill, Heartbeat, TrendUp, ChatCircleDots, DotsThreeVertical,
+  Pill, Heartbeat, TrendUp, ChatCircleDots, DotsThreeVertical, Headset,
 } from "@phosphor-icons/react";
 import { AlertTriangle, RefreshCw, ShieldCheck, Lock } from "lucide-react";
 import PatientOnboarding, { ONBOARDING_KEY, KYC_PENDING_KEY } from "@/components/patient/PatientOnboarding";
@@ -94,45 +94,6 @@ const PatientDashboard = () => {
   const { data: returnAppts = [] } = useReturnAppointments();
   const { data: healthMetrics = [] } = useRecentHealthMetrics();
   const { data: timelineEvents = [], isLoading: timelineLoading } = useHealthTimeline(3);
-             <section>
-               <div className="flex items-center justify-between mb-4 px-1">
-                 <h3 className="text-sm font-bold text-foreground">Linha do Tempo</h3>
-                 <Button variant="ghost" size="sm" className="h-7 text-[11px] gap-1 font-bold text-primary" onClick={() => navigate("/dashboard/health-timeline")}>
-                   Ver tudo <ArrowRight className="w-3 h-3" />
-                 </Button>
-               </div>
-               <div className="space-y-3">
-                 {timelineLoading ? (
-                   [1, 2].map(i => <Skeleton key={i} className="h-16 rounded-2xl w-full" />)
-                 ) : timelineEvents.length > 0 ? (
-                   timelineEvents.map((event: any, i: number) => (
-                     <motion.div
-                       key={event.id}
-                       initial={{ opacity: 0, x: -10 }}
-                       animate={{ opacity: 1, x: 0 }}
-                       transition={{ delay: 0.2 + i * 0.05 }}
-                       className="group flex items-center gap-3 p-3 rounded-2xl border border-border/40 bg-card hover:bg-muted/30 transition-colors cursor-pointer"
-                       onClick={() => navigate("/dashboard/health-timeline")}
-                     >
-                       <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", event.color)}>
-                         <event.icon className="w-5 h-5" />
-                       </div>
-                       <div className="flex-1 min-w-0">
-                         <p className="text-sm font-bold text-foreground truncate">{event.title}</p>
-                         <p className="text-[11px] text-muted-foreground truncate">{event.subtitle}</p>
-                       </div>
-                       <p className="text-[10px] font-bold text-muted-foreground shrink-0">
-                         {format(new Date(event.date), "dd/MM", { locale: ptBR })}
-                       </p>
-                     </motion.div>
-                   ))
-                 ) : (
-                   <div className="p-8 text-center rounded-2xl border border-dashed border-border/40 bg-muted/5">
-                     <p className="text-xs text-muted-foreground">Seu histórico de saúde aparecerá aqui.</p>
-                   </div>
-                 )}
-               </div>
-             </section>
   const loading = statsLoading || upcomingLoading || detectingService;
   const waitingAppt = upcoming.find((a: any) => a.status === "waiting" || a.status === "in_progress") ?? null;
   const nextAppt = upcoming[0];
@@ -265,6 +226,32 @@ const PatientDashboard = () => {
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">Baixe um PDF com consultas, receitas e exames recentes para levar a outros médicos.</p>
               <PatientHealthReport variant="default" className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90" />
             </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05 }}
+              className="rounded-3xl border border-border/40 bg-card p-5 shadow-sm"
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 shrink-0">
+                  <Headset size={22} weight="fill" className="text-blue-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-base font-bold text-foreground mb-1">Precisa de ajuda?</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Nossa equipe está pronta para te atender.
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/dashboard/chat?role=patient")}
+                className="w-full rounded-xl border-border/60 font-bold text-sm gap-2"
+              >
+                <ChatCircleDots size={16} weight="fill" className="text-blue-500" />
+                Abrir chat de suporte
+              </Button>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -354,10 +341,25 @@ const NextAppointmentCard = ({ appt, navigate }: any) => {
 };
 
 const EmptyAppointmentCard = ({ navigate }: any) => (
-  <div className="rounded-[32px] border-2 border-dashed border-border/40 bg-muted/20 p-8 flex flex-col items-center text-center">
-    <div className="p-4 rounded-full bg-primary/10 mb-4"><CalendarCheck size={32} weight="fill" className="text-primary opacity-40" /></div>
-    <p className="text-lg font-bold text-foreground mb-2">Sem consultas agendadas</p><p className="text-sm text-muted-foreground max-w-xs mb-6">Você ainda não tem nenhuma consulta para os próximos dias.</p>
-    <Button onClick={() => navigate("/dashboard/schedule?role=patient")} className="rounded-2xl px-8 h-12 font-bold bg-primary text-white shadow-lg hover:shadow-xl">Agendar primeira consulta</Button>
+  <div className="relative rounded-[32px] border border-border/40 bg-gradient-to-br from-card via-card to-blue-500/[0.04] p-6 md:p-8 overflow-hidden flex flex-col md:flex-row items-center gap-6">
+    <div className="flex-1 text-center md:text-left">
+      <div className="inline-flex p-3 rounded-2xl bg-primary/10 mb-3">
+        <CalendarCheck size={24} weight="fill" className="text-primary" />
+      </div>
+      <p className="text-lg md:text-xl font-bold text-foreground mb-2">Sem consultas agendadas</p>
+      <p className="text-sm text-muted-foreground max-w-md mb-5 mx-auto md:mx-0">
+        Você ainda não tem nenhuma consulta para os próximos dias.
+      </p>
+      <Button
+        onClick={() => navigate("/dashboard/schedule?role=patient")}
+        className="rounded-2xl px-8 h-12 font-bold bg-primary text-primary-foreground shadow-lg hover:shadow-xl"
+      >
+        Agendar primeira consulta
+      </Button>
+    </div>
+    <div className="shrink-0 hidden md:block">
+      <PingoMascot variant="reading" size={160} animate className="drop-shadow-[0_12px_28px_rgba(15,42,90,0.18)]" />
+    </div>
   </div>
 );
 
