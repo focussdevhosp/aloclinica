@@ -217,6 +217,9 @@ const AppointmentsList = () => {
 
   const upcoming = filtered.filter(a => ["scheduled", "waiting", "in_progress", "payment_pending"].includes(a.status));
   const past = filtered.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
+  const completedCount = past.filter(a => a.status === "completed").length;
+  const paymentPendingCount = appointments.filter(a => a.status === "payment_pending").length;
+  const nextAppt = upcoming.sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())[0];
 
   const activeFilterCount = (filterStatus !== "all" ? 1 : 0) + (period !== "all" ? 1 : 0) + (search ? 1 : 0);
 
