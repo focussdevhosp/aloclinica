@@ -62,11 +62,11 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
 
   const logoUrl = config?.logo_url || mascot;
   const menuItems = config?.menu_items || [
-    { label: "Especialidades", href: "/#especialidades" },
-    { label: "Para Médicos", href: "/#para-medicos" },
-    { label: "Cartão de Benefícios", href: "/pingo-card" },
-    { label: "Para Empresas", href: "/para-empresas" },
-    { label: "Ajuda", href: "/ajuda" },
+     { label: "Pingo Card", href: "/pingo-card", isHighlighted: true },
+     { label: "Especialidades", href: "/#especialidades" },
+     { label: "Para Médicos", href: "/#para-medicos" },
+     { label: "Para Empresas", href: "/para-empresas" },
+     { label: "Ajuda", href: "/ajuda" },
   ];
 
   useEffect(() => {
@@ -145,15 +145,25 @@ const Header = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {menuItems.filter((item: any) => item.label !== "Início").map((item: any, idx: number) => (
-                <NavigationMenuItem key={idx}>
-                  <NavigationMenuLink asChild>
-                    <Link to={item.href || item.url} className={linkBtnCls}>
-                      {item.label}
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
+               {menuItems.filter((item: any) => item.label !== "Início").map((item: any, idx: number) => {
+                 const isHighlighted = item.label === "Pingo Card";
+                 return (
+                   <NavigationMenuItem key={idx}>
+                     <NavigationMenuLink asChild>
+                       <Link 
+                         to={item.href || item.url} 
+                         className={cn(
+                           linkBtnCls,
+                           isHighlighted && "bg-amber-400/10 text-amber-700 hover:bg-amber-400 hover:text-amber-950 font-bold border border-amber-400/30 px-5"
+                         )}
+                       >
+                         {isHighlighted && <CreditCard className="w-4 h-4 mr-2" weight="fill" />}
+                         {item.label}
+                       </Link>
+                     </NavigationMenuLink>
+                   </NavigationMenuItem>
+                 );
+               })}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
