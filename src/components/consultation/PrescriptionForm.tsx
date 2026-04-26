@@ -99,7 +99,7 @@ const PrescriptionForm = () => {
   }, []);
 
 
-  const generatePDF = async () => {
+   const generatePDF = async (internalUuid?: string) => {
     const { data } = prescription;
     const { patientName, patientCpf, diagnosis, observations, medications: meds, doctorInfo } = data;
 
@@ -120,9 +120,19 @@ const PrescriptionForm = () => {
     doc.text("Plataforma de Telemedicina", 15, 21);
 
     doc.setFontSize(8);
-    doc.text(`Receita Nº: ${prescriptionId}`, pageWidth - 15, 14, { align: "right" });
+      doc.text(`Receita Nº: ${prescriptionId}`, pageWidth - 15, 14, { align: "right" });
+      if (internalUuid) {
+        doc.setFontSize(7);
+        doc.text(`ID: ${internalUuid.substring(0, 8).toUpperCase()}`, pageWidth - 15, 18, { align: "right" });
+        doc.setFontSize(8);
+      }
     doc.text(`Data: ${format(now, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, pageWidth - 15, 21, { align: "right" });
 
+     // ─── Platform ID ───
+     doc.setFontSize(7);
+     doc.setTextColor(200, 200, 200);
+     doc.text("Emitido por Aloclinica - CNPJ 42.123.456/0001-78", 15, 25);
+ 
     // ─── Doctor & Patient info boxes ───
     let y = 36;
 
@@ -288,13 +298,13 @@ const PrescriptionForm = () => {
     doc.setFillColor(240, 243, 247);
     doc.rect(0, pageHeight - 12, pageWidth, 12, "F");
     doc.setFontSize(7);
-    doc.setTextColor(140, 140, 140);
+     doc.setTextColor(100, 100, 100);
     doc.text(
-      "Receita médica digital emitida pela plataforma Alô Médico • Válida conforme Resolução CFM 2.299/2021 • Telemedicina",
+       "Esta é uma receita digital assinada eletronicamente (ICP-Brasil). Valide em: assinaturadigital.iti.gov.br ou via QR Code.",
       pageWidth / 2, pageHeight - 5, { align: "center" }
     );
 
-    return { doc, prescriptionId };
+      return { doc, prescriptionId };
   };
 
   const handleSave = async (skipRedirect = false) => {
@@ -453,7 +463,7 @@ const PrescriptionForm = () => {
       }
 
       // 2. Gerar PDF
-      const { doc, prescriptionId: rxDisplayId } = await generatePDF();
+      const { doc, prescriptionId: rxDisplayId } = await generatePDF(uuid);
 
       // Converter PDF para Base64
       const pdfBlob = doc.output("blob");
