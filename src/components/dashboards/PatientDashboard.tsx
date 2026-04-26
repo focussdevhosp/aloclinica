@@ -358,7 +358,7 @@ const EmptyAppointmentCard = ({ navigate }: any) => (
       </Button>
     </div>
     <div className="shrink-0 hidden md:block">
-      <PingoMascot variant="laptop" size={160} animate className="drop-shadow-[0_12px_28px_rgba(15,42,90,0.18)]" />
+      <PingoMascot variant="reading" size={160} animate className="drop-shadow-[0_12px_28px_rgba(15,42,90,0.18)]" />
     </div>
   </div>
 );
