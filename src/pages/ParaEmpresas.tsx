@@ -203,11 +203,7 @@ const ParaEmpresas = () => {
         </div>
       </section>
 
-      {/* Benefícios */}
-      <section className="py-12 md:py-20 px-4">
-        {/* PINGO CARD CORPORATIVO */}
-      </section>
-
+      {/* PINGO CARD CORPORATIVO */}
       <section className="py-16 md:py-24 px-4 bg-gradient-to-br from-[#0a2540] via-[#1a4fcf] to-[#0a2540] text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 items-center relative">
