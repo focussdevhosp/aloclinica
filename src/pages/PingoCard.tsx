@@ -1,11 +1,13 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Heart, User, Star, Shield, Check, ArrowRight, QrCode, Sparkle, MapPin, Storefront, Flask, Eyeglasses } from "@phosphor-icons/react";
+import { Heart, User, Star, Shield, Check, ArrowRight, QrCode, Sparkle, MapPin, Storefront, Flask, Eyeglasses, Quotes, Calculator, Question, CaretDown } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
 import { db } from "@/integrations/supabase/untyped";
@@ -57,6 +59,8 @@ const PingoCard = () => {
   const [plans, setPlans] = useState<PingoPlan[]>([]);
   const [partners, setPartners] = useState<PingoPartner[]>([]);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [consultations, setConsultations] = useState<number>(2);
+  const [exams, setExams] = useState<number>(1);
 
   useEffect(() => {
     const load = async () => {
@@ -69,6 +73,39 @@ const PingoCard = () => {
     };
     load();
   }, []);
+
+  // Calculadora — economia estimada baseada no plano destacado (ou primeiro)
+  const featuredPlan = useMemo(
+    () => plans.find(p => p.is_highlighted) ?? plans[0],
+    [plans]
+  );
+
+  const savings = useMemo(() => {
+    const consultPrice = 120;
+    const examPrice = 80;
+    const consultDisc = featuredPlan?.consultation_discount_percent ?? 30;
+    const examDisc = featuredPlan?.exam_discount_percent ?? 40;
+    const monthlySaving =
+      consultations * consultPrice * (consultDisc / 100) +
+      exams * examPrice * (examDisc / 100);
+    const yearlyNet = monthlySaving * 12 - (featuredPlan?.price_monthly ?? 19.9) * 12;
+    return { monthly: monthlySaving, yearly: yearlyNet };
+  }, [consultations, exams, featuredPlan]);
+
+  const testimonials = [
+    { name: "Mariana C.", role: "Mãe de 2 filhos", text: "Em 3 meses já paguei o cartão de um ano inteiro. Os descontos em laboratório fizeram total diferença.", rating: 5 },
+    { name: "Roberto S.", role: "Aposentado", text: "Eu e minha esposa usamos o Pingo Card para consultas de rotina. Atendimento excelente e preços justíssimos.", rating: 5 },
+    { name: "Juliana M.", role: "Designer", text: "O QR Code no celular é prático demais. Já usei em farmácias e ótica. Recomendo!", rating: 5 },
+  ];
+
+  const faqs = [
+    { q: "O Pingo Card é um plano de saúde?", a: "Não. O Pingo Card é um cartão de benefícios que oferece descontos em consultas, exames e parceiros — sem carência e sem coparticipação fixa." },
+    { q: "Posso incluir minha família?", a: "Sim! Os planos Família e Premium incluem dependentes. Você pode adicionar até o limite definido em cada plano." },
+    { q: "Tem fidelidade ou multa?", a: "Não. Você pode cancelar quando quiser, sem multa nem burocracia. É só acessar o painel e cancelar com um clique." },
+    { q: "Como uso meu cartão?", a: "Após assinar, você recebe seu cartão digital com QR Code no app. Basta apresentar em consultas, exames e parceiros para garantir o desconto." },
+    { q: "Quais são as formas de pagamento?", a: "Aceitamos PIX, cartão de crédito (Visa, Master, Elo) e débito recorrente. O plano anual tem 15% de desconto à vista." },
+    { q: "Em quanto tempo o cartão fica ativo?", a: "Imediatamente! Após a confirmação do pagamento (PIX é instantâneo), seu cartão já está disponível para uso." },
+  ];
 
   const benefits = [
     { icon: <Heart size={28} weight="fill" />, title: "Mais saúde para você", desc: "Descontos reais em consultas, exames e medicamentos." },
@@ -322,6 +359,178 @@ const PingoCard = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* CALCULADORA DE ECONOMIA */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-amber-50 via-background to-primary/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <Badge className="mb-3 bg-amber-400 text-amber-950 hover:bg-amber-400 border-0">
+              <Calculator size={14} weight="fill" className="mr-1" /> SIMULADOR
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Quanto você pode economizar?</h2>
+            <p className="text-muted-foreground text-lg">Ajuste e veja sua economia mensal e anual com o Pingo Card.</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Card className="border-2 shadow-xl overflow-hidden">
+              <CardContent className="p-6 md:p-10">
+                <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                  <div className="space-y-8">
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="text-sm font-semibold flex items-center gap-2">
+                          <Heart size={16} weight="fill" className="text-rose-500" />
+                          Consultas por mês
+                        </label>
+                        <span className="text-2xl font-extrabold text-primary">{consultations}</span>
+                      </div>
+                      <Slider
+                        value={[consultations]}
+                        onValueChange={([v]) => setConsultations(v)}
+                        min={0}
+                        max={10}
+                        step={1}
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="text-sm font-semibold flex items-center gap-2">
+                          <Flask size={16} weight="fill" className="text-emerald-500" />
+                          Exames por mês
+                        </label>
+                        <span className="text-2xl font-extrabold text-primary">{exams}</span>
+                      </div>
+                      <Slider
+                        value={[exams]}
+                        onValueChange={([v]) => setExams(v)}
+                        min={0}
+                        max={10}
+                        step={1}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-6 md:p-8 text-primary-foreground">
+                    <p className="text-xs uppercase tracking-widest opacity-80 font-semibold mb-2">Economia mensal estimada</p>
+                    <p className="text-4xl md:text-5xl font-extrabold mb-6">{formatBRL(savings.monthly)}</p>
+                    <div className="border-t border-white/20 pt-4">
+                      <p className="text-xs uppercase tracking-widest opacity-80 font-semibold mb-1">Em 12 meses (já descontado o plano)</p>
+                      <p className="text-2xl font-bold text-amber-300">{formatBRL(Math.max(0, savings.yearly))}</p>
+                    </div>
+                    <Button
+                      className="w-full mt-6 bg-amber-400 text-amber-950 hover:bg-amber-300 font-semibold"
+                      onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })}
+                    >
+                      Quero esse desconto <ArrowRight className="ml-2 w-4 h-4" weight="bold" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* DEPOIMENTOS */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Quem usa, ama 💛</h2>
+            <p className="text-muted-foreground text-lg">Histórias reais de quem já cuida da saúde com o Pingo Card.</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="h-full border-2 hover:border-primary/40 hover:shadow-xl transition-all">
+                  <CardContent className="p-6 md:p-7">
+                    <Quotes size={32} weight="fill" className="text-primary/30 mb-3" />
+                    <p className="text-sm md:text-base text-foreground/85 leading-relaxed mb-5">
+                      "{t.text}"
+                    </p>
+                    <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center font-bold">
+                        {t.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">{t.name}</p>
+                        <p className="text-xs text-muted-foreground">{t.role}</p>
+                      </div>
+                      <div className="ml-auto flex gap-0.5">
+                        {Array.from({ length: t.rating }).map((_, idx) => (
+                          <Star key={idx} size={14} weight="fill" className="text-amber-400" />
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <Badge className="mb-3 bg-violet-100 text-violet-700 hover:bg-violet-100 border-0">
+              <Question size={14} weight="fill" className="mr-1" /> DÚVIDAS FREQUENTES
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Perguntas frequentes</h2>
+            <p className="text-muted-foreground text-lg">Tudo o que você precisa saber sobre o Pingo Card.</p>
+          </motion.div>
+
+          <Accordion type="single" collapsible className="space-y-3">
+            {faqs.map((faq, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+              >
+                <AccordionItem
+                  value={`item-${i}`}
+                  className="border-2 rounded-2xl px-5 bg-card data-[state=open]:border-primary/40 data-[state=open]:shadow-md transition-all"
+                >
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed pb-4">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
         </div>
       </section>
 
