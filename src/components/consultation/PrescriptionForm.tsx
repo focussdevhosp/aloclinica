@@ -117,9 +117,17 @@ const PrescriptionForm = () => {
     doc.setTextColor(255, 255, 255);
     doc.text("Alô Médico", 15, 14);
     doc.setFontSize(9);
-    doc.text("Plataforma de Telemedicina", 15, 21);
-
-    doc.setFontSize(8);
+     doc.text("Plataforma de Telemedicina", 15, 21);
+ 
+     // Logo da Plataforma
+     try {
+       // Posicionando a logo à direita no header azul
+       doc.addImage("/logo.png", "PNG", pageWidth - 45, 4, 30, 15);
+     } catch (e) {
+       // Silencioso se a logo não carregar
+     }
+ 
+     doc.setFontSize(8);
       doc.text(`Receita Nº: ${prescriptionId}`, pageWidth - 15, 14, { align: "right" });
       if (internalUuid) {
         doc.setFontSize(7);
