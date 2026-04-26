@@ -97,7 +97,7 @@ export function PingoAssistantChat() {
       });
     };
 
-    const performRequest = async (retryCount = 0): Promise<void> => {
+    const performRequest = async (retryCount = 0, msgsToSend = currentMessages): Promise<void> => {
       try {
         const resp = await fetch(`${SUPABASE_FUNCTIONS_URL}/pingo-chat`, {
           method: "POST",
@@ -106,7 +106,7 @@ export function PingoAssistantChat() {
             Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            messages: currentMessages,
+            messages: msgsToSend,
             role: "patient",
           }),
         });
@@ -143,7 +143,7 @@ export function PingoAssistantChat() {
           }
         }
       } catch (e: any) {
-        if (retryCount < 1) return performRequest(retryCount + 1);
+        if (retryCount < 1) return performRequest(retryCount + 1, msgsToSend);
         setHasError(true);
         logError("Pingo Assistant Chat error", e);
       }
@@ -288,7 +288,14 @@ export function PingoAssistantChat() {
                       <Button 
                         size="sm" 
                         className="rounded-full h-8 px-4 gap-2 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
-                        onClick={() => send(lastUserMessage)}
+                        onClick={() => {
+                          const userMsg: Msg = { role: "user", content: lastUserMessage };
+                          const currentMessagesWithErrorReset = [...messages.filter(m => m.content !== userMsg.content || m.role !== "user"), userMsg];
+                          setMessages(currentMessagesWithErrorReset);
+                          setHasError(false);
+                          setIsLoading(true);
+                          performRequest(0, currentMessagesWithErrorReset).finally(() => setIsLoading(false));
+                        }}
                       >
                         <RefreshCw className="w-3 h-3" />
                         Tentar novamente
