@@ -21,6 +21,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import pingoAdmin from "@/assets/pingo-admin.png";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartTooltip, Cell } from "recharts";
 
 interface RecentUser { name: string; page: string; lastSeen: string }
 interface PanelInfo {
