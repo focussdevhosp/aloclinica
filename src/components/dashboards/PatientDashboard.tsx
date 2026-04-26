@@ -39,6 +39,7 @@ const HEALTH_TIPS = [
 const getQuickActions = (serviceType: ServiceType) => [
   { label: "Agendar", icon: CalendarCheck, path: "/dashboard/schedule?role=patient", color: "#3b82f6", bg: "#f0f7ff" },
   { label: "Urgência", icon: Lightning, path: "/dashboard/urgent-care?role=patient", color: "#ef4444", bg: "#fef2f2" },
+  { label: "Pingo IA", icon: Robot, path: "/dashboard/ai-assistant?role=patient&tab=triagem", color: "#0ea5e9", bg: "#f0f9ff" },
   { label: "Chat", icon: ChatCircleDots, path: "/dashboard/chat?role=patient", color: "#10b981", bg: "#ecfdf5" },
   { label: "Exames", icon: ClipboardText, path: "/dashboard/patient/exam-results?role=patient", color: "#8b5cf6", bg: "#f5f3ff" },
 ];
