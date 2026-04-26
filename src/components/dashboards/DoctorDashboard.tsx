@@ -11,9 +11,8 @@ import { logError } from "@/lib/logger";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, DollarSign, Users, TrendingUp, Video, BarChart2, ArrowRight, Clock, Radio, AlertCircle, Sparkles } from "lucide-react";
+import { Calendar, DollarSign, Users, TrendingUp, Video, BarChart2, ArrowRight, Clock } from "lucide-react";
 import DoctorAnalyticsCharts from "./DoctorAnalyticsCharts";
-import { differenceInHours, differenceInMinutes } from "date-fns";
 import DoctorOnboarding from "@/components/doctor/DoctorOnboarding";
 import { useDoctorStats } from "@/hooks/useDoctorDashboard";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,6 +26,9 @@ import { DashboardShortcuts } from "./DashboardShortcuts";
 import SectionErrorBoundary from "@/components/ui/section-error-boundary";
 import mascotWave from "@/assets/mascot-wave.png";
 import mascotWelcome from "@/assets/mascot-welcome.png";
+import DoctorCommandCenter from "./DoctorCommandCenter";
+import DoctorSmartInsights from "./DoctorSmartInsights";
+import DoctorWeeklyPulse from "./DoctorWeeklyPulse";
 
 const statusColor: Record<string, string> = {
   scheduled:   "bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400",
