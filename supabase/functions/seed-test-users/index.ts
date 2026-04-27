@@ -6,6 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+ import { addHours, startOfHour } from "https://esm.sh/date-fns@2.30.0";
+ 
 const TEST_USERS = [
   { email: "paciente@teste.com", password: "Teste123!", role: "patient", first_name: "Ana", last_name: "Paciente" },
   { email: "medico@teste.com", password: "Teste123!", role: "doctor", first_name: "Carlos", last_name: "Médico" },
@@ -166,6 +168,43 @@ serve(async (req) => {
       results.push({ email: u.email, password: u.password, role: u.role, status: "created" });
     }
 
+     // 2. Extra steps for doctor and patient to facilitate testing
+     const { data: patientUser } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+     const patient = patientUser?.users.find(u => u.email === "paciente@teste.com");
+     const doctor = patientUser?.users.find(u => u.email === "medico@teste.com");
+ 
+     if (patient && doctor) {
+       const patientId = patient.id;
+       const doctorId = doctor.id;
+ 
+       // Create availability slot for today
+       const today = new Date().toISOString().split('T')[0];
+       await supabase.from("availability_slots").upsert({
+         doctor_id: doctorId,
+         date: today,
+         start_time: "09:00:00",
+         end_time: "23:59:00",
+         status: "available"
+       }, { onConflict: "doctor_id,date,start_time" });
+ 
+       // Create a test appointment for "now" (rounded to hour)
+       const scheduledFor = startOfHour(addHours(new Date(), 1)).toISOString();
+       
+       const { data: appointment, error: appError } = await supabase.from("appointments").upsert({
+         patient_id: patientId,
+         doctor_id: doctorId,
+         scheduled_for: scheduledFor,
+         status: "confirmed",
+         payment_status: "confirmed",
+         specialty: "Clínico Geral",
+         duration_minutes: 30
+       }, { onConflict: "patient_id,doctor_id,scheduled_for" }).select().single();
+ 
+       if (appointment) {
+         results.push({ type: "appointment", id: appointment.id, scheduled_for: scheduledFor, status: "created" });
+       }
+     }
+ 
     return new Response(JSON.stringify({ success: true, users: results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
