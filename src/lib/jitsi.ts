@@ -1,26 +1,22 @@
 /**
- * Jitsi Meet integration utilities for AloClínica teleconsultation.
+ * MiroTalk P2P integration for AloClínica teleconsultation.
+ * Self-hosted on https://meet.telemedicinaaloclinica.sbs (substitui Jitsi).
  */
 
- export const JITSI_BASE_URL = "https://meet.jit.si";
+export const JITSI_BASE_URL = "https://meet.telemedicinaaloclinica.sbs";
 
 export function gerarRoomId(appointmentId: string): string {
   return `consulta-${appointmentId}`;
 }
 
 export function getJitsiUrl(roomId: string, displayName: string): string {
-  const encodedName = encodeURIComponent(displayName);
-  const configParams = [
-    "config.startWithAudioMuted=false",
-    "config.startWithVideoMuted=false",
-    "config.prejoinPageEnabled=false",
-    "config.disableDeepLinking=true",
-    "config.enableWelcomePage=false",
-    "config.enableClosePage=false",
-    "interfaceConfig.SHOW_JITSI_WATERMARK=false",
-    "interfaceConfig.SHOW_BRAND_WATERMARK=false",
-    'interfaceConfig.TOOLBAR_BUTTONS=["microphone","camera","hangup","chat","tileview","fullscreen"]',
-  ].join("&");
-
-  return `${JITSI_BASE_URL}/${roomId}?userInfo.displayName=${encodedName}#${configParams}`;
+  const params = new URLSearchParams({
+    name: displayName,
+    audio: "1",
+    video: "1",
+    screen: "0",
+    notify: "0",
+    hide: "0",
+  });
+  return `${JITSI_BASE_URL}/join/${encodeURIComponent(roomId)}?${params.toString()}`;
 }

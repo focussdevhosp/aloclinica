@@ -6,9 +6,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const COMPREFACE_URL = "http://72.62.138.208:8000";
-const VERIFY_API_KEY = "5f3c100e-0144-465d-87b3-86c34ba70a1e";
-const DETECT_API_KEY = "a2d930ec-e3ee-46b4-b770-023524e41178";
+const COMPREFACE_URL = Deno.env.get("COMPREFACE_URL") || "https://face.aloclinica.com.br";
+const COMPREFACE_API_KEY = Deno.env.get("COMPREFACE_API_KEY") || "";
+const VERIFY_API_KEY = Deno.env.get("COMPREFACE_VERIFY_KEY") || COMPREFACE_API_KEY;
+const DETECT_API_KEY = Deno.env.get("COMPREFACE_DETECT_KEY") || COMPREFACE_API_KEY;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
