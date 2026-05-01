@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, DownloadSimple, Share, ArrowRight, ShieldCheck } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import pingoLogo from "@/assets/pingo-cartao.png";
 
 interface Sub {
   id: string;
@@ -86,49 +87,111 @@ const CarteirinhaDigital = () => {
   return (
     <DashboardLayout title="Carteirinha Digital" nav={nav} role="cartao_beneficios">
       <div className="max-w-2xl mx-auto space-y-5">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-          <Card className="overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-[hsl(340,75%,40%)] via-[hsl(345,70%,48%)] to-[hsl(355,65%,55%)] text-white rounded-3xl">
-            <CardContent className="p-7">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <Heart size={20} weight="fill" className="text-amber-300" />
-                  <span className="font-bold tracking-wide text-sm">CARTÃO BENEFÍCIOS</span>
+        {/* CARTÃO PREMIUM — frente */}
+        <motion.div
+          initial={{ opacity: 0, y: 20, rotateX: -15 }}
+          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{ perspective: 1200 }}
+        >
+          <div className="relative rounded-[28px] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] aspect-[1.586/1] max-w-[440px] mx-auto group">
+            {/* Base metálica escura */}
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,#0a1628_0%,#0f2942_30%,#1a3a5c_55%,#0f2942_80%,#0a1628_100%)]" />
+            {/* Reflexo holográfico */}
+            <div className="absolute inset-0 opacity-40 mix-blend-screen bg-[conic-gradient(from_135deg_at_60%_40%,transparent_0deg,rgba(120,200,255,0.35)_60deg,transparent_120deg,rgba(255,180,220,0.25)_200deg,transparent_280deg,rgba(120,255,220,0.3)_340deg,transparent_360deg)]" />
+            {/* Linhas guilhoché */}
+            <div className="absolute inset-0 opacity-[0.07]" style={{
+              backgroundImage: "repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 8px), repeating-linear-gradient(-45deg, #fff 0 1px, transparent 1px 8px)"
+            }} />
+            {/* Brilho diagonal animado no hover */}
+            <div className="absolute -inset-x-1/2 -inset-y-1/2 bg-[linear-gradient(115deg,transparent_40%,rgba(255,255,255,0.18)_50%,transparent_60%)] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-[1400ms]" />
+
+            <div className="relative h-full w-full p-5 sm:p-6 flex flex-col text-white">
+              {/* Topo: Logo Pingo + bandeira plano */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-11 h-11 rounded-full bg-white/95 ring-2 ring-amber-300/60 shadow-lg flex items-center justify-center overflow-hidden">
+                    <img src={pingoLogo} alt="Pingo" className="w-9 h-9 object-contain" />
+                  </div>
+                  <div className="leading-tight">
+                    <p className="text-[9px] tracking-[0.25em] text-amber-200/90 font-semibold">PINGO CARD</p>
+                    <p className="text-[13px] font-bold tracking-wide">Benefícios Saúde</p>
+                  </div>
                 </div>
-                <Badge className="bg-amber-400 text-amber-950 border-0">{sub.plan?.name ?? "Plano"}</Badge>
+                <div className="text-right">
+                  <Badge className="bg-gradient-to-br from-amber-300 to-amber-500 text-amber-950 border-0 font-bold tracking-wider text-[10px] px-2.5 py-0.5 shadow-md">
+                    {(sub.plan?.name ?? "PLANO").toUpperCase()}
+                  </Badge>
+                  {!isCanceled && (
+                    <p className="text-[9px] mt-1 text-emerald-300/90 font-semibold flex items-center justify-end gap-1">
+                      <ShieldCheck size={10} weight="fill" /> ATIVO
+                    </p>
+                  )}
+                </div>
               </div>
-              <p className="text-2xl md:text-3xl font-mono tracking-widest mb-6">{sub.card_number}</p>
-              <div className="grid grid-cols-2 gap-4 text-sm mb-5">
-                <div>
-                  <p className="text-[10px] uppercase opacity-75 font-bold">Titular</p>
-                  <p className="font-semibold truncate">{fullName}</p>
+
+              {/* Chip + contactless */}
+              <div className="flex items-center gap-3 mt-5">
+                <div className="w-11 h-8 rounded-md bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 relative overflow-hidden shadow-inner">
+                  <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-px p-0.5">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div key={i} className="bg-amber-700/40 rounded-[1px]" />
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] uppercase opacity-75 font-bold">Válido até</p>
-                  <p className="font-semibold">
-                    {sub.current_period_end ? format(new Date(sub.current_period_end), "MM/yy") : "—"}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-white/80">
+                  <path d="M5 8a10 10 0 0114 0M8 11a6 6 0 018 0M11 14a2 2 0 012 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                </svg>
+              </div>
+
+              {/* Número do cartão */}
+              <p className="mt-3 font-mono text-[17px] sm:text-[19px] tracking-[0.18em] font-semibold drop-shadow-sm">
+                {sub.card_number.replace(/(.{4})/g, "$1 ").trim()}
+              </p>
+
+              {/* Rodapé: titular + validade */}
+              <div className="mt-auto flex items-end justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-white/60 font-bold">Titular</p>
+                  <p className="text-[13px] font-bold uppercase tracking-wide truncate">{fullName}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-white/60 font-bold">Válido até</p>
+                  <p className="text-[13px] font-bold font-mono tracking-wider">
+                    {sub.current_period_end ? format(new Date(sub.current_period_end), "MM/yy") : "—/—"}
                   </p>
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-2xl flex flex-col items-center">
-                <QRCodeSVG value={payload} size={140} />
-                <p className="text-[11px] text-foreground/70 mt-2 font-medium">Apresente em parceiros</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* VERSO — QR Code de validação */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Card className="overflow-hidden border border-border/50 shadow-xl rounded-3xl bg-gradient-to-br from-background to-muted/40">
+            <CardContent className="p-6 flex items-center gap-5">
+              <div className="bg-white p-3 rounded-2xl shadow-md ring-1 ring-border">
+                <QRCodeSVG value={payload} size={110} />
               </div>
-              {!isCanceled && (
-                <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-white/90">
-                  <ShieldCheck size={14} weight="fill" className="text-emerald-300" />
-                  Carteirinha verificada · ativa
-                </div>
-              )}
-              {isCanceled && <Badge variant="destructive" className="mt-4">Assinatura cancelada</Badge>}
+              <div className="flex-1 space-y-1.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-primary">Validação</p>
+                <p className="text-base font-bold leading-tight">Apresente em parceiros credenciados</p>
+                <p className="text-xs text-muted-foreground">O parceiro escaneia o QR para confirmar seu plano e aplicar o desconto.</p>
+                {isCanceled && <Badge variant="destructive" className="mt-1">Assinatura cancelada</Badge>}
+              </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Button variant="outline" onClick={share} className="rounded-xl gap-2 h-12">
+          <Button variant="outline" onClick={share} className="rounded-2xl gap-2 h-12">
             <Share size={18} weight="bold" /> Compartilhar
           </Button>
-          <Button variant="outline" onClick={() => window.print()} className="rounded-xl gap-2 h-12">
+          <Button variant="outline" onClick={() => window.print()} className="rounded-2xl gap-2 h-12">
             <DownloadSimple size={18} weight="bold" /> Salvar
           </Button>
         </div>
