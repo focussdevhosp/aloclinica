@@ -107,7 +107,7 @@ const PingoTicket = () => {
       p_amount: v,
       p_merchant: merchant.trim(),
       p_category: category,
-      p_description: null,
+      p_description: undefined,
     });
     setSubmitting(false);
     if (error) {
