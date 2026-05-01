@@ -1,6 +1,6 @@
 import {
   House, IdentificationCard, Storefront, Users, Receipt,
-  Headset, Sliders, UserCircle, Crown, Bell, Shield,
+  Headset, Sliders, UserCircle, Crown, Bell, Shield, ForkKnife,
 } from "@phosphor-icons/react";
 import { NavIcon } from "@/components/ui/nav-icon";
 
@@ -12,6 +12,7 @@ export const getCartaoNav = (active: string) => [
   // ── Bottom bar (5 primeiros) ──
   { label: "Início", href: "/dashboard?role=cartao_beneficios", icon: <NavIcon icon={<House size={16} weight="fill" />} color="rose" />, active: active === "home", group: "Principal" },
   { label: "Carteirinha", href: "/dashboard/cartao/carteirinha?role=cartao_beneficios", icon: <NavIcon icon={<IdentificationCard size={16} weight="fill" />} color="rose" />, active: active === "carteirinha", group: "Principal" },
+  { label: "Pingo Ticket", href: "/dashboard/cartao/ticket?role=cartao_beneficios", icon: <NavIcon icon={<ForkKnife size={16} weight="fill" />} color="emerald" />, active: active === "ticket", group: "Principal" },
   { label: "Rede", href: "/dashboard/cartao/rede?role=cartao_beneficios", icon: <NavIcon icon={<Storefront size={16} weight="fill" />} color="emerald" />, active: active === "rede", group: "Principal" },
   { label: "Faturas", href: "/dashboard/cartao/faturas?role=cartao_beneficios", icon: <NavIcon icon={<Receipt size={16} weight="fill" />} color="amber" />, active: active === "faturas", group: "Principal" },
   { label: "Perfil", href: "/dashboard/profile?role=cartao_beneficios", icon: <NavIcon icon={<UserCircle size={16} weight="fill" />} color="rose" />, active: active === "profile", group: "Principal" },
