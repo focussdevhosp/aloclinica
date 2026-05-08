@@ -2,7 +2,7 @@ import {
   SquaresFour, VideoCamera, Wallet, ChartLineUp, Star,
   UserCircleCheck, ClipboardText, UserGear, Users, Stethoscope,
   Buildings, CalendarCheck, ShieldStar,
-   Key, Tag, ClockCounterClockwise, WhatsappLogo, Sliders, Activity,
+   Key, Tag, ClockCounterClockwise, WhatsappLogo, Sliders, Pulse,
    PaintBrush, Image as ImageIcon, Heart, CreditCard
  } from "@phosphor-icons/react";
 import { NavIcon } from "@/components/ui/nav-icon";
@@ -15,7 +15,7 @@ export const getAdminNav = (active: string) => [
   // ── Visão Geral ──
    { label: "Centro Admin", href: "/dashboard/admin/panel-center?role=admin", icon: <NavIcon icon={<SquaresFour size={16} weight="fill" />}    color="blue"   />, active: active === "overview" || active === "panel-center", group: "Visão Geral" },
    { label: "Ao Vivo",      href: "/dashboard/admin/live?role=admin",         icon: <NavIcon icon={<VideoCamera size={16} weight="fill" />}    color="rose"   />, active: active === "live",     group: "Visão Geral" },
-   { label: "Saúde Sistema", href: "/dashboard/admin/health?role=admin",      icon: <NavIcon icon={<Activity size={16} weight="fill" />}       color="emerald" />, active: active === "health", group: "Visão Geral" },
+   { label: "Saúde Sistema", href: "/dashboard/admin/health?role=admin",      icon: <NavIcon icon={<Pulse size={16} weight="fill" />}       color="emerald" />, active: active === "health", group: "Visão Geral" },
   { label: "Relatórios",  href: "/dashboard/admin/reports?role=admin",      icon: <NavIcon icon={<ChartLineUp size={16} weight="fill" />}    color="cyan"   />, active: active === "reports",  group: "Visão Geral" },
   { label: "NPS",         href: "/dashboard/admin/nps?role=admin",          icon: <NavIcon icon={<Star size={16} weight="fill" />}           color="amber"  />, active: active === "nps",      group: "Visão Geral" },
 
