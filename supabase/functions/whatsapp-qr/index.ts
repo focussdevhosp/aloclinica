@@ -6,6 +6,27 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const jsonResponse = (payload: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(payload), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const isPlaceholder = (value?: string | null) =>
+  !value || value.includes("PLACEHOLDER_VALUE_TO_BE_REPLACED") || value.trim() === "";
+
+const normalizeEvolutionUrl = (value?: string | null) => {
+  if (isPlaceholder(value)) return null;
+  const trimmed = value!.trim().replace(/\/+$/, "");
+  try {
+    const url = new URL(trimmed);
+    if (!/^https?:$/.test(url.protocol)) return null;
+    return url.toString().replace(/\/+$/, "");
+  } catch {
+    return null;
+  }
+};
+
 const fetchEvo = async (url: string, opts: RequestInit = {}): Promise<Response> => {
   try {
     return await fetch(url, opts);
@@ -29,17 +50,22 @@ serve(async (req) => {
     const EVOLUTION_API_URL = Deno.env.get("EVOLUTION_API_URL");
     const EVOLUTION_API_KEY = Deno.env.get("EVOLUTION_API_KEY");
 
-    if (!EVOLUTION_API_URL || !EVOLUTION_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: "Evolution API not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const baseUrl = normalizeEvolutionUrl(EVOLUTION_API_URL);
+
+    if (!baseUrl || isPlaceholder(EVOLUTION_API_KEY)) {
+      console.warn("Evolution API is not configured or still has placeholder values.");
+      return jsonResponse({
+        success: false,
+        configured: false,
+        error: "Evolution API not configured",
+        code: "EVOLUTION_API_CONFIG_INVALID",
+        message: "Configure EVOLUTION_API_URL with the real Evolution API URL and EVOLUTION_API_KEY with the real API key.",
+      });
     }
 
     const body = await req.json();
     const { action, instanceName } = body;
 
-    const baseUrl = EVOLUTION_API_URL.replace(/\/+$/, "");
     const headers = {
       "Content-Type": "application/json",
       apikey: EVOLUTION_API_KEY,
