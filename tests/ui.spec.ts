@@ -13,8 +13,11 @@ test.describe("UI quality checks", () => {
     expect(jsErrors.length).toBe(0);
   });
 
-  test("auth page displays loading/submit button", async ({ page }) => {
+  test("auth page exibe botão de submit após abrir login rápido", async ({ page }) => {
     await page.goto("/auth");
+    // Login fica oculto por padrão (cards de perfil são o estado inicial).
+    // Precisa clicar para revelar o formulário.
+    await page.getByText(/fazer login rápido/i).click();
     const submitButton = page.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();
     await expect(submitButton).toBeEnabled();
