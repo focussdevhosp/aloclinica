@@ -12,8 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { getAdminNav } from "./adminNav";
 import { AdminPageHeader } from "./AdminPageHeader";
-import { Search, Eye, Edit, Check, X, Stethoscope } from "lucide-react";
+import { Search, Eye, Edit, Check, X, Stethoscope, Download } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
+import { exportToCSV } from "@/lib/csv";
 
 const AdminDoctors = () => {
   
@@ -73,6 +74,41 @@ const AdminDoctors = () => {
     return matchSearch && matchStatus;
   });
 
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      toast.error("Nenhum médico para exportar");
+      return;
+    }
+    exportToCSV(
+      `medicos_${new Date().toISOString().slice(0, 10)}.csv`,
+      filtered.map(d => ({
+        nome: `Dr(a). ${d.first_name ?? ""} ${d.last_name ?? ""}`.trim(),
+        crm: `${d.crm ?? ""}/${d.crm_state ?? ""}`,
+        telefone: d.phone ?? "",
+        preco: d.consultation_price ?? "",
+        experiencia_anos: d.experience_years ?? 0,
+        avaliacao: d.rating ?? "",
+        avaliacoes_total: d.total_reviews ?? 0,
+        formacao: d.education ?? "",
+        status: d.is_approved ? "Aprovado" : "Pendente",
+        cadastrado_em: new Date(d.created_at).toLocaleDateString("pt-BR"),
+      })),
+      [
+        { key: "nome", label: "Nome" },
+        { key: "crm", label: "CRM" },
+        { key: "telefone", label: "Telefone" },
+        { key: "preco", label: "Preço" },
+        { key: "experiencia_anos", label: "Experiência (anos)" },
+        { key: "avaliacao", label: "Avaliação" },
+        { key: "avaliacoes_total", label: "Total Avaliações" },
+        { key: "formacao", label: "Formação" },
+        { key: "status", label: "Status" },
+        { key: "cadastrado_em", label: "Cadastrado em" },
+      ],
+    );
+    toast.success(`${filtered.length} médico${filtered.length === 1 ? "" : "s"} exportado${filtered.length === 1 ? "" : "s"}`);
+  };
+
   return (
     <DashboardLayout title="Administração" nav={getAdminNav("doctors")}>
       <div className="w-full mx-auto max-w-5xl space-y-5 pb-24 md:pb-6">
@@ -83,6 +119,11 @@ const AdminDoctors = () => {
           description="Cadastros, CRMs, preços e status de aprovação dos profissionais."
           accent="from-emerald-500 to-teal-600"
           badge={{ label: `${filtered.length} ${filtered.length === 1 ? "médico" : "médicos"}`, tone: "success" }}
+          actions={
+            <Button variant="outline" size="sm" onClick={handleExport} className="gap-1.5">
+              <Download className="w-4 h-4" /> Exportar CSV
+            </Button>
+          }
         />
 
         <div className="flex gap-3">
