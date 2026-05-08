@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
    SignOut, User, GearSix, List, MagnifyingGlass, ShieldCheck as ShieldCheckIcon,
    CaretDown, DownloadSimple, X as XIcon, DeviceMobile, SidebarSimple, ArrowLineLeft,
-   House, Bell, ChatCircleText, UserCircle,
+    House, Bell, ChatCircleText, UserCircle, Timer, VideoCamera,
 } from "@phosphor-icons/react";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
