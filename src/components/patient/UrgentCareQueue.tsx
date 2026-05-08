@@ -1,4 +1,3 @@
- import { invokePaymentFunction } from "@/lib/payment-utils";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/integrations/supabase/untyped";
@@ -253,7 +252,7 @@ const UrgentCareQueue = () => {
         if (tokenError || !tokenData?.success) { toast.error("Erro no cartão", { description: tokenData?.error }); await db.from("on_demand_queue").delete().eq("id", queueEntry.id); setProcessing(false); return; }
         payload.creditCardToken = tokenData.creditCardToken;
       }
-       const { data, error } = await invokePaymentFunction(payload);
+      const { data, error } = await db.functions.invoke("create-asaas-payment", { body: payload });
       if (error || !data?.success) { toast.error("Erro no pagamento", { description: data?.error || "Tente novamente." }); await db.from("on_demand_queue").delete().eq("id", queueEntry.id); setProcessing(false); return; }
       if (paymentMethod === "pix") { setPixQrCode(data.pixQrCode || null); setPixCopyPaste(data.pixCopyPaste || null); setProcessing(false); toast.success("PIX gerado! 🎉"); return; }
       if (paymentMethod === "boleto") { setBoletoUrl(data.bankSlipUrl || data.invoiceUrl || null); setProcessing(false); toast.success("Boleto gerado! 📄"); return; }
