@@ -15,13 +15,13 @@ import {
   FileText, PieChart, ShieldAlert, Database, 
   CreditCard, ClipboardList, CheckCircle, AlertCircle
 } from "lucide-react";
- import { SquaresFour, WhatsappLogo } from "@phosphor-icons/react";
+ import { SquaresFour, WhatsappLogo, ShieldStar, Tag } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import pingoAdmin from "@/assets/pingo-admin.png";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartTooltip, Cell, LineChart, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartTooltip, Cell, LineChart, Line, AreaChart, Area } from "recharts";
 
 interface RecentUser { name: string; page: string; lastSeen: string }
 interface PanelInfo {
