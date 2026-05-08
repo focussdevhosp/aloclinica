@@ -551,7 +551,7 @@ const AdminWhatsApp = () => {
                         </div>
                         <div className="bg-background/50 p-3 rounded-lg border border-border/50">
                           <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Passo 2</p>
-                          <p className="text-xs">No Lovable, vá em <strong>Cloud -> Secrets</strong> e defina <code>EVOLUTION_API_URL</code> e <code>EVOLUTION_API_KEY</code>.</p>
+                          <p className="text-xs">No Lovable, vá em <strong>Cloud {"->"} Secrets</strong> e defina <code>EVOLUTION_API_URL</code> e <code>EVOLUTION_API_KEY</code>.</p>
                         </div>
                       </div>
                     </div>
