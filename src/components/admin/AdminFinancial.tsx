@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { getAdminNav } from "./adminNav";
 import { AdminPageHeader } from "./AdminPageHeader";
@@ -17,8 +17,10 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import {
   DollarSign, TrendingUp, TrendingDown, AlertTriangle, Search, Download,
-  CreditCard, Receipt, Clock, CheckCircle2, XCircle, RefreshCw, Banknote, Wallet
+  CreditCard, Receipt, Clock, CheckCircle2, XCircle, RefreshCw, Banknote, Wallet,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
+import { exportToCSV } from "@/lib/csv";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Area, AreaChart } from "recharts";
 
 const adminNav = getAdminNav("financial");
@@ -98,6 +100,8 @@ const AdminFinancial = () => {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [period, setPeriod] = useState<string>("30");
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 25;
 
   // Withdrawal state
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
@@ -332,7 +336,7 @@ const AdminFinancial = () => {
   });
 
   // Filtered list
-  const filtered = appointments.filter(a => {
+  const filtered = useMemo(() => appointments.filter(a => {
     if (filter !== "all") {
       if (filter === "paid" && a.payment_status !== "approved" && a.payment_status !== "confirmed") return false;
       if (filter === "pending" && a.payment_status !== "pending") return false;
@@ -348,32 +352,49 @@ const AdminFinancial = () => {
       );
     }
     return true;
-  });
+  }), [appointments, filter, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages - 1);
+  const paged = useMemo(
+    () => filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE),
+    [filtered, currentPage],
+  );
+
+  // Reset to first page when filters change
+  useEffect(() => { setPage(0); }, [filter, search, period]);
 
   const exportCSV = () => {
-    // BOM for Excel to recognize UTF-8 encoding correctly
-    const BOM = "\uFEFF";
-    const headers = "ID,Paciente,Médico,Data,Status,Pagamento,Valor\n";
-    const rows = filtered.map(a => {
-      const date = format(new Date(a.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR });
-      const status = statusLabels[a.status] ?? a.status;
-      const payment = statusLabels[a.payment_status ?? "pending"] ?? a.payment_status ?? "";
-      const price = a.price_at_booking != null ? `R$ ${Number(a.price_at_booking).toFixed(2)}` : "";
-      // Escape fields that may contain commas or quotes
-      const escape = (s: string) => `"${s.replace(/"/g, '""')}"`;
-      return [escape(a.id), escape(a.patient_name ?? ""), escape(a.doctor_name ?? ""), date, status, payment, price].join(",");
-    }).join("\n");
-    const csv = BOM + headers + rows;
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `financeiro_${format(new Date(), "yyyy-MM-dd")}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    // Clean up object URL after download
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    if (filtered.length === 0) {
+      toast.error("Nenhuma transa\u00E7\u00E3o para exportar");
+      return;
+    }
+    exportToCSV(
+      `financeiro_${format(new Date(), "yyyy-MM-dd")}.csv`,
+      filtered.map(a => ({
+        id: a.id,
+        paciente: a.patient_name ?? "",
+        medico: a.doctor_name ?? "",
+        data: format(new Date(a.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
+        status: statusLabels[a.status] ?? a.status,
+        pagamento: statusLabels[a.payment_status ?? "pending"] ?? a.payment_status ?? "",
+        valor: a.price_at_booking != null
+          ? `R$ ${Number(a.price_at_booking).toFixed(2)}`
+          : a.consultation_price != null
+            ? `R$ ${Number(a.consultation_price).toFixed(2)}`
+            : "",
+      })),
+      [
+        { key: "id", label: "ID" },
+        { key: "paciente", label: "Paciente" },
+        { key: "medico", label: "Médico" },
+        { key: "data", label: "Data" },
+        { key: "status", label: "Status" },
+        { key: "pagamento", label: "Pagamento" },
+        { key: "valor", label: "Valor" },
+      ],
+    );
+    toast.success(`${filtered.length} transação${filtered.length === 1 ? "" : "s"} exportada${filtered.length === 1 ? "" : "s"}`);
   };
 
   const pendingWithdrawals = withdrawals.filter(w => w.status === "pending").length;
@@ -665,7 +686,7 @@ const AdminFinancial = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filtered.slice(0, 100).map(a => (
+                        {paged.map(a => (
                           <TableRow key={a.id}>
                             <TableCell className="font-medium">{a.patient_name}</TableCell>
                             <TableCell>{a.doctor_name}</TableCell>
@@ -695,10 +716,33 @@ const AdminFinancial = () => {
                         ))}
                       </TableBody>
                     </Table>
-                    {filtered.length > 100 && (
-                      <p className="text-xs text-muted-foreground text-center mt-3">
-                        Mostrando 100 de {filtered.length} resultados
-                      </p>
+                    {totalPages > 1 && (
+                      <div className="flex items-center justify-between mt-3 px-1">
+                        <p className="text-xs text-muted-foreground">
+                          Mostrando {currentPage * PAGE_SIZE + 1}–{Math.min((currentPage + 1) * PAGE_SIZE, filtered.length)} de {filtered.length}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.max(0, p - 1))}
+                            disabled={currentPage === 0}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+                          <span className="text-xs text-muted-foreground tabular-nums px-2">
+                            {currentPage + 1} / {totalPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                            disabled={currentPage >= totalPages - 1}
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}

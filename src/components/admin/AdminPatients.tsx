@@ -13,6 +13,7 @@ import { getAdminNav } from "./adminNav";
 import { AdminPageHeader } from "./AdminPageHeader";
 import { Search, Eye, Edit, Download, ChevronLeft, ChevronRight, Users, Calendar, Filter } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
+import { exportToCSV } from "@/lib/csv";
 
 const PAGE_SIZE = 20;
 
@@ -123,24 +124,30 @@ const AdminPatients = () => {
   };
 
   const exportCSV = () => {
-    const headers = ["Nome", "Sobrenome", "Telefone", "CPF", "Nascimento", "Cadastro"];
-    const rows = filtered.map(p => [
-      p.first_name, p.last_name, p.phone || "", p.cpf || "",
-      p.date_of_birth ? new Date(p.date_of_birth).toLocaleDateString("pt-BR") : "",
-      new Date(p.created_at).toLocaleDateString("pt-BR"),
-    ]);
-    const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pacientes_${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-    toast.success("CSV exportado!");
+    if (filtered.length === 0) {
+      toast.error("Nenhum paciente para exportar");
+      return;
+    }
+    exportToCSV(
+      `pacientes_${new Date().toISOString().slice(0, 10)}.csv`,
+      filtered.map(p => ({
+        nome: p.first_name ?? "",
+        sobrenome: p.last_name ?? "",
+        telefone: p.phone ?? "",
+        cpf: p.cpf ?? "",
+        nascimento: p.date_of_birth ? new Date(p.date_of_birth).toLocaleDateString("pt-BR") : "",
+        cadastro: new Date(p.created_at).toLocaleDateString("pt-BR"),
+      })),
+      [
+        { key: "nome", label: "Nome" },
+        { key: "sobrenome", label: "Sobrenome" },
+        { key: "telefone", label: "Telefone" },
+        { key: "cpf", label: "CPF" },
+        { key: "nascimento", label: "Nascimento" },
+        { key: "cadastro", label: "Cadastro" },
+      ],
+    );
+    toast.success(`${filtered.length} paciente${filtered.length === 1 ? "" : "s"} exportado${filtered.length === 1 ? "" : "s"}`);
   };
 
   const statusLabel: Record<string, string> = {
