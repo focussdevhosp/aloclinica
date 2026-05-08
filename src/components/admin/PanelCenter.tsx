@@ -12,8 +12,8 @@ import {
   Handshake, Bot, ShieldCheck, ArrowRight,
   Activity, RefreshCw, Monitor, Sparkles, LayoutGrid,
   UserPlus, Layers, TrendingUp, Zap, Settings2,
-  FileText, PieChart, ShieldAlert, Database,
-  CreditCard,
+  FileText, PieChart, ShieldAlert, Database, 
+  CreditCard, ClipboardList, CheckCircle, AlertCircle
 } from "lucide-react";
  import { SquaresFour, WhatsappLogo } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
@@ -218,6 +218,13 @@ const PanelCenter = () => {
     "M0,16 L12,13 L24,15 L36,9 L48,11 L60,6 L72,10 L84,4 L96,7 L108,5 L120,3",
   ];
 
+   const quickActions = [
+     { label: "Aprovar Médicos", icon: UserPlus, route: "/dashboard/admin/approvals?role=admin", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+     { label: "Relatório Financeiro", icon: ClipboardList, route: "/dashboard/admin/financial?role=admin", color: "text-blue-500", bg: "bg-blue-500/10" },
+     { label: "Configurar WhatsApp", icon: WhatsappLogo, route: "/dashboard/admin/whatsapp?role=admin", color: "text-green-500", bg: "bg-green-500/10" },
+     { label: "Ver Logs", icon: Database, route: "/dashboard/admin/logs?role=admin", color: "text-slate-500", bg: "bg-slate-500/10" },
+   ];
+
   return (
     <DashboardLayout title="Centro de Painéis" nav={getAdminNav("panel-center")}>
       <motion.div variants={container} initial="hidden" animate="show" className="w-full max-w-7xl mx-auto space-y-6 pb-24 md:pb-8">
@@ -288,6 +295,29 @@ const PanelCenter = () => {
               </div>
             </div>
           </Card>
+        </motion.section>
+
+        {/* ─────── QUICK ACTIONS ─────── */}
+        <motion.section variants={fadeUp} className="space-y-4">
+          <div className="flex items-center gap-2 px-1">
+            <Zap className="w-5 h-5 text-amber-500" fill="currentColor" />
+            <h2 className="text-lg font-bold text-foreground">Ações Rápidas</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {quickActions.map((action) => (
+              <Button
+                key={action.label}
+                variant="outline"
+                className="h-auto py-4 px-4 flex flex-col items-center gap-3 bg-card hover:bg-muted/50 border-border/40 rounded-2xl group transition-all"
+                onClick={() => navigate(action.route)}
+              >
+                <div className={cn("p-3 rounded-xl transition-transform group-hover:scale-110", action.bg)}>
+                  <action.icon className={cn("w-5 h-5", action.color)} />
+                </div>
+                <span className="text-xs font-bold text-foreground">{action.label}</span>
+              </Button>
+            ))}
+          </div>
         </motion.section>
 
         {/* ─────── KPI CARDS ─────── */}
