@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const PORT = 4173;
+const BASE_URL = `http://localhost:${PORT}`;
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -9,7 +12,7 @@ export default defineConfig({
   reporter: "html",
   timeout: 30_000,
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: BASE_URL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -21,9 +24,13 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:5173",
+    // Em CI, o workflow já fez `npm run build` e baixou o dist/ como artifact;
+    // usamos `vite preview` (serve dist/) com porta fixa, MUITO mais rápido
+    // do que `npm run dev` que recompila tudo. Também evita o conflito de
+    // porta com o `vite.config.ts` (que usa 8080 para o dev server).
+    command: `npx vite preview --port ${PORT} --strictPort`,
+    url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
+    timeout: 120_000,
   },
 });

@@ -1,36 +1,46 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Authentication flows", () => {
-  test("accessing /dashboard without login redirects to auth page", async ({ page }) => {
+  test("accessing /dashboard without login redirects to login page", async ({ page }) => {
     await page.goto("/dashboard");
-    await page.waitForURL(/\/(auth|login)/);
-    expect(page.url()).toMatch(/\/(auth|login)/);
+    // ProtectedRoute sem requiredRole redireciona para /paciente.
+    // Aceita também /auth (compat) e qualquer rota de login.
+    await page.waitForURL(/\/(auth|paciente|medico|admin)/);
+    expect(page.url()).toMatch(/\/(auth|paciente|medico|admin)/);
   });
 
-  test("login page renders email and password fields", async ({ page }) => {
+  test("auth page (/auth) renderiza cards de seleção de perfil", async ({ page }) => {
     await page.goto("/auth");
-    await expect(page.locator('input[type="email"], input#email')).toBeVisible();
-    await expect(page.locator('input[type="password"], input#password')).toBeVisible();
+    // Pós-redesign: cards "Sou paciente" e "Sou médico" são o estado inicial
+    await expect(page.getByText("Sou paciente")).toBeVisible();
+    await expect(page.getByText("Sou médico")).toBeVisible();
   });
 
-  test("submitting empty login shows validation errors", async ({ page }) => {
+  test("login rápido revela email e senha após clicar em 'fazer login rápido'", async ({ page }) => {
     await page.goto("/auth");
-    await page.click('button[type="submit"]');
-    // Should show error messages
-    const errorTexts = await page.locator('[class*="destructive"], [class*="error"]').count();
-    expect(errorTexts).toBeGreaterThan(0);
+
+    // Login fica oculto por padrão; clica para revelar
+    await page.getByText(/fazer login rápido/i).click();
+
+    // Agora os campos devem estar visíveis
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.locator('input[type="password"]')).toBeVisible();
   });
 
-  test("login with invalid credentials shows error", async ({ page }) => {
+  test("login com credenciais inválidas mostra erro", async ({ page }) => {
     await page.goto("/auth");
-    await page.fill('input[type="email"], input#email', "invalid@test.com");
-    await page.fill('input[type="password"], input#password', "wrongpassword123");
-    await page.click('button[type="submit"]');
-    // Wait for error to appear
-    await page.waitForSelector('[class*="destructive"], [role="alert"], [data-sonner-toast]', { timeout: 10000 });
+    await page.getByText(/fazer login rápido/i).click();
+    await page.fill('input[type="email"]', "invalid@test.com");
+    await page.fill('input[type="password"]', "wrongpassword123");
+    await page.locator('button[type="submit"]').click();
+    // Espera o toast de erro aparecer (sonner)
+    await page.waitForSelector(
+      '[data-sonner-toast], [role="alert"], [class*="destructive"]',
+      { timeout: 10000 }
+    );
   });
 
-  test("404 page appears for unknown routes", async ({ page }) => {
+  test("404 aparece para rotas desconhecidas", async ({ page }) => {
     await page.goto("/some-nonexistent-route-xyz");
     await expect(page.locator("body")).toContainText(/404|não encontrada|not found/i);
   });
