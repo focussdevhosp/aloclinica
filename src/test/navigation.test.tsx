@@ -122,13 +122,15 @@ describe("Route Navigation", () => {
     expect(screen.getByText("404")).toBeInTheDocument();
   });
 
-  it("renders Auth page at /paciente", async () => {
+  it("renderiza a página Auth com cards de seleção de perfil", async () => {
     const Auth = (await import("@/pages/Auth")).default;
     render(
       <MemoryRouter initialEntries={["/paciente"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Auth />
       </MemoryRouter>
     );
-    expect(screen.getByText("Entrar")).toBeInTheDocument();
+    // A página Auth pós-redesign mostra cards de perfil por padrão
+    expect(screen.getByText("Sou paciente")).toBeInTheDocument();
+    expect(screen.getByText("Sou médico")).toBeInTheDocument();
   });
 });

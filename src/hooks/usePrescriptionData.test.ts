@@ -1,9 +1,9 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { usePrescriptionData } from './usePrescriptionData';
-import * as supabase from '@/integrations/supabase/client';
 
-// Mock Supabase
+// Mock supabase (db = supabase aliased em supabase/untyped.ts).
+// Sem appointmentId, o useEffect retorna cedo e nenhuma chamada acontece.
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn(),
@@ -15,48 +15,44 @@ describe('usePrescriptionData', () => {
     vi.clearAllMocks();
   });
 
-  it('should initialize with empty data', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
+  it('inicializa com 1 medicamento vazio (template) e diagnóstico vazio', () => {
+    const { result } = renderHook(() => usePrescriptionData());
 
     expect(result.current.data).toBeDefined();
-    expect(result.current.data.medications).toEqual([]);
+    // O hook começa com um template vazio para o usuário começar a preencher
+    expect(result.current.data.medications).toHaveLength(1);
+    expect(result.current.data.medications[0]).toEqual({
+      name: '', dosage: '', frequency: '', duration: '', instructions: '',
+    });
     expect(result.current.data.diagnosis).toBe('');
     expect(result.current.errors).toEqual([]);
   });
 
-  it('should add medication', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
+  it('addMedication adiciona um novo template vazio à lista', () => {
+    const { result } = renderHook(() => usePrescriptionData());
+    const initialCount = result.current.data.medications.length;
 
-    act(() => {
-      result.current.addMedication();
-    });
+    act(() => { result.current.addMedication(); });
 
-    expect(result.current.data.medications).toHaveLength(1);
+    expect(result.current.data.medications).toHaveLength(initialCount + 1);
   });
 
-  it('should remove medication', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
+  it('removeMedication remove pelo índice', () => {
+    const { result } = renderHook(() => usePrescriptionData());
 
     act(() => {
       result.current.addMedication();
       result.current.addMedication();
     });
+    const before = result.current.data.medications.length;
 
-    expect(result.current.data.medications).toHaveLength(2);
+    act(() => { result.current.removeMedication(0); });
 
-    act(() => {
-      result.current.removeMedication(0);
-    });
-
-    expect(result.current.data.medications).toHaveLength(1);
+    expect(result.current.data.medications).toHaveLength(before - 1);
   });
 
-  it('should update medication', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
-
-    act(() => {
-      result.current.addMedication();
-    });
+  it('updateMedication substitui o item no índice', () => {
+    const { result } = renderHook(() => usePrescriptionData());
 
     const updatedMed = {
       name: 'Amoxicilina',
@@ -66,43 +62,35 @@ describe('usePrescriptionData', () => {
       instructions: 'Tomar com água',
     };
 
-    act(() => {
-      result.current.updateMedication(0, updatedMed);
-    });
+    act(() => { result.current.updateMedication(0, updatedMed); });
 
     expect(result.current.data.medications[0]).toEqual(updatedMed);
   });
 
-  it('should update diagnosis field', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
-
+  it('updateField atualiza o campo diagnosis', () => {
+    const { result } = renderHook(() => usePrescriptionData());
     const diagnosis = 'Infecção respiratória aguda';
 
-    act(() => {
-      result.current.updateField('diagnosis', diagnosis);
-    });
+    act(() => { result.current.updateField('diagnosis', diagnosis); });
 
     expect(result.current.data.diagnosis).toBe(diagnosis);
   });
 
-  it('should validate medications', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
+  it('validate retorna false quando faltam campos obrigatórios', () => {
+    const { result } = renderHook(() => usePrescriptionData());
 
-    act(() => {
-      result.current.addMedication();
-    });
+    let isValid = true;
+    act(() => { isValid = result.current.validate(); });
 
-    // Empty medication should fail validation
-    const isValid = result.current.validate();
     expect(isValid).toBe(false);
     expect(result.current.errors.length).toBeGreaterThan(0);
   });
 
-  it('should pass validation with valid medications', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
+  it('validate retorna true com diagnóstico preenchido e ao menos 1 medicamento completo', () => {
+    const { result } = renderHook(() => usePrescriptionData());
 
     act(() => {
-      result.current.addMedication();
+      result.current.updateField('diagnosis', 'Infecção respiratória aguda');
       result.current.updateMedication(0, {
         name: 'Amoxicilina',
         dosage: '500mg',
@@ -112,16 +100,17 @@ describe('usePrescriptionData', () => {
       });
     });
 
-    const isValid = result.current.validate();
+    let isValid = false;
+    act(() => { isValid = result.current.validate(); });
+
     expect(isValid).toBe(true);
-    expect(result.current.errors.length).toBe(0);
+    expect(result.current.errors).toEqual([]);
   });
 
-  it('should filter valid medications', () => {
-    const { result } = renderHook(() => usePrescriptionData('test-appt-id'));
+  it('validMedications filtra apenas os que possuem name preenchido', () => {
+    const { result } = renderHook(() => usePrescriptionData());
 
     act(() => {
-      result.current.addMedication();
       result.current.addMedication();
       result.current.updateMedication(0, {
         name: 'Amoxicilina',

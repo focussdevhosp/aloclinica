@@ -94,10 +94,13 @@ describe('useSOAPNotes', () => {
 
     const formatted = result.current.formatForPDF();
 
-    expect(formatted).toContain('Subjective');
+    // formatForPDF gera os cabeçalhos em CAIXA ALTA (formato canônico SOAP)
+    expect(formatted).toMatch(/SUBJECTIVE/i);
     expect(formatted).toContain('Fever and cough');
-    expect(formatted).toContain('Objective');
+    expect(formatted).toMatch(/OBJECTIVE/i);
     expect(formatted).toContain('Temp 38.5C');
+    expect(formatted).toMatch(/ASSESSMENT/i);
+    expect(formatted).toMatch(/PLAN/i);
   });
 
   it('should update all sections at once', () => {
