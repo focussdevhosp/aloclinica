@@ -2,15 +2,12 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-// Mock supabase — the onAuthStateChange callback must fire to set loading=false
+// Mock supabase — getSession resolve com session=null e onAuthStateChange
+// nunca dispara; AuthProvider deve transitar de loading=true para false.
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     auth: {
-      onAuthStateChange: vi.fn((callback: any) => {
-        // Fire callback with no session to simulate unauthenticated state
-        setTimeout(() => callback("INITIAL_SESSION", null), 0);
-        return { data: { subscription: { unsubscribe: vi.fn() } } };
-      }),
+      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
       signOut: vi.fn(),
     },
@@ -41,7 +38,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 describe("ProtectedRoute", () => {
-  it("redirects unauthenticated users to /auth", async () => {
+  it("redireciona usuário não autenticado para a página de login do paciente (default)", async () => {
     render(
       <MemoryRouter initialEntries={["/dashboard"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
@@ -51,14 +48,38 @@ describe("ProtectedRoute", () => {
                 <div>Dashboard Content</div>
               </ProtectedRoute>
             } />
-            <Route path="/auth" element={<div>Auth Page</div>} />
+            {/* Sem requiredRole, ProtectedRoute redireciona para /paciente */}
+            <Route path="/paciente" element={<div>Página de login do paciente</div>} />
           </Routes>
         </AuthProvider>
       </MemoryRouter>
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Auth Page")).toBeInTheDocument();
-    }, { timeout: 3000 });
+      expect(screen.getByText("Página de login do paciente")).toBeInTheDocument();
+    }, { timeout: 5000 });
+    // E o conteúdo protegido NÃO deve estar acessível
+    expect(screen.queryByText("Dashboard Content")).not.toBeInTheDocument();
+  });
+
+  it("redireciona para /admin quando requiredRole é admin e usuário não está autenticado", async () => {
+    render(
+      <MemoryRouter initialEntries={["/admin/painel"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/admin/painel" element={
+              <ProtectedRoute requiredRole="admin">
+                <div>Admin Content</div>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={<div>Login do Admin</div>} />
+          </Routes>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Login do Admin")).toBeInTheDocument();
+    }, { timeout: 5000 });
   });
 });

@@ -32,7 +32,7 @@ describe("Header", () => {
     localStorage.setItem("locale", "pt-BR");
   });
 
-  it("renders logo and nav links with i18n", () => {
+  it("renderiza logo e principais itens de menu", () => {
     render(
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <I18nProvider>
@@ -40,9 +40,11 @@ describe("Header", () => {
         </I18nProvider>
       </BrowserRouter>
     );
-    expect(screen.getByText("Alo")).toBeInTheDocument();
-    // "Serviços" is the dropdown trigger that contains Teleconsulta
-    expect(screen.getByText("Serviços")).toBeInTheDocument();
+    // Logo presente (img com alt="Logo")
+    expect(screen.getByAltText("Logo")).toBeInTheDocument();
+    // O Header agora tem menu items diretos (não mais dropdown "Serviços").
+    // Pingo Card é injetado mesmo quando o config do banco não vem com ele.
+    expect(screen.getAllByText("Pingo Card").length).toBeGreaterThan(0);
   });
 });
 
