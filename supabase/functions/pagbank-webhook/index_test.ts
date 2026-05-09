@@ -28,7 +28,10 @@ async function pickPatient(admin: any, exclude: string): Promise<string> {
 }
 
 Deno.test("PagBank webhook: PIX PAID approves the appointment", async () => {
-  assert(SERVICE_ROLE, "SUPABASE_SERVICE_ROLE_KEY required");
+  if (!SERVICE_ROLE) {
+    console.warn("SKIP: SUPABASE_SERVICE_ROLE_KEY not set");
+    return;
+  }
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
   const doctorId = await pickDoctor(admin);
@@ -88,6 +91,10 @@ Deno.test("PagBank webhook: PIX PAID approves the appointment", async () => {
 });
 
 Deno.test("PagBank webhook: CREDIT_CARD DECLINED marks refused", async () => {
+  if (!SERVICE_ROLE) {
+    console.warn("SKIP: SUPABASE_SERVICE_ROLE_KEY not set");
+    return;
+  }
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
   const doctorId = await pickDoctor(admin);
   const patientId = await pickPatient(admin, doctorId);
