@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, CheckCircle2, XCircle, QrCode, CreditCard, Trash2, Copy } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, QrCode, CreditCard, Trash2, Copy, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import AdminPageHeader from "./AdminPageHeader";
 
@@ -200,16 +199,20 @@ export default function AdminPaymentTest() {
 
   return (
     <div className="space-y-6 max-w-5xl">
-      <AdminPageHeader title="Teste de Pagamento PagBank" subtitle="Validação end-to-end: PIX e Cartão · R$ 1,00" />
+      <AdminPageHeader
+        icon={FlaskConical}
+        title="Teste de Pagamento PagBank"
+        description="Validação end-to-end: PIX e Cartão · R$ 1,00"
+        eyebrow="Sistema"
+      />
 
-      <Alert>
-        <AlertTitle>Como funciona</AlertTitle>
-        <AlertDescription>
-          Cria um agendamento de teste em seu próprio usuário (R$ 1,00), gera uma cobrança real no PagBank e
-          monitora a tabela <code>appointments</code> a cada 3s. Quando o webhook chegar, o status muda para
-          <code> approved</code>. Use "Limpar" ao final.
-        </AlertDescription>
-      </Alert>
+      <Card className="border-blue-500/30 bg-blue-500/5">
+        <CardContent className="pt-6 text-sm">
+          <strong>Como funciona:</strong> cria um agendamento de teste no seu usuário (R$ 1,00), gera cobrança real
+          no PagBank e monitora <code>appointments</code> a cada 3s. Quando o webhook chegar, o status muda para
+          <code> approved</code>. Clique em "Limpar" ao final.
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
