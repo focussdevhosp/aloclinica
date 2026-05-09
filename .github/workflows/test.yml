@@ -48,7 +48,7 @@ jobs:
         run: npx vitest run
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
   # ── Job 3: Build de produção ─────────────────────────────────────────────
   build:
@@ -70,7 +70,7 @@ jobs:
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -108,7 +108,7 @@ jobs:
         run: npx playwright test
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
           TEST_USER_A_PASSWORD: ${{ secrets.TEST_USER_A_PASSWORD }}
 
