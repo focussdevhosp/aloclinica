@@ -51,7 +51,7 @@ interface DoctorInfo {
 const STEPS = [
   { key: "date", label: "Data", icon: CalendarDays },
   { key: "time", label: "Horário", icon: Clock },
-  { key: "confirm", label: "Confirmar", icon: CheckCircle2 },
+  { key: "confirm", label: "Confirmação", icon: CheckCircle2 },
   { key: "payment", label: "Pagamento", icon: CreditCard },
 ];
 
