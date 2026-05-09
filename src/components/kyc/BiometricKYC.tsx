@@ -141,7 +141,9 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
       // Call DeepSeek Vision API via edge function for real biometric verification
       const verification = await verifyViaDeepSeek(documentImage, selfieImage);
 
-      const isApproved = verification.match && verification.score >= 60;
+      // Threshold elevado para 80 — similaridade <80% tem alto risco de falso positivo
+      // (CompreFace usa 90% no didit-kyc; mantemos 80 aqui por usar DeepSeek Vision)
+      const isApproved = verification.match && verification.score >= 80;
       const status = isApproved ? "aprovado" : "reprovado";
       const score = verification.score;
 
