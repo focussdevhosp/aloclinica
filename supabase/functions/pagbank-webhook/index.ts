@@ -101,7 +101,7 @@ serve(async (req) => {
       }
       if (["refunded", "cancelled"].includes(newStatus)) {
         update.status = "cancelled";
-        update.cancel_reason = `Pagamento ${newStatus} via PagBank`;
+        update.cancellation_reason = `Pagamento ${newStatus} via PagBank`;
       }
 
       const { data: appt } = await supabase
