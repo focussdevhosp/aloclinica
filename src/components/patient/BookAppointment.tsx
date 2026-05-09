@@ -1011,38 +1011,55 @@ const BookAppointment = () => {
             </motion.div>
           )}
 
-          {/* Step 4: Payment */}
+          {/* Step 4: Premium Payment Checkout */}
           {currentStep === 3 && paymentStep && (
-            <motion.div key="payment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <div className="text-center mb-5">
-                <Lock className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-                <h3 className="text-lg font-bold text-foreground">Pagamento Seguro</h3>
-                <p className="text-xs text-muted-foreground">R$ {totalPrice.toFixed(2)} · via Asaas</p>
+            <motion.div key="payment" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary/90 to-secondary p-8 text-primary-foreground shadow-2xl">
+                <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12">
+                  <Shield className="w-32 h-32" />
+                </div>
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <Badge className="mb-4 bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-md px-4 py-1">
+                    <Lock className="w-3 h-3 mr-2" /> Checkout Seguro
+                  </Badge>
+                  <h3 className="text-3xl font-black tracking-tight mb-2">Finalizar Agendamento</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-lg opacity-80 font-medium">R$</span>
+                    <span className="text-5xl font-black">{totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="mt-6 flex items-center gap-2 text-sm opacity-90 font-medium bg-black/10 px-4 py-2 rounded-2xl">
+                    <CalendarDays className="w-4 h-4" />
+                    {selectedDate && format(selectedDate, "dd 'de' MMMM", { locale: ptBR })} às {selectedTime}
+                  </div>
+                </div>
               </div>
 
-              {/* Method selector */}
-              <div className="grid grid-cols-3 gap-2 mb-5">
-                {([
-                  { id: "pix" as PaymentMethod, label: "PIX", icon: QrCode, badge: "Instantâneo" },
-                  { id: "card" as PaymentMethod, label: "Cartão", icon: CreditCard, badge: null },
-                  { id: "boleto" as PaymentMethod, label: "Boleto", icon: FileBarChart, badge: null },
-                ] as const).map(method => (
-                  <button key={method.id} onClick={() => setPaymentMethod(method.id)}
-                    className={cn(
-                      "relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all",
-                      paymentMethod === method.id
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border bg-card hover:border-primary/30"
-                    )}>
-                    <method.icon className={cn("w-5 h-5", paymentMethod === method.id ? "text-primary" : "text-muted-foreground")} />
-                    <span className={cn("text-xs font-semibold", paymentMethod === method.id ? "text-primary" : "text-foreground")}>{method.label}</span>
-                    {method.badge && (
-                      <Badge className="absolute -top-2 -right-2 text-[10px] px-1.5 py-0 bg-secondary text-secondary-foreground border-0">
-                        {method.badge}
-                      </Badge>
-                    )}
-                  </button>
-                ))}
+              <div className="grid grid-cols-3 gap-3 p-1 bg-muted/30 rounded-2xl border border-border/40">
+                {(["pix", "card", "boleto"] as const).map((method) => {
+                  const Icon = method === "pix" ? QrCode : method === "card" ? CreditCard : FileBarChart;
+                  const active = paymentMethod === method;
+                  return (
+                    <button
+                      key={method}
+                      onClick={() => setPaymentMethod(method)}
+                      className={cn(
+                        "flex flex-col items-center justify-center gap-2 py-4 rounded-xl transition-all duration-300 relative overflow-hidden group",
+                        active ? "bg-white dark:bg-card shadow-xl scale-[1.02] border-primary/10 border" : "text-muted-foreground hover:bg-white/50 dark:hover:bg-card/30"
+                      )}
+                    >
+                      {active && (
+                        <motion.div layoutId="active-tab" className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary" />
+                      )}
+                      <Icon className={cn("w-6 h-6 transition-transform duration-500", active ? "text-primary scale-110" : "group-hover:scale-110")} />
+                      <span className={cn("text-xs font-bold uppercase tracking-wider", active ? "text-primary" : "text-muted-foreground")}>
+                        {method === "pix" ? "PIX" : method === "card" ? "Cartão" : "Boleto"}
+                      </span>
+                      {method === "pix" && !active && (
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full animate-ping" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               <AnimatePresence mode="wait">
