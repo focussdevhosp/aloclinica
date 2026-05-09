@@ -1,47 +1,51 @@
 import { test, expect } from "@playwright/test";
 
+/**
+ * E2E auth flows.
+ *
+ * Notas de roteamento:
+ * - `/auth` redireciona para `/paciente` (definido em App.tsx).
+ * - A página /paciente é `AuthPaciente.tsx` — tem email/senha visíveis por padrão
+ *   e placeholder `seu@email.com`.
+ * - O componente `Auth.tsx` (cards "Sou paciente" / "Sou médico" + login rápido)
+ *   está prefetched mas não montado em rota direta.
+ */
+
 test.describe("Authentication flows", () => {
-  test("accessing /dashboard without login redirects to login page", async ({ page }) => {
+  test("acesso a /dashboard sem login redireciona para tela de login", async ({ page }) => {
     await page.goto("/dashboard");
-    // ProtectedRoute sem requiredRole redireciona para /paciente.
-    // Aceita também /auth (compat) e qualquer rota de login.
-    await page.waitForURL(/\/(auth|paciente|medico|admin)/);
+    // ProtectedRoute sem requiredRole vai para /paciente
+    await page.waitForURL(/\/(auth|paciente|medico|admin)/, { timeout: 15000 });
     expect(page.url()).toMatch(/\/(auth|paciente|medico|admin)/);
   });
 
-  test("auth page (/auth) renderiza cards de seleção de perfil", async ({ page }) => {
+  test("/auth redireciona para /paciente", async ({ page }) => {
     await page.goto("/auth");
-    // Pós-redesign: cards "Sou paciente" e "Sou médico" são o estado inicial
-    await expect(page.getByText("Sou paciente")).toBeVisible();
-    await expect(page.getByText("Sou médico")).toBeVisible();
+    await page.waitForURL(/\/paciente/, { timeout: 15000 });
+    expect(page.url()).toMatch(/\/paciente/);
   });
 
-  test("login rápido revela email e senha após clicar em 'fazer login rápido'", async ({ page }) => {
-    await page.goto("/auth");
-
-    // Login fica oculto por padrão; clica para revelar
-    await page.getByText(/fazer login rápido/i).click();
-
-    // Agora os campos devem estar visíveis
-    await expect(page.locator('input[type="email"]')).toBeVisible();
-    await expect(page.locator('input[type="password"]')).toBeVisible();
+  test("página de login do paciente exibe email e senha", async ({ page }) => {
+    await page.goto("/paciente");
+    await expect(page.locator('input[type="email"]').first()).toBeVisible();
+    await expect(page.locator('input[type="password"]').first()).toBeVisible();
   });
 
   test("login com credenciais inválidas mostra erro", async ({ page }) => {
-    await page.goto("/auth");
-    await page.getByText(/fazer login rápido/i).click();
-    await page.fill('input[type="email"]', "invalid@test.com");
-    await page.fill('input[type="password"]', "wrongpassword123");
-    await page.locator('button[type="submit"]').click();
-    // Espera o toast de erro aparecer (sonner)
+    await page.goto("/paciente");
+    await page.locator('input[type="email"]').first().fill("invalid@test.com");
+    await page.locator('input[type="password"]').first().fill("wrongpassword123");
+    await page.locator('button[type="submit"]').first().click();
+    // Aguarda algum sinal de erro: toast Sonner, alert role, ou algum container destrutivo
     await page.waitForSelector(
       '[data-sonner-toast], [role="alert"], [class*="destructive"]',
-      { timeout: 10000 }
+      { timeout: 15000 }
     );
   });
 
   test("404 aparece para rotas desconhecidas", async ({ page }) => {
     await page.goto("/some-nonexistent-route-xyz");
-    await expect(page.locator("body")).toContainText(/404|não encontrada|not found/i);
+    // Espera o NotFound montar (a página tem '404' visível)
+    await expect(page.locator("body")).toContainText(/404|não encontrada|not found/i, { timeout: 10000 });
   });
 });

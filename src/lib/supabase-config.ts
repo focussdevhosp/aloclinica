@@ -2,8 +2,11 @@
 // .env.local ou .env.production devem conter:
 // VITE_SUPABASE_URL=sua_url_supabase
 // VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_publica
+//
+// Nota: o cliente Supabase em src/integrations/supabase/client.ts tem
+// valores hardcoded (gerados pelo Lovable) e funciona mesmo sem env vars.
+// Esta validação é apenas um aviso — não derruba o app.
 
-// Validar credenciais obrigatórias
 const validateSupabaseEnv = () => {
   const url = import.meta.env.VITE_SUPABASE_URL?.trim();
   const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
@@ -12,13 +15,8 @@ const validateSupabaseEnv = () => {
     const missing: string[] = [];
     if (!url) missing.push('VITE_SUPABASE_URL');
     if (!key) missing.push('VITE_SUPABASE_PUBLISHABLE_KEY');
-
-    const error = `❌ [AloClínica] Credenciais Supabase faltando: ${missing.join(', ')}. Configure em .env.local`;
-    console.error(error);
-
-    if (import.meta.env.PROD) {
-      throw new Error(error);
-    }
+    // Apenas warn — o cliente em supabase/client.ts cobre o caso com hardcoded.
+    console.warn(`[AloClínica] Variáveis de ambiente Supabase ausentes: ${missing.join(', ')}. Usando defaults do client.ts.`);
   }
 };
 
