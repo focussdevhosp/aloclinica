@@ -12,16 +12,18 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function pickDoctor(admin: ReturnType<typeof createClient>) {
+// deno-lint-ignore no-explicit-any
+async function pickDoctor(admin: any): Promise<string> {
   const { data } = await admin.from("appointments").select("doctor_id").not("doctor_id", "is", null).limit(1);
   if (data?.[0]?.doctor_id) return data[0].doctor_id as string;
   const { data: profs } = await admin.from("profiles").select("id").limit(1);
-  return profs![0].id as string;
+  return profs[0].id as string;
 }
 
-async function pickPatient(admin: ReturnType<typeof createClient>, exclude: string) {
+// deno-lint-ignore no-explicit-any
+async function pickPatient(admin: any, exclude: string): Promise<string> {
   const { data } = await admin.from("profiles").select("id").neq("id", exclude).limit(1);
-  return data![0].id as string;
+  return data[0].id as string;
 }
 
 Deno.test("PagBank webhook: PIX PAID approves the appointment", async () => {
