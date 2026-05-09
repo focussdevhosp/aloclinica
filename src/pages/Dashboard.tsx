@@ -8,6 +8,7 @@ import { warn } from "@/lib/logger";
 
 import PingoLoader from "@/components/PingoLoader";
 import ReVerificationGate from "@/components/auth/ReVerificationGate";
+import { KycRequiredGate } from "@/components/auth/KycRequiredGate";
 
 // ── LAZY imports: dashboard shells ──
 const PatientDashboard = lazy(() => import("@/components/dashboards/PatientDashboard"));
@@ -273,7 +274,7 @@ const Dashboard = () => {
       <Route path="appointments/:appointmentId" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AppointmentDetail /></ContextGuard></RoleGuard>} />
       <Route path="appointments/:appointmentId/confirmed" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AppointmentConfirmed /></ContextGuard></RoleGuard>} />
       <Route path="schedule" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><DoctorSearch /></ContextGuard></RoleGuard>} />
-      <Route path="schedule/:doctorId" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><BookAppointment /></ContextGuard></RoleGuard>} />
+      <Route path="schedule/:doctorId" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><KycRequiredGate reason="Antes de marcar uma consulta, precisamos confirmar sua identidade. É exigência regulatória da telemedicina (CFM Resolução 2.314/2022)."><BookAppointment /></KycRequiredGate></ContextGuard></RoleGuard>} />
       
       <Route path="history" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><MedicalHistory /></ContextGuard></RoleGuard>} />
       <Route path="payment-history" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><PaymentHistory /></ContextGuard></RoleGuard>} />
@@ -325,7 +326,7 @@ const Dashboard = () => {
       <Route path="ophthalmology/my-exams" element={<RoleGuard allowed={["doctor", "ophthalmologist"]} roles={roles}><OphthalmologyMyExams /></RoleGuard>} />
 
       {/* Consultation */}
-      <Route path="consultation/:appointmentId" element={<RoleGuard allowed={["doctor", "patient"]} roles={roles}><VideoRoom /></RoleGuard>} />
+      <Route path="consultation/:appointmentId" element={<RoleGuard allowed={["doctor", "patient"]} roles={roles}><KycRequiredGate reason="Para entrar em uma consulta por vídeo, sua identidade precisa estar verificada. É exigência do CFM (Resolução 2.314/2022)."><VideoRoom /></KycRequiredGate></RoleGuard>} />
       <Route path="prescribe/:appointmentId" element={<RoleGuard allowed={["doctor"]} roles={roles}><PrescriptionForm /></RoleGuard>} />
       <Route path="rate/:appointmentId" element={<RoleGuard allowed={["patient"]} roles={roles}><RateConsultationPage /></RoleGuard>} />
       <Route path="pre-consultation/:appointmentId" element={<RoleGuard allowed={["patient"]} roles={roles}><PreConsultationPage /></RoleGuard>} />
