@@ -97,29 +97,61 @@ export default function AdminPaymentTest() {
     return data.id;
   };
 
+  // Helper para extrair mensagem REAL do erro retornado pela edge function
+  // (db.functions.invoke esconde o body em erros 4xx/5xx)
+  const invokePagBankFn = async (fnName: string, body: any) => {
+    try {
+      const session = await db.auth.getSession();
+      const token = session.data.session?.access_token;
+      const res = await fetch(`${(import.meta as any).env.VITE_SUPABASE_URL || ""}/functions/v1/${fnName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(body),
+      });
+      const text = await res.text();
+      let json: any = null;
+      try { json = JSON.parse(text); } catch { /* não-JSON */ }
+      return { ok: res.ok, status: res.status, data: json, raw: text };
+    } catch (e) {
+      return { ok: false, status: 0, data: null, raw: String(e) };
+    }
+  };
+
+  // Mensagem amigável quando erro é de whitelist PagBank
+  const explainPagBankError = (msg: string): string => {
+    if (msg && msg.toLowerCase().includes("whitelist")) {
+      return `${msg}\n→ A conta PagBank precisa ser liberada para a Orders API. Contato: 4002-4023 (PagBank Empresas) ou painel "Atendimento" pedindo liberação da Orders API.`;
+    }
+    return msg;
+  };
+
   const generatePix = async () => {
     setBusy(true); setPixQr(null); setPixCopy(null); setOrderId(null);
     try {
       const id = appointmentId || (await createAppointment());
       if (!id) return;
       const { data: profile } = await db.from("profiles").select("cpf, phone").eq("id", user!.id).maybeSingle();
-      const { data, error } = await db.functions.invoke("pagbank-create-payment", {
-        body: {
-          customerName: user!.email || "Admin Teste",
-          customerCpf: profile?.cpf || "12345678909",
-          customerEmail: user!.email,
-          customerPhone: profile?.phone || "11999999999",
-          billingType: "PIX",
-          value: 1.0,
-          description: "Teste PagBank R$1",
-          appointmentId: id,
-        },
+      const r = await invokePagBankFn("pagbank-create-payment", {
+        customerName: user!.email || "Admin Teste",
+        customerCpf: profile?.cpf || "12345678909",
+        customerEmail: user!.email,
+        customerPhone: profile?.phone || "11999999999",
+        billingType: "PIX",
+        value: 1.0,
+        description: "Teste PagBank R$1",
+        appointmentId: id,
       });
-      if (error || !data?.success) {
-        log(`❌ Erro PIX: ${data?.error || error?.message}`);
-        toast.error("Erro PIX", { description: data?.error || error?.message });
+      if (!r.ok || !r.data?.success) {
+        const real = r.data?.error || r.data?.details?.error_messages?.[0]?.description || r.raw?.slice(0, 200) || "Erro desconhecido";
+        const explained = explainPagBankError(real);
+        log(`❌ Erro PIX (HTTP ${r.status}): ${explained}`);
+        toast.error("Erro PIX", { description: real });
         return;
       }
+      const data = r.data;
       setPixQr(data.pixQrCode || null);
       setPixCopy(data.pixCopyPaste || null);
       setOrderId(data.orderId || data.id || null);
@@ -137,47 +169,46 @@ export default function AdminPaymentTest() {
       const cpf = profile?.cpf || "12345678909";
       const phone = profile?.phone || "11999999999";
       const [m, y] = cardExp.split("/");
-      const { data: tok, error: tokErr } = await db.functions.invoke("pagbank-tokenize-card", {
-        body: {
-          customerName: user!.email,
-          customerCpf: cpf,
-          customerEmail: user!.email,
-          customerPhone: phone,
-          cardHolderName: cardName,
-          cardNumber: cardNumber.replace(/\s/g, ""),
-          cardExpiryMonth: m,
-          cardExpiryYear: `20${y}`,
-          cardCcv: cardCvv,
-          cardHolderCpf: cpf,
-          cardHolderPhone: phone,
-          remoteIp: "0.0.0.0",
-        },
+      const tokR = await invokePagBankFn("pagbank-tokenize-card", {
+        customerName: user!.email,
+        customerCpf: cpf,
+        customerEmail: user!.email,
+        customerPhone: phone,
+        cardHolderName: cardName,
+        cardNumber: cardNumber.replace(/\s/g, ""),
+        cardExpiryMonth: m,
+        cardExpiryYear: `20${y}`,
+        cardCcv: cardCvv,
+        cardHolderCpf: cpf,
+        cardHolderPhone: phone,
+        remoteIp: "0.0.0.0",
       });
-      if (tokErr || !tok?.success) {
-        log(`❌ Tokenização falhou: ${tok?.error || tokErr?.message}`);
-        toast.error("Erro tokenização", { description: tok?.error || tokErr?.message });
+      if (!tokR.ok || !tokR.data?.success) {
+        const real = tokR.data?.error || tokR.raw?.slice(0, 200) || "Erro desconhecido";
+        log(`❌ Tokenização falhou (HTTP ${tokR.status}): ${explainPagBankError(real)}`);
+        toast.error("Erro tokenização", { description: real });
         return;
       }
       log(`🔐 Cartão tokenizado`);
-      const { data, error } = await db.functions.invoke("pagbank-create-payment", {
-        body: {
-          customerName: user!.email,
-          customerCpf: cpf,
-          customerEmail: user!.email,
-          customerPhone: phone,
-          billingType: "CREDIT_CARD",
-          value: 1.0,
-          description: "Teste cartão R$1",
-          appointmentId: id,
-          creditCardToken: tok.creditCardToken,
-          installmentCount: 1,
-        },
+      const r = await invokePagBankFn("pagbank-create-payment", {
+        customerName: user!.email,
+        customerCpf: cpf,
+        customerEmail: user!.email,
+        customerPhone: phone,
+        billingType: "CREDIT_CARD",
+        value: 1.0,
+        description: "Teste cartão R$1",
+        appointmentId: id,
+        creditCardToken: tokR.data.creditCardToken,
+        installmentCount: 1,
       });
-      if (error || !data?.success) {
-        log(`❌ Erro cartão: ${data?.error || error?.message}`);
-        toast.error("Erro cartão", { description: data?.error || error?.message });
+      if (!r.ok || !r.data?.success) {
+        const real = r.data?.error || r.data?.details?.error_messages?.[0]?.description || r.raw?.slice(0, 200) || "Erro desconhecido";
+        log(`❌ Erro cartão (HTTP ${r.status}): ${explainPagBankError(real)}`);
+        toast.error("Erro cartão", { description: real });
         return;
       }
+      const data = r.data;
       setOrderId(data.orderId || data.id || null);
       log(`💳 Cartão enviado (status=${data.status || "?"}). Aguardando webhook…`);
       startPolling(id);
