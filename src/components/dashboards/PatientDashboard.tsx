@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/integrations/supabase/untyped";
 import { getPatientNav } from "@/components/patient/patientNav";
+import { useTranslation } from "@/i18n";
 import { format, differenceInDays, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -84,6 +85,7 @@ const PatientDashboard = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const forceOnboarding = searchParams.get("onboarding") === "true";
   const { data: detectedService, isLoading: detectingService } = useDetectPatientService();
   const serviceType = getServiceTypeFromParam(searchParams) || detectedService || "all";
@@ -159,13 +161,13 @@ const PatientDashboard = () => {
    }, [loading, stats?.total, onboardingDone, forceOnboarding, profile, user]);
 
   if (loading) return (
-    <DashboardLayout title="Perfil do Paciente" nav={getPatientNav("home")} role="patient">
+    <DashboardLayout title="Perfil do Paciente" nav={getPatientNav("home", t)} role="patient">
       <div className="space-y-6 pb-24 md:pb-8"><Skeleton className="h-56 rounded-[2rem]" /><div className="grid grid-cols-5 gap-3">{[0,1,2,3,4].map(i => <Skeleton key={i} className="h-16 rounded-2xl" />)}</div><Skeleton className="h-40 rounded-2xl" /></div>
     </DashboardLayout>
   );
 
   return (
-    <DashboardLayout title="Perfil do Paciente" nav={getPatientNav("home")} role="patient">
+    <DashboardLayout title="Perfil do Paciente" nav={getPatientNav("home", t)} role="patient">
       {showOnboarding && <PatientOnboarding onComplete={() => setShowOnboarding(false)} />}
       {!showOnboarding && <FirstConsultationTour />}
       <div ref={scrollRef} className="space-y-6 pb-24 md:pb-12 max-w-7xl mx-auto">
