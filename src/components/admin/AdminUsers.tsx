@@ -12,8 +12,13 @@ import { toast } from "sonner";
 import { getAdminNav } from "./adminNav";
 import { AdminPageHeader } from "./AdminPageHeader";
 import { AdminLoading, AdminEmpty } from "./AdminStateBlocks";
-import { Search, Shield, Eye, Users as UsersIcon, Download } from "lucide-react";
+import { Search, Shield, Eye, Users as UsersIcon, Download, Bookmark, Trash2, Plus } from "lucide-react";
 import { exportCSV } from "@/lib/csvExport";
+import { useBulkSelection } from "@/hooks/useBulkSelection";
+import { BulkActionBar } from "@/components/ui/bulk-action-bar";
+import { useSavedFilters } from "@/hooks/useSavedFilters";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 const ROLE_LABELS: Record<string, string> = {
   patient: "Paciente",
@@ -58,8 +63,10 @@ interface UserWithRoles {
   roles: string[];
 }
 
+type SavedFilter = { search: string; roleFilter: string | null };
+
 const AdminUsers = () => {
-  
+
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -67,6 +74,9 @@ const AdminUsers = () => {
   const [selected, setSelected] = useState<UserWithRoles | null>(null);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [filterName, setFilterName] = useState("");
+  const sel = useBulkSelection();
+  const savedFilters = useSavedFilters<SavedFilter>("admin_users");
 
   useEffect(() => { fetchUsers(); }, []);
 
@@ -151,6 +161,70 @@ const AdminUsers = () => {
     return acc;
   }, {});
 
+  const selectedUsers = users.filter(u => sel.has(u.user_id));
+
+  const bulkExport = () => {
+    if (selectedUsers.length === 0) return;
+    const today = new Date().toISOString().slice(0, 10);
+    exportCSV(`usuarios-selecionados-${today}.csv`, selectedUsers, [
+      { key: "first_name", header: "Nome" },
+      { key: "last_name", header: "Sobrenome" },
+      { key: "cpf", header: "CPF" },
+      { key: "phone", header: "Telefone" },
+      { key: "roles", header: "Roles", format: (v: string[]) => (v ?? []).map(r => ROLE_LABELS[r] ?? r).join(", ") },
+      { key: "created_at", header: "Cadastro", format: (v: string) => v ? new Date(v).toLocaleString("pt-BR") : "" },
+    ]);
+    toast.success(`${selectedUsers.length} usuário${selectedUsers.length === 1 ? "" : "s"} exportado${selectedUsers.length === 1 ? "" : "s"}`);
+  };
+
+  const bulkAddRole = async (role: string) => {
+    if (selectedUsers.length === 0) return;
+    const targets = selectedUsers.filter(u => !u.roles.includes(role));
+    if (targets.length === 0) { toast.info("Todos já têm essa role"); return; }
+    const rows = targets.map(u => ({ user_id: u.user_id, role: role as any }));
+    const { error } = await db.from("user_roles").upsert(rows);
+    if (error) toast.error("Erro ao aplicar role em lote");
+    else {
+      toast.success(`Role "${ROLE_LABELS[role] ?? role}" aplicada a ${targets.length} usuário(s)`);
+      sel.clear();
+      fetchUsers();
+    }
+  };
+
+  const bulkRemoveRole = async (role: string) => {
+    if (selectedUsers.length === 0) return;
+    const targets = selectedUsers.filter(u => u.roles.includes(role));
+    if (targets.length === 0) { toast.info("Nenhum dos selecionados tem essa role"); return; }
+    const ids = targets.map(u => u.user_id);
+    const { error } = await db.from("user_roles")
+      .delete()
+      .in("user_id", ids)
+      .eq("role", role as any);
+    if (error) toast.error("Erro ao remover role em lote");
+    else {
+      toast.success(`Role removida de ${targets.length} usuário(s)`);
+      sel.clear();
+      fetchUsers();
+    }
+  };
+
+  const applySavedFilter = (name: string) => {
+    const f = savedFilters.apply(name);
+    if (!f) return;
+    setSearch(f.search);
+    setRoleFilter(f.roleFilter);
+    sel.clear();
+    toast.success(`Filtro "${name}" aplicado`);
+  };
+
+  const handleSaveFilter = () => {
+    const name = filterName.trim();
+    if (!name) return;
+    savedFilters.save(name, { search, roleFilter });
+    setFilterName("");
+    toast.success(`Filtro "${name}" salvo`);
+  };
+
   return (
     <DashboardLayout title="Administração" nav={getAdminNav("users")}>
       <div className="w-full mx-auto max-w-5xl space-y-5 pb-24 md:pb-6">
@@ -175,9 +249,62 @@ const AdminUsers = () => {
         />
 
         <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Buscar por nome, CPF ou telefone..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Buscar por nome, CPF ou telefone..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="default" className="gap-1.5 shrink-0">
+                  <Bookmark className="w-4 h-4" /> Filtros salvos {savedFilters.names.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">{savedFilters.names.length}</Badge>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72 p-3 space-y-3">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Salvar filtro atual</p>
+                <div className="flex gap-2">
+                  <Input
+                    value={filterName}
+                    onChange={(e) => setFilterName(e.target.value)}
+                    placeholder="Nome (ex: Médicos sem CPF)"
+                    className="h-8 text-sm"
+                    onKeyDown={(e) => e.key === "Enter" && handleSaveFilter()}
+                  />
+                  <Button size="sm" onClick={handleSaveFilter} disabled={!filterName.trim()} className="h-8 px-3">
+                    <Plus className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+                {savedFilters.names.length > 0 ? (
+                  <>
+                    <div className="h-px bg-border" />
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Salvos</p>
+                    <div className="space-y-1 max-h-64 overflow-auto">
+                      {savedFilters.names.map(name => (
+                        <div key={name} className="flex items-center gap-1 rounded-lg hover:bg-muted/60 group">
+                          <button
+                            type="button"
+                            onClick={() => applySavedFilter(name)}
+                            className="flex-1 text-left text-sm font-medium px-2 py-1.5 truncate"
+                          >
+                            {name}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { savedFilters.remove(name); toast.success("Filtro removido"); }}
+                            className="opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground hover:text-destructive transition-opacity"
+                            aria-label="Remover"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-2">Nenhum filtro salvo ainda</p>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
           {Object.keys(roleCounts).length > 0 && (
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -209,6 +336,44 @@ const AdminUsers = () => {
           )}
         </div>
 
+        <BulkActionBar count={sel.size} onClear={sel.clear} noun="usuários">
+          <Button size="sm" variant="outline" onClick={bulkExport} className="gap-1.5 h-8">
+            <Download className="w-3.5 h-3.5" /> Exportar CSV
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="gap-1.5 h-8">
+                <Plus className="w-3.5 h-3.5" /> Adicionar role
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="text-[11px]">Aplicar a {sel.size} usuário(s)</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {(["patient", "doctor", "clinic", "admin", "receptionist", "support", "partner"] as const).map(role => (
+                <DropdownMenuItem key={role} onClick={() => bulkAddRole(role)}>
+                  {ROLE_LABELS[role]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="gap-1.5 h-8 text-destructive border-destructive/30 hover:bg-destructive/5">
+                <Trash2 className="w-3.5 h-3.5" /> Remover role
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="text-[11px]">Remover de {sel.size} usuário(s)</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {(["patient", "doctor", "clinic", "admin", "receptionist", "support", "partner"] as const).map(role => (
+                <DropdownMenuItem key={role} onClick={() => bulkRemoveRole(role)}>
+                  {ROLE_LABELS[role]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </BulkActionBar>
+
         {loading ? (
           <AdminLoading variant="table" count={6} />
         ) : filtered.length === 0 ? (
@@ -228,6 +393,13 @@ const AdminUsers = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        checked={filtered.length > 0 && sel.isAllSelected(filtered.map(u => u.user_id))}
+                        onCheckedChange={() => sel.selectAll(filtered.map(u => u.user_id))}
+                        aria-label="Selecionar todos"
+                      />
+                    </TableHead>
                     <TableHead>Usuário</TableHead>
                     <TableHead>Telefone</TableHead>
                     <TableHead>Roles</TableHead>
@@ -237,7 +409,14 @@ const AdminUsers = () => {
                 </TableHeader>
                 <TableBody>
                   {filtered.map(u => (
-                    <TableRow key={u.user_id}>
+                    <TableRow key={u.user_id} data-state={sel.has(u.user_id) ? "selected" : undefined}>
+                      <TableCell className="w-10">
+                        <Checkbox
+                          checked={sel.has(u.user_id)}
+                          onCheckedChange={() => sel.toggle(u.user_id)}
+                          aria-label={`Selecionar ${u.first_name} ${u.last_name}`}
+                        />
+                      </TableCell>
                       <TableCell data-label="Usuário">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
