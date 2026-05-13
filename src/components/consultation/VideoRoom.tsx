@@ -90,6 +90,30 @@ const VideoRoom = () => {
   const channelRef = useRef<ReturnType<typeof db.channel> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Robustez: estado de rede e auto-fallback WebRTC → Jitsi
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+  const reconnectStartRef = useRef<number | null>(null);
+  const autoFallbackDoneRef = useRef(false);
+
+  /** Switch atomically to Jitsi (usado pela UI manual e pelo fallback automático). */
+  const switchToJitsi = useCallback(async (reason: "manual" | "auto") => {
+    const rid = gerarRoomId(appointmentId ?? "");
+    setUseJitsi(true);
+    setJitsiRoomId(rid);
+    localStorage.setItem(`jitsi_${appointmentId}`, "true");
+    try {
+      await db.from("appointments").update({ jitsi_room_id: rid } as any).eq("id", appointmentId ?? "");
+    } catch (err) {
+      logError("switchToJitsi: falha ao persistir room_id", err);
+    }
+    if (reason === "auto") {
+      toast.warning("Conexão P2P instável", {
+        description: "Trocamos para o servidor de vídeo (Jitsi) automaticamente para manter sua consulta.",
+        duration: 6000,
+      });
+    }
+  }, [appointmentId]);
+
   // Sync panel state helpers
    const openPanel = (panel: "chat" | "notes" | "info" | "referral") => {
     setActivePanel(prev => prev === panel ? null : panel);
@@ -223,6 +247,63 @@ const VideoRoom = () => {
     timerRef.current = setInterval(() => setElapsed((prev) => prev + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [deviceChecked]);
+
+  // ─── Online/offline awareness ───
+  useEffect(() => {
+    const goOnline = () => {
+      setIsOnline(true);
+      toast.success("Conexão restaurada", { description: "Reconectando à consulta..." });
+    };
+    const goOffline = () => {
+      setIsOnline(false);
+      toast.error("Sem conexão", { description: "Verifique sua internet. A consulta tentará reconectar quando voltar." });
+    };
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+  // ─── Auto-fallback WebRTC → Jitsi ───
+  // Critério: status "failed" (imediato) ou "reconnecting" persistente por > 15s.
+  // Roda apenas uma vez por sessão para evitar oscilação. Quando volta a "connected",
+  // reseta o timer (mas não desfaz o switch — para evitar flapping).
+  useEffect(() => {
+    if (useJitsi || autoFallbackDoneRef.current || !appointmentId) return;
+
+    if (webrtcStatus === "failed") {
+      autoFallbackDoneRef.current = true;
+      switchToJitsi("auto");
+      return;
+    }
+
+    if (webrtcStatus === "reconnecting") {
+      if (reconnectStartRef.current === null) {
+        reconnectStartRef.current = Date.now();
+      }
+      const elapsed = Date.now() - reconnectStartRef.current;
+      if (elapsed > 15_000) {
+        autoFallbackDoneRef.current = true;
+        switchToJitsi("auto");
+        return;
+      }
+      const remaining = 15_000 - elapsed;
+      const t = setTimeout(() => {
+        if (!autoFallbackDoneRef.current && webrtcStatus === "reconnecting") {
+          autoFallbackDoneRef.current = true;
+          switchToJitsi("auto");
+        }
+      }, remaining + 100);
+      return () => clearTimeout(t);
+    }
+
+    // Estado saudável: zera o cronômetro de reconexão
+    if (webrtcStatus === "connected") {
+      reconnectStartRef.current = null;
+    }
+  }, [webrtcStatus, useJitsi, appointmentId, switchToJitsi]);
 
   // ─── Load persisted chat messages on mount ───
   useEffect(() => {
@@ -1249,21 +1330,28 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
                 icon={<Video className="w-3.5 h-3.5" />}
                 label={useJitsi ? "Jitsi" : "P2P"}
                 onClick={() => {
-                  const next = !useJitsi;
-                  setUseJitsi(next);
-                  localStorage.setItem(`jitsi_${appointmentId}`, String(next));
-                  if (next) {
-                    const rid = gerarRoomId(appointmentId ?? '');
-                    setJitsiRoomId(rid);
-                    db.from("appointments").update({ jitsi_room_id: rid } as any).eq("id", appointmentId ?? '');
+                  if (!useJitsi) {
+                    autoFallbackDoneRef.current = true; // troca manual conta como decisão final
+                    switchToJitsi("manual");
                   } else {
+                    setUseJitsi(false);
                     setJitsiRoomId(null);
-                    db.from("appointments").update({ jitsi_room_id: null } as any).eq("id", appointmentId ?? '');
+                    autoFallbackDoneRef.current = false;
+                    reconnectStartRef.current = null;
+                    localStorage.setItem(`jitsi_${appointmentId}`, "false");
+                    db.from("appointments").update({ jitsi_room_id: null } as any).eq("id", appointmentId ?? "");
                   }
                 }}
               />
             </>
           )}
+        </div>
+      )}
+
+      {/* Banner persistente quando o navegador detecta queda de rede */}
+      {!isOnline && (
+        <div className="bg-destructive text-destructive-foreground px-4 py-2 text-xs font-semibold text-center shrink-0">
+          ⚠️ Sem conexão — a consulta vai retomar quando sua internet voltar.
         </div>
       )}
 
