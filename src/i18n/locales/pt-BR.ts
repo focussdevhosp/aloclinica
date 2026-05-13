@@ -127,6 +127,59 @@ const ptBR = {
   "pingo.greeting": "Olá! Eu sou a Pingo, seu assistente virtual. Como posso ajudar?",
   "pingo.placeholder": "Digite sua pergunta...",
   "pingo.newConversation": "Nova conversa",
+
+  // Patient nav
+  "patientNav.home": "Início",
+  "patientNav.appointments": "Consultas",
+  "patientNav.urgentCare": "Urgência",
+  "patientNav.schedule": "Agendar",
+  "patientNav.health": "Minha Saúde",
+  "patientNav.prescriptions": "Receitas",
+  "patientNav.examResults": "Exames",
+  "patientNav.uploadExams": "Enviar Exames",
+  "patientNav.renewal": "Renovar Receita",
+  "patientNav.payments": "Pagamentos",
+  "patientNav.notifications": "Avisos",
+  "patientNav.support": "Suporte",
+  "patientNav.chat": "Chat",
+  "patientNav.profile": "Meu Perfil",
+  "patientNav.settings": "Configurações",
+  "patientNav.privacy": "Privacidade",
+  "patientNav.groupMain": "Principal",
+  "patientNav.groupHealth": "Saúde Digital",
+  "patientNav.groupFinance": "Financeiro & Alertas",
+  "patientNav.groupAccount": "Conta",
+
+  // Appointment statuses
+  "appt.scheduled": "Agendada",
+  "appt.confirmed": "Confirmada",
+  "appt.inProgress": "Em andamento",
+  "appt.completed": "Concluída",
+  "appt.cancelled": "Cancelada",
+  "appt.noShow": "Não compareceu",
+
+  // Booking flow
+  "book.selectSpecialty": "Selecione a especialidade",
+  "book.selectDoctor": "Escolha o médico",
+  "book.selectSlot": "Escolha o horário",
+  "book.confirmBooking": "Confirmar agendamento",
+  "book.paymentMethod": "Forma de pagamento",
+  "book.total": "Total",
+
+  // Patient dashboard hero
+  "dashboardPatient.greetingMorning": "Bom dia",
+  "dashboardPatient.greetingAfternoon": "Boa tarde",
+  "dashboardPatient.greetingEvening": "Boa noite",
+  "dashboardPatient.howAreYou": "Como você está se sentindo hoje?",
+  "dashboardPatient.bookNow": "Agendar agora",
+  "dashboardPatient.urgentNow": "Atendimento imediato",
+
+  // Common extras
+  "common.yes": "Sim",
+  "common.no": "Não",
+  "common.continue": "Continuar",
+  "common.required": "Obrigatório",
+  "common.optional": "Opcional",
 } as const;
 
 export default ptBR;
