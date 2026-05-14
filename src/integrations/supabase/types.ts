@@ -53,6 +53,45 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_logs_archive: {
+        Row: {
+          action: string
+          consent_reference: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          consent_reference?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          consent_reference?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       aloc_exames: {
         Row: {
           clinic_id: string | null
@@ -114,6 +153,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "aloc_exames_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       aloc_laudos: {
@@ -172,6 +218,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aloc_laudos_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
           {
             foreignKeyName: "aloc_laudos_exam_id_fkey"
@@ -244,6 +297,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_waitlist_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
           {
             foreignKeyName: "appointment_waitlist_specialty_id_fkey"
@@ -357,6 +417,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       availability_slots: {
@@ -394,6 +461,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "availability_slots_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
         ]
       }
@@ -466,6 +540,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_affiliations_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
         ]
       }
@@ -665,6 +746,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "consultation_notes_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       coupons: {
@@ -775,6 +863,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "doctor_absences_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       doctor_care_areas: {
@@ -803,6 +898,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_care_areas_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
         ]
       }
@@ -842,6 +944,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "doctor_invite_codes_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       doctor_profiles: {
@@ -856,6 +965,7 @@ export type Database = {
           crm_verified_at: string | null
           crm_verified_by: string | null
           display_name: string | null
+          doctor_type: string
           id: string
           is_active: boolean | null
           is_approved: boolean | null
@@ -884,6 +994,7 @@ export type Database = {
           crm_verified_at?: string | null
           crm_verified_by?: string | null
           display_name?: string | null
+          doctor_type?: string
           id?: string
           is_active?: boolean | null
           is_approved?: boolean | null
@@ -912,6 +1023,7 @@ export type Database = {
           crm_verified_at?: string | null
           crm_verified_by?: string | null
           display_name?: string | null
+          doctor_type?: string
           id?: string
           is_active?: boolean | null
           is_approved?: boolean | null
@@ -957,6 +1069,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_specialties_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
           {
             foreignKeyName: "doctor_specialties_specialty_id_fkey"
@@ -1115,6 +1234,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "exam_reports_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
+          {
             foreignKeyName: "exam_reports_exam_id_fkey"
             columns: ["exam_id"]
             isOneToOne: false
@@ -1193,6 +1319,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "exam_requests_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       exames: {
@@ -1258,6 +1391,33 @@ export type Database = {
         }
         Relationships: []
       }
+      failed_login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          reason: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          reason?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          reason?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       faq_items: {
         Row: {
           answer: string
@@ -1314,6 +1474,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorite_doctors_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
         ]
       }
@@ -1579,6 +1746,119 @@ export type Database = {
         }
         Relationships: []
       }
+      lgpd_export_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          download_url: string | null
+          error: string | null
+          expires_at: string | null
+          id: string
+          requested_by: string | null
+          size_bytes: number | null
+          status: string
+          tables_exported: Json | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          download_url?: string | null
+          error?: string | null
+          expires_at?: string | null
+          id?: string
+          requested_by?: string | null
+          size_bytes?: number | null
+          status?: string
+          tables_exported?: Json | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          download_url?: string | null
+          error?: string | null
+          expires_at?: string | null
+          id?: string
+          requested_by?: string | null
+          size_bytes?: number | null
+          status?: string
+          tables_exported?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medical_certificates: {
+        Row: {
+          appointment_id: string | null
+          cid: string | null
+          created_at: string
+          days: number | null
+          doctor_crm: string
+          doctor_id: string
+          doctor_name: string
+          document_hash: string | null
+          id: string
+          issued_at: string
+          patient_cpf: string | null
+          patient_id: string | null
+          patient_name: string
+          pdf_url: string | null
+          reason: string | null
+          storage_path: string | null
+          type: string
+          verification_code: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          cid?: string | null
+          created_at?: string
+          days?: number | null
+          doctor_crm: string
+          doctor_id: string
+          doctor_name: string
+          document_hash?: string | null
+          id?: string
+          issued_at?: string
+          patient_cpf?: string | null
+          patient_id?: string | null
+          patient_name: string
+          pdf_url?: string | null
+          reason?: string | null
+          storage_path?: string | null
+          type: string
+          verification_code: string
+        }
+        Update: {
+          appointment_id?: string | null
+          cid?: string | null
+          created_at?: string
+          days?: number | null
+          doctor_crm?: string
+          doctor_id?: string
+          doctor_name?: string
+          document_hash?: string | null
+          id?: string
+          issued_at?: string
+          patient_cpf?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          pdf_url?: string | null
+          reason?: string | null
+          storage_path?: string | null
+          type?: string
+          verification_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_certificates_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_records: {
         Row: {
           appointment_id: string | null
@@ -1658,6 +1938,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "medical_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       messages: {
@@ -1725,6 +2012,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          channel: string
+          created_at: string
+          error: string | null
+          id: string
+          payload: Json | null
+          provider: string | null
+          provider_message_id: string | null
+          recipient: string
+          status: string
+          subject: string | null
+          template_slug: string | null
+          user_id: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          payload?: Json | null
+          provider?: string | null
+          provider_message_id?: string | null
+          recipient: string
+          status?: string
+          subject?: string | null
+          template_slug?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          payload?: Json | null
+          provider?: string | null
+          provider_message_id?: string | null
+          recipient?: string
+          status?: string
+          subject?: string | null
+          template_slug?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notification_logs: {
         Row: {
           canal: string | null
@@ -1752,6 +2084,54 @@ export type Database = {
           status?: string
           tipo?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      notification_templates: {
+        Row: {
+          body_html: string | null
+          body_text: string | null
+          channel: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_system: boolean
+          slug: string
+          subject: string | null
+          updated_at: string
+          updated_by: string | null
+          variables: Json | null
+        }
+        Insert: {
+          body_html?: string | null
+          body_text?: string | null
+          channel: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          slug: string
+          subject?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          body_html?: string | null
+          body_text?: string | null
+          channel?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          slug?: string
+          subject?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          variables?: Json | null
         }
         Relationships: []
       }
@@ -1832,6 +2212,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "on_demand_queue_assigned_doctor_id_fkey"
+            columns: ["assigned_doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
           {
             foreignKeyName: "on_demand_queue_specialty_id_fkey"
@@ -1941,6 +2328,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ophthalmology_exams_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       ophthalmology_prescriptions: {
@@ -2020,6 +2414,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ophthalmology_prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
           {
             foreignKeyName: "ophthalmology_prescriptions_exam_id_fkey"
@@ -2490,6 +2891,117 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "patient_documents_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
+        ]
+      }
+      payment_transactions: {
+        Row: {
+          amount_cents: number
+          authorized_at: string | null
+          created_at: string
+          currency: string
+          declined_at: string | null
+          description: string | null
+          gateway: string
+          id: string
+          installments: number | null
+          metadata: Json
+          mp_boleto_url: string | null
+          mp_payment_id: string | null
+          mp_preapproval_id: string | null
+          mp_qr_code: string | null
+          mp_qr_code_base64: string | null
+          pagbank_charge_id: string | null
+          pagbank_order_id: string | null
+          paid_at: string | null
+          payment_method: string
+          raw_response: Json | null
+          refund_amount_cents: number | null
+          refund_reason: string | null
+          refunded_at: string | null
+          resource_id: string
+          resource_type: string
+          saved_card_id: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          authorized_at?: string | null
+          created_at?: string
+          currency?: string
+          declined_at?: string | null
+          description?: string | null
+          gateway?: string
+          id?: string
+          installments?: number | null
+          metadata?: Json
+          mp_boleto_url?: string | null
+          mp_payment_id?: string | null
+          mp_preapproval_id?: string | null
+          mp_qr_code?: string | null
+          mp_qr_code_base64?: string | null
+          pagbank_charge_id?: string | null
+          pagbank_order_id?: string | null
+          paid_at?: string | null
+          payment_method: string
+          raw_response?: Json | null
+          refund_amount_cents?: number | null
+          refund_reason?: string | null
+          refunded_at?: string | null
+          resource_id: string
+          resource_type: string
+          saved_card_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          authorized_at?: string | null
+          created_at?: string
+          currency?: string
+          declined_at?: string | null
+          description?: string | null
+          gateway?: string
+          id?: string
+          installments?: number | null
+          metadata?: Json
+          mp_boleto_url?: string | null
+          mp_payment_id?: string | null
+          mp_preapproval_id?: string | null
+          mp_qr_code?: string | null
+          mp_qr_code_base64?: string | null
+          pagbank_charge_id?: string | null
+          pagbank_order_id?: string | null
+          paid_at?: string | null
+          payment_method?: string
+          raw_response?: Json | null
+          refund_amount_cents?: number | null
+          refund_reason?: string | null
+          refunded_at?: string | null
+          resource_id?: string
+          resource_type?: string
+          saved_card_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_saved_card_id_fkey"
+            columns: ["saved_card_id"]
+            isOneToOne: false
+            referencedRelation: "saved_cards"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pingo_card_partners: {
@@ -2634,7 +3146,11 @@ export type Database = {
           card_number: string
           created_at: string
           current_period_end: string | null
+          gateway: string
           id: string
+          mp_payer_id: string | null
+          mp_preapproval_id: string | null
+          next_charge_at: string | null
           plan_id: string
           started_at: string
           status: string
@@ -2651,7 +3167,11 @@ export type Database = {
           card_number: string
           created_at?: string
           current_period_end?: string | null
+          gateway?: string
           id?: string
+          mp_payer_id?: string | null
+          mp_preapproval_id?: string | null
+          next_charge_at?: string | null
           plan_id: string
           started_at?: string
           status?: string
@@ -2668,7 +3188,11 @@ export type Database = {
           card_number?: string
           created_at?: string
           current_period_end?: string | null
+          gateway?: string
           id?: string
+          mp_payer_id?: string | null
+          mp_preapproval_id?: string | null
+          next_charge_at?: string | null
           plan_id?: string
           started_at?: string
           status?: string
@@ -2826,6 +3350,7 @@ export type Database = {
           id: string
           interval: string | null
           is_active: boolean | null
+          mp_plan_id: string | null
           name: string
           price: number
         }
@@ -2837,6 +3362,7 @@ export type Database = {
           id?: string
           interval?: string | null
           is_active?: boolean | null
+          mp_plan_id?: string | null
           name: string
           price: number
         }
@@ -2848,6 +3374,7 @@ export type Database = {
           id?: string
           interval?: string | null
           is_active?: boolean | null
+          mp_plan_id?: string | null
           name?: string
           price?: number
         }
@@ -2932,6 +3459,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescription_renewals_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
           },
           {
             foreignKeyName: "prescription_renewals_prescription_id_fkey"
@@ -3109,6 +3643,13 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
       }
       profiles: {
@@ -3128,6 +3669,7 @@ export type Database = {
           gender: string | null
           id: string
           last_name: string | null
+          mp_customer_id: string | null
           phone: string | null
           settings: Json | null
           social_name: string | null
@@ -3150,6 +3692,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string | null
+          mp_customer_id?: string | null
           phone?: string | null
           settings?: Json | null
           social_name?: string | null
@@ -3172,6 +3715,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string | null
+          mp_customer_id?: string | null
           phone?: string | null
           settings?: Json | null
           social_name?: string | null
@@ -3283,7 +3827,71 @@ export type Database = {
             referencedRelation: "doctor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "satisfaction_surveys_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_sla_dashboard"
+            referencedColumns: ["doctor_id"]
+          },
         ]
+      }
+      saved_cards: {
+        Row: {
+          brand: string | null
+          created_at: string
+          expiry_month: string | null
+          expiry_year: string | null
+          gateway: string
+          holder_name: string | null
+          id: string
+          is_default: boolean
+          last4: string
+          mp_card_id: string | null
+          mp_customer_id: string | null
+          pagbank_card_id: string | null
+          removed_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          expiry_month?: string | null
+          expiry_year?: string | null
+          gateway?: string
+          holder_name?: string | null
+          id?: string
+          is_default?: boolean
+          last4: string
+          mp_card_id?: string | null
+          mp_customer_id?: string | null
+          pagbank_card_id?: string | null
+          removed_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          expiry_month?: string | null
+          expiry_year?: string | null
+          gateway?: string
+          holder_name?: string | null
+          id?: string
+          is_default?: boolean
+          last4?: string
+          mp_card_id?: string | null
+          mp_customer_id?: string | null
+          pagbank_card_id?: string | null
+          removed_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       site_config: {
         Row: {
@@ -3356,6 +3964,7 @@ export type Database = {
           id: string
           is_enabled: boolean | null
           key: string
+          language: string
           last_published_at: string | null
           schema: Json
           updated_at: string
@@ -3370,6 +3979,7 @@ export type Database = {
           id?: string
           is_enabled?: boolean | null
           key: string
+          language?: string
           last_published_at?: string | null
           schema?: Json
           updated_at?: string
@@ -3384,6 +3994,7 @@ export type Database = {
           id?: string
           is_enabled?: boolean | null
           key?: string
+          language?: string
           last_published_at?: string | null
           schema?: Json
           updated_at?: string
@@ -3437,34 +4048,73 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          amount_cents: number | null
           cancelled_at: string | null
           created_at: string
+          currency: string
           expires_at: string | null
+          gateway: string
           id: string
+          interval_days: number
+          last_charge_at: string | null
+          last_charge_status: string | null
+          metadata: Json
+          mp_payer_id: string | null
+          mp_preapproval_id: string | null
+          next_charge_at: string | null
+          pagbank_subscription_id: string | null
           payment_id: string | null
           plan_id: string | null
+          retry_count: number
+          saved_card_id: string | null
           started_at: string | null
           status: string | null
           user_id: string
         }
         Insert: {
+          amount_cents?: number | null
           cancelled_at?: string | null
           created_at?: string
+          currency?: string
           expires_at?: string | null
+          gateway?: string
           id?: string
+          interval_days?: number
+          last_charge_at?: string | null
+          last_charge_status?: string | null
+          metadata?: Json
+          mp_payer_id?: string | null
+          mp_preapproval_id?: string | null
+          next_charge_at?: string | null
+          pagbank_subscription_id?: string | null
           payment_id?: string | null
           plan_id?: string | null
+          retry_count?: number
+          saved_card_id?: string | null
           started_at?: string | null
           status?: string | null
           user_id: string
         }
         Update: {
+          amount_cents?: number | null
           cancelled_at?: string | null
           created_at?: string
+          currency?: string
           expires_at?: string | null
+          gateway?: string
           id?: string
+          interval_days?: number
+          last_charge_at?: string | null
+          last_charge_status?: string | null
+          metadata?: Json
+          mp_payer_id?: string | null
+          mp_preapproval_id?: string | null
+          next_charge_at?: string | null
+          pagbank_subscription_id?: string | null
           payment_id?: string | null
           plan_id?: string | null
+          retry_count?: number
+          saved_card_id?: string | null
           started_at?: string | null
           status?: string | null
           user_id?: string
@@ -3475,6 +4125,13 @@ export type Database = {
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_saved_card_id_fkey"
+            columns: ["saved_card_id"]
+            isOneToOne: false
+            referencedRelation: "saved_cards"
             referencedColumns: ["id"]
           },
         ]
@@ -3805,6 +4462,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_consent_log: {
+        Row: {
+          accepted_at: string
+          document_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          document_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          document_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
       user_consents: {
         Row: {
           accepted: boolean | null
@@ -3963,6 +4650,9 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          mp_money_request_id: string | null
+          mp_payout_id: string | null
+          payout_gateway: string
           pix_key: string | null
           pix_key_type: string | null
           processed_at: string | null
@@ -3975,6 +4665,9 @@ export type Database = {
           amount: number
           created_at?: string
           id?: string
+          mp_money_request_id?: string | null
+          mp_payout_id?: string | null
+          payout_gateway?: string
           pix_key?: string | null
           pix_key_type?: string | null
           processed_at?: string | null
@@ -3987,6 +4680,9 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          mp_money_request_id?: string | null
+          mp_payout_id?: string | null
+          payout_gateway?: string
           pix_key?: string | null
           pix_key_type?: string | null
           processed_at?: string | null
@@ -3998,6 +4694,37 @@ export type Database = {
       }
     }
     Views: {
+      doctor_sla_dashboard: {
+        Row: {
+          atrasados: number | null
+          avg_resolution_hours: number | null
+          crm: string | null
+          crm_state: string | null
+          doctor_id: string | null
+          doctor_name: string | null
+          doctor_user_id: string | null
+          pendentes: number | null
+          proximo_sla: string | null
+          proximos_24h: number | null
+        }
+        Relationships: []
+      }
+      payment_gateway_status: {
+        Row: {
+          mp_count: number | null
+          pagbank_count: number | null
+          table_name: string | null
+        }
+        Relationships: []
+      }
+      security_dashboard: {
+        Row: {
+          metric: string | null
+          value: number | null
+          window_label: string | null
+        }
+        Relationships: []
+      }
       wallet_balances: {
         Row: {
           available_balance: number | null
@@ -4010,6 +4737,13 @@ export type Database = {
       }
     }
     Functions: {
+      archive_old_activity_logs: {
+        Args: never
+        Returns: {
+          archived_count: number
+          deleted_count: number
+        }[]
+      }
       cleanup_rate_limits: { Args: never; Returns: undefined }
       expire_subscriptions_and_cards: { Args: never; Returns: undefined }
       fn_admin_doctor_kyc_list: { Args: never; Returns: Json[] }
@@ -4040,6 +4774,8 @@ export type Database = {
         }
         Returns: Json
       }
+      get_active_theme: { Args: never; Returns: Json }
+      get_maintenance_status: { Args: never; Returns: Json }
       get_public_doctor_profile: {
         Args: { p_doctor_id: string }
         Returns: Json
