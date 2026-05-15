@@ -16,6 +16,8 @@ const MARQUEE_ITEMS = [
 ];
 
 const PingoRunBanner = () => {
+  // eslint-disable-next-line no-console
+  console.log("Pingo img src:", pingoPhone);
   const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
   return (
