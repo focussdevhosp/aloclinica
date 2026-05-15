@@ -2,10 +2,12 @@ import { forwardRef, lazy, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import {
   Stethoscope, CurrencyDollar, CalendarBlank, Globe, ShieldCheck, ArrowRight,
   ChartLineUp, CheckCircle, Lock, Star, CaretDown, Video, Notepad, Certificate,
   FirstAid, Heartbeat, Clock, Wallet, UserCirclePlus, FileText, ChatsCircle,
+  Lightning, X, Sparkle, MapPin,
 } from "@phosphor-icons/react";
 import { TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +33,10 @@ const staggerItem = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0
 const ForDoctors = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [consultsPerWeek, setConsultsPerWeek] = useState<number>(15);
+  const [pricePerConsult, setPricePerConsult] = useState<number>(55);
+  const monthlyEarnings = consultsPerWeek * pricePerConsult * 4;
+  const yearlyEarnings = monthlyEarnings * 12;
 
   return (
     <div ref={ref} className="relative min-h-screen bg-background">
@@ -101,6 +107,21 @@ const ForDoctors = forwardRef<HTMLDivElement>((_, ref) => {
                 >
                   Já sou parceiro
                 </Button>
+              </div>
+
+              {/* Trust signals */}
+              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                {[
+                  { icon: CheckCircle, label: "Cadastro gratuito" },
+                  { icon: Clock, label: "Aprovação em 24h" },
+                  { icon: ShieldCheck, label: "100% CFM e LGPD" },
+                  { icon: Wallet, label: "Saque via PIX" },
+                ].map((t) => (
+                  <span key={t.label} className="inline-flex items-center gap-1.5">
+                    <t.icon className="w-4 h-4 text-primary" weight="fill" />
+                    <span className="font-medium text-foreground/80">{t.label}</span>
+                  </span>
+                ))}
               </div>
             </motion.div>
 
