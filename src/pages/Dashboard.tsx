@@ -135,6 +135,7 @@ const AdminFullSiteEditor = lazy(() => import("@/components/admin/AdminFullSiteE
 const AdminMediaLibrary = lazy(() => import("@/components/admin/AdminMediaLibrary"));
 const AdminPingoCard = lazy(() => import("@/components/admin/AdminPingoCard"));
 const AdminPaymentTest = lazy(() => import("@/components/admin/AdminPaymentTest"));
+const AdminPayouts = lazy(() => import("@/components/admin/AdminPayouts"));
 const PingoCardPanel = lazy(() => import("@/components/patient/PingoCardPanel"));
 const SupportInbox = lazy(() => import("@/components/support/SupportInbox"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
@@ -403,6 +404,7 @@ const Dashboard = () => {
       <Route path="admin/media" element={<RoleGuard allowed={[]} roles={roles}><AdminMediaLibrary /></RoleGuard>} />
       <Route path="admin/pingo-card" element={<RoleGuard allowed={[]} roles={roles}><AdminPingoCard /></RoleGuard>} />
       <Route path="admin/payment-test" element={<RoleGuard allowed={[]} roles={roles}><AdminPaymentTest /></RoleGuard>} />
+      <Route path="admin/payouts" element={<RoleGuard allowed={[]} roles={roles}><AdminPayouts /></RoleGuard>} />
 
 
       {/* Laudista — blocked when ?role=doctor */}

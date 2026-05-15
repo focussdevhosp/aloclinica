@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, DollarSign, Users, TrendingUp, Video, BarChart2, ArrowRight, Clock, ShieldCheck } from "lucide-react";
 import DoctorAnalyticsCharts from "./DoctorAnalyticsCharts";
 import DoctorOnboarding from "@/components/doctor/DoctorOnboarding";
+import OnboardingProgress from "@/components/doctor/OnboardingProgress";
 import CrmApprovalTimeline from "@/components/doctor/CrmApprovalTimeline";
 import { useDoctorStats } from "@/hooks/useDoctorDashboard";
 import { useQueryClient } from "@tanstack/react-query";
@@ -154,6 +155,7 @@ const DoctorDashboard = () => {
   return (
     <DashboardLayout title="Médico" nav={getDoctorNav("home")} role="doctor">
       {!loading && !data?.crm && <DoctorOnboarding />}
+      {!loading && data?.crm && <OnboardingProgress />}
       {!loading && data?.crm && data?.approval && !data.approval.is_approved && (
         <div className="mb-5">
           <CrmApprovalTimeline doctor={data.approval} />
