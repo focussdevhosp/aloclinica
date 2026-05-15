@@ -497,6 +497,63 @@ const ForDoctors = forwardRef<HTMLDivElement>((_, ref) => {
 
       {/* ═══════════════ CTA FINAL ═══════════════ */}
       <section className="py-20 px-4">
+        <div className="max-w-5xl mx-auto mb-20">
+          <motion.div className="text-center mb-10" {...fadeUp}>
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full mb-4">
+              <Sparkle className="w-3.5 h-3.5" weight="fill" />
+              Comparativo
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
+              AloClínica vs consultório tradicional
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Veja por que centenas de médicos preferem complementar a renda com a telemedicina.
+            </p>
+          </motion.div>
+
+          <motion.div {...fadeUp} className="overflow-hidden rounded-2xl border border-border bg-card/80 shadow-sm">
+            <div className="grid grid-cols-3 bg-muted/40 text-xs sm:text-sm font-bold uppercase tracking-wider">
+              <div className="p-4 text-muted-foreground">Característica</div>
+              <div className="p-4 text-primary text-center">AloClínica</div>
+              <div className="p-4 text-muted-foreground text-center">Consultório tradicional</div>
+            </div>
+            {[
+              { feat: "Custo inicial", us: "R$ 0", them: "R$ 30k+", usIcon: CheckCircle },
+              { feat: "Aluguel e estrutura", us: false, them: true },
+              { feat: "Alcance geográfico", us: "Nacional", them: "Local", usIcon: Globe },
+              { feat: "Agenda flexível", us: true, them: false },
+              { feat: "Pagamento garantido em 48h", us: true, them: false },
+              { feat: "Prontuário digital incluso", us: true, them: false },
+              { feat: "Receita ICP-Brasil", us: true, them: false },
+              { feat: "Suporte e onboarding", us: true, them: false },
+            ].map((row, i) => (
+              <div
+                key={i}
+                className={`grid grid-cols-3 text-sm border-t border-border/60 ${i % 2 === 1 ? "bg-background/60" : ""}`}
+              >
+                <div className="p-4 font-medium text-foreground">{row.feat}</div>
+                <div className="p-4 flex items-center justify-center gap-1.5 font-semibold text-primary">
+                  {typeof row.us === "boolean" ? (
+                    row.us ? <CheckCircle className="w-5 h-5" weight="fill" /> : <X className="w-5 h-5 text-muted-foreground/50" />
+                  ) : (
+                    <>
+                      {row.usIcon && <row.usIcon className="w-4 h-4" weight="fill" />}
+                      <span>{row.us}</span>
+                    </>
+                  )}
+                </div>
+                <div className="p-4 flex items-center justify-center gap-1.5 text-muted-foreground">
+                  {typeof row.them === "boolean" ? (
+                    row.them ? <CheckCircle className="w-5 h-5" weight="fill" /> : <X className="w-5 h-5" />
+                  ) : (
+                    <span>{row.them}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
         <div className="max-w-7xl mx-auto">
           <motion.div
             {...fadeUp}
