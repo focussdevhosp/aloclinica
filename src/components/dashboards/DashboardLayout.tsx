@@ -23,6 +23,7 @@ import { DevModeToggle } from "@/components/dev/DevModeToggle";
 const logoImg = PINGO_LOGO_URL;
 const mascotImg = PINGO_LOGO_URL;
 import DashboardBreadcrumbs from "@/components/dashboards/DashboardBreadcrumbs";
+import FaqChatWidget from "@/components/support/FaqChatWidget";
 import useNotificationTitle from "@/hooks/use-notification-title";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSessionSecurity } from "@/hooks/use-session-security";
@@ -676,6 +677,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
 
       <GlobalCommand role={role} />
       <PWABanner role={role} />
+      <FaqChatWidget />
 
        {/* ═══ Mobile bottom nav — Premium Floating TabBar ═══ */}
        {nav && nav.length > 0 && (
