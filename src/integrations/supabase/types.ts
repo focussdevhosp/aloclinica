@@ -259,6 +259,35 @@ export type Database = {
         }
         Relationships: []
       }
+      appointment_reminders_sent: {
+        Row: {
+          appointment_id: string
+          id: string
+          reminder_type: string
+          sent_at: string
+        }
+        Insert: {
+          appointment_id: string
+          id?: string
+          reminder_type: string
+          sent_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          id?: string
+          reminder_type?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_reminders_sent_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointment_waitlist: {
         Row: {
           created_at: string
@@ -1061,6 +1090,8 @@ export type Database = {
           rating_avg: number | null
           rating_count: number | null
           return_price: number | null
+          risk_score: number | null
+          risk_score_updated_at: string | null
           slug: string | null
           social_name: string | null
           updated_at: string
@@ -1094,6 +1125,8 @@ export type Database = {
           rating_avg?: number | null
           rating_count?: number | null
           return_price?: number | null
+          risk_score?: number | null
+          risk_score_updated_at?: string | null
           slug?: string | null
           social_name?: string | null
           updated_at?: string
@@ -1127,6 +1160,8 @@ export type Database = {
           rating_avg?: number | null
           rating_count?: number | null
           return_price?: number | null
+          risk_score?: number | null
+          risk_score_updated_at?: string | null
           slug?: string | null
           social_name?: string | null
           updated_at?: string
@@ -3655,17 +3690,20 @@ export type Database = {
       prescriptions: {
         Row: {
           appointment_id: string | null
+          continuous_duration_days: number | null
           created_at: string
           diagnosis: string | null
           doctor_id: string
           id: string
           instructions: string | null
+          is_continuous: boolean | null
           is_signed: boolean | null
           medications: Json | null
           observations: string | null
           patient_id: string
           pdf_url: string | null
           prescription_type: string | null
+          renewal_alerted_at: string | null
           signature_hash: string | null
           signed_at: string | null
           status: string | null
@@ -3675,17 +3713,20 @@ export type Database = {
         }
         Insert: {
           appointment_id?: string | null
+          continuous_duration_days?: number | null
           created_at?: string
           diagnosis?: string | null
           doctor_id: string
           id?: string
           instructions?: string | null
+          is_continuous?: boolean | null
           is_signed?: boolean | null
           medications?: Json | null
           observations?: string | null
           patient_id: string
           pdf_url?: string | null
           prescription_type?: string | null
+          renewal_alerted_at?: string | null
           signature_hash?: string | null
           signed_at?: string | null
           status?: string | null
@@ -3695,17 +3736,20 @@ export type Database = {
         }
         Update: {
           appointment_id?: string | null
+          continuous_duration_days?: number | null
           created_at?: string
           diagnosis?: string | null
           doctor_id?: string
           id?: string
           instructions?: string | null
+          is_continuous?: boolean | null
           is_signed?: boolean | null
           medications?: Json | null
           observations?: string | null
           patient_id?: string
           pdf_url?: string | null
           prescription_type?: string | null
+          renewal_alerted_at?: string | null
           signature_hash?: string | null
           signed_at?: string | null
           status?: string | null
@@ -4876,6 +4920,7 @@ export type Database = {
       fn_auto_complete_stale_consultations: { Args: never; Returns: undefined }
       fn_auto_no_show: { Args: never; Returns: undefined }
       fn_auto_pause_doctor_no_shows: { Args: never; Returns: undefined }
+      fn_calculate_doctor_risk_score: { Args: never; Returns: undefined }
       fn_detect_churn: { Args: never; Returns: undefined }
       fn_doctor_onboarding_progress: {
         Args: { p_user_id: string }
@@ -4893,8 +4938,10 @@ export type Database = {
       }
       fn_nps_whatsapp_followup: { Args: never; Returns: undefined }
       fn_pix_expiry_reminder: { Args: never; Returns: undefined }
+      fn_prescription_renewal_alert: { Args: never; Returns: undefined }
       fn_reengagement_inactive: { Args: never; Returns: undefined }
       fn_release_doctor_payouts: { Args: never; Returns: undefined }
+      fn_send_appointment_reminders: { Args: never; Returns: undefined }
       fn_spend_pingo_ticket: {
         Args: {
           p_amount: number
