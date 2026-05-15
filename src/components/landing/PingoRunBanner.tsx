@@ -40,8 +40,7 @@ const PingoRunBanner = () => {
           <motion.p
             className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2"
             initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             Na palma da sua mão
@@ -49,8 +48,7 @@ const PingoRunBanner = () => {
           <motion.h2
             className="text-white text-2xl md:text-4xl font-bold leading-tight"
             initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             Agende sua consulta em{" "}
@@ -64,8 +62,7 @@ const PingoRunBanner = () => {
           aria-hidden="true"
           className="relative shrink-0 hidden sm:block"
           initial={{ opacity: 0, scale: 0.85 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <motion.img
