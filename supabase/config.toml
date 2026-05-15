@@ -8,3 +8,12 @@ verify_jwt = false
 
 [functions.verify-crm]
 verify_jwt = false
+
+[functions.ai-ticket-triage]
+verify_jwt = false
+
+[functions.auto-clinical-summary]
+verify_jwt = false
+
+[functions.weekly-admin-report]
+verify_jwt = false
