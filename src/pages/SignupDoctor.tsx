@@ -181,7 +181,7 @@ export default function SignupDoctor() {
       if (dpErr && !String(dpErr.message || "").includes("duplicate")) throw dpErr;
 
       toast.success("Cadastro realizado! Sua conta está em análise.");
-      navigate("/medico");
+      navigate("/aguardando-aprovacao?role=doctor");
     } catch (error) {
       toastError(toast, error, "signup");
       console.error(error);

@@ -60,6 +60,7 @@ const SignupPatient = lazy(() => import("./pages/SignupPatient"));
 const SignupDoctor = lazy(() => import("./pages/SignupDoctor"));
 const SignupClinic = lazy(() => import("./pages/SignupClinic"));
 const SignupSupport = lazy(() => import("./pages/SignupSupport"));
+const AwaitingApproval = lazy(() => import("./pages/AwaitingApproval"));
 
 // Landing pages
 const ForDoctors = lazy(() => import("./pages/ForDoctors"));
@@ -160,6 +161,7 @@ const AnimatedRoutes = () => {
       <Route path="/admin" element={<AuthAdmin />} />
       <Route path="/suporte" element={<AuthSuporte />} />
       <Route path="/suporte/cadastro" element={<SignupSupport />} />
+     <Route path="/aguardando-aprovacao" element={<AwaitingApproval />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/terms" element={<Terms />} />

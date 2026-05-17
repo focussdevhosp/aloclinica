@@ -131,7 +131,7 @@ export default function SignupClinic() {
       if (cErr && !String(cErr.message || "").includes("duplicate")) throw cErr;
 
       toast.success("Cadastro realizado! Sua clínica está em análise.");
-      navigate("/clinica");
+      navigate("/aguardando-aprovacao?role=clinic");
     } catch (err) {
       toastError(toast, err, "signup");
     } finally {
