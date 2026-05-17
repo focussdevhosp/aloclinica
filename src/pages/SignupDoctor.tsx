@@ -157,9 +157,16 @@ export default function SignupDoctor() {
         await db.auth.signInWithPassword({ email: formData.email, password: formData.password });
       }
 
-      // 3. Cria doctor_profiles com CRM e especialidade
+      // 3. Confirma que auth.uid() bate com o usuário criado antes de inserir
+      const { data: sessionData } = await db.auth.getSession();
+      const authedUserId = sessionData?.session?.user?.id;
+      if (!authedUserId || authedUserId !== authData.user.id) {
+        throw new Error("Sessão não confirmada. Faça login para finalizar o cadastro.");
+      }
+
+      // 4. Cria doctor_profiles com CRM e especialidade (user_id = auth.uid())
       const { error: dpErr } = await (db as any).from("doctor_profiles").insert({
-        user_id: authData.user.id,
+        user_id: authedUserId,
         crm: formData.crm.replace(/\D/g, ""),
         crm_state: formData.crm_state,
         doctor_type: formData.specialty,
