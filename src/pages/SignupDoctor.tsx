@@ -133,36 +133,42 @@ export default function SignupDoctor() {
 
     setLoading(true);
     try {
-      // 1. Create auth user
+      const parts = formData.full_name.trim().split(/\s+/);
+      // 1. Cria usuário com role=doctor; trigger handle_new_user cria profile + user_role
       const { data: authData, error: authError } = await db.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            role: "doctor",
+            first_name: parts[0] || "",
+            last_name: parts.slice(1).join(" ") || "",
+            cpf: formData.cpf.replace(/\D/g, ""),
+            phone: formData.phone.replace(/\D/g, ""),
+          },
+        },
       });
-
       if (authError) throw authError;
       if (!authData.user) throw new Error("Falha ao criar usuário");
 
-      // 2. Create doctor profile
-      const { error: profileError } = await (db as any).from("profiles").insert([
-        {
-          id: authData.user.id,
-          full_name: formData.full_name,
-          email: formData.email,
-          phone: formData.phone,
-          cpf: formData.cpf.replace(/\D/g, ""),
-          crm: formData.crm.replace(/\D/g, ""),
-          crm_state: formData.crm_state,
-          specialty: formData.specialty,
-          role: "doctor",
-          doctor_type: formData.specialty,
-          avatar_url: null,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      // 2. Auto-login antes de inserir doctor_profiles (RLS exige auth.uid())
+      if (!authData.session) {
+        await db.auth.signInWithPassword({ email: formData.email, password: formData.password });
+      }
 
-      if (profileError) throw profileError;
+      // 3. Cria doctor_profiles com CRM e especialidade
+      const { error: dpErr } = await (db as any).from("doctor_profiles").insert({
+        user_id: authData.user.id,
+        crm: formData.crm.replace(/\D/g, ""),
+        crm_state: formData.crm_state,
+        doctor_type: formData.specialty,
+        is_approved: false,
+        crm_verified: false,
+      });
+      if (dpErr && !String(dpErr.message || "").includes("duplicate")) throw dpErr;
 
-      toast.success("Cadastro realizado com sucesso! Verifique seu email.");
+      toast.success("Cadastro realizado! Sua conta está em análise.");
       navigate("/medico");
     } catch (error) {
       toastError(toast, error, "signup");
