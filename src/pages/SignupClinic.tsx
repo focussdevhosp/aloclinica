@@ -115,8 +115,14 @@ export default function SignupClinic() {
         await db.auth.signInWithPassword({ email: data.email, password: data.password });
       }
 
+      const { data: sessionData } = await db.auth.getSession();
+      const authedUserId = sessionData?.session?.user?.id;
+      if (!authedUserId || authedUserId !== auth.user.id) {
+        throw new Error("Sessão não confirmada. Faça login para finalizar o cadastro.");
+      }
+
       const { error: cErr } = await (db as any).from("clinic_profiles").insert({
-        user_id: auth.user.id,
+        user_id: authedUserId,
         name: data.company_name,
         cnpj: data.cnpj.replace(/\D/g, ""),
         phone: data.phone.replace(/\D/g, ""),
