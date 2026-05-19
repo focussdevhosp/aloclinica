@@ -2,12 +2,11 @@ import { useState, useRef, useCallback } from "react";
 import { logError, warn } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Camera, RotateCcw, CheckCircle2, XCircle, Loader2, FileImage, User, ShieldCheck, Upload } from "lucide-react";
+import { Camera, RotateCcw, CheckCircle2, XCircle, Loader2, FileImage, User, ShieldCheck, Upload, Sparkles, Lock } from "lucide-react";
 import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { IS_DEV } from "@/lib/constants";
 
 type Step = "intro" | "document" | "selfie" | "analyzing" | "result";
 
@@ -233,99 +232,54 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
 
       <AnimatePresence mode="wait">
         {step === "intro" && (
-          <motion.div key="intro" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-            <div className="text-center">
-              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <ShieldCheck className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground">Verificação Biométrica</h3>
-              <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
-                Verificação facial inteligente com IA — tire uma foto do seu documento e uma selfie em poucos segundos.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border/50 p-4 bg-card space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <FileImage className="w-4 h-4 text-primary" />
+          <motion.div key="intro" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
+            <div className="relative overflow-hidden rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-secondary/10 p-6 text-center">
+              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary/10 blur-3xl" aria-hidden />
+              <div className="absolute -bottom-12 -left-8 w-32 h-32 rounded-full bg-secondary/10 blur-3xl" aria-hidden />
+              <div className="relative">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30">
+                  <ShieldCheck className="w-8 h-8" />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Documento com foto</p>
-                  <p className="text-xs text-muted-foreground">RG, CNH ou passaporte</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <User className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Selfie ao vivo</p>
-                  <p className="text-xs text-muted-foreground">Comparação facial por IA (DeepSeek Vision)</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Extração de dados</p>
-                  <p className="text-xs text-muted-foreground">Nome e CPF extraídos automaticamente do documento</p>
+                <h3 className="text-xl font-extrabold text-foreground tracking-tight">Verificação biométrica</h3>
+                <p className="text-sm text-muted-foreground mt-1.5 max-w-sm mx-auto leading-relaxed">
+                  Confirme sua identidade em menos de 1 minuto com nossa IA. Rápido, seguro e em conformidade com a LGPD.
+                </p>
+                <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-background/60 backdrop-blur border border-border/50">
+                  <Sparkles className="w-3 h-3 text-primary" />
+                  <span className="text-[11px] font-semibold text-foreground">Análise por IA em tempo real</span>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Button onClick={() => { setStep("document"); startCamera("document"); }} className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 gap-2">
-                <Camera className="w-5 h-5" /> Iniciar Verificação
-              </Button>
-
-              <Button 
-                variant="outline" 
-                onClick={async () => {
-                  if (!user) return;
-                  try {
-                    const score = 100;
-                    const isApproved = true;
-                    
-                    await db.from("kyc_verificacoes" as any).insert({
-                      user_id: user.id,
-                      status: "approved",
-                      similarity: 1.0,
-                      tipo,
-                    });
-
-                    if (tipo === "medico") {
-                      await db.from("doctor_profiles").update({
-                        kyc_status: "approved",
-                        kyc_verified_at: new Date().toISOString(),
-                        kyc_face_match_score: score,
-                      } as any).eq("user_id", user.id);
-                    }
-
-                    const kycResult: KYCResult = {
-                      match: true,
-                      score: 100,
-                      status: "aprovado",
-                      nome: user.email?.split("@")[0] || "Test User",
-                      cpf: "000.000.000-00",
-                    };
-                    
-                    setResult(kycResult);
-                    setStep("result");
-                    onComplete?.(kycResult);
-                    toast.success("Pulo de verificação realizado (Dev)");
-                  } catch (err) {
-                    toast.error("Erro ao pular KYC");
-                  }
-                }} 
-                className="w-full h-10 rounded-xl border-dashed border-primary/40 text-primary/70 hover:text-primary hover:border-primary transition-all text-xs"
-              >
-                <ShieldCheck className="w-4 h-4 mr-2" /> Pular Verificação (Desenvolvimento)
-              </Button>
+            <div className="grid gap-2.5">
+              {[
+                { icon: FileImage, title: "1. Documento com foto", desc: "RG, CNH ou passaporte — frente legível" },
+                { icon: User, title: "2. Selfie ao vivo", desc: "Olhe para a câmera com boa iluminação" },
+                { icon: CheckCircle2, title: "3. Pronto!", desc: "Nome e CPF extraídos automaticamente" },
+              ].map((s, i) => (
+                <div key={i} className="flex items-center gap-3 rounded-2xl border border-border/50 p-3.5 bg-card hover:border-primary/30 transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <s.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{s.title}</p>
+                    <p className="text-xs text-muted-foreground">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-              🔒 Verificação segura com IA. Seus dados são protegidos por criptografia e conformidade com LGPD.
-            </p>
+
+            <Button
+              onClick={() => { setStep("document"); startCamera("document"); }}
+              className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/25 gap-2 hover:shadow-xl hover:shadow-primary/30 transition-all"
+            >
+              <Camera className="w-5 h-5" /> Iniciar verificação
+            </Button>
+
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+              <Lock className="w-3 h-3" />
+              <span>Criptografia ponta-a-ponta · LGPD · Dados nunca compartilhados</span>
+            </div>
           </motion.div>
         )}
 
