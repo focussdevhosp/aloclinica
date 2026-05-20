@@ -525,6 +525,28 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
               <Button className="w-full h-12 rounded-xl font-bold" onClick={handleCloseConfirmation}>
                 Entendi, voltar à agenda
               </Button>
+              {scheduledAt && (
+                <Button
+                  variant="outline"
+                  className="w-full h-11 rounded-xl"
+                  onClick={() => {
+                    const ok = downloadCancelIcs({
+                      appointmentId,
+                      scheduledAt,
+                      doctorName,
+                    });
+                    if (ok) {
+                      toast.success("Baixado novamente", {
+                        description: "Abra o arquivo para atualizar seu calendário.",
+                      });
+                    } else {
+                      toast.error("Não foi possível gerar o .ics de cancelamento");
+                    }
+                  }}
+                >
+                  <Download className="w-4 h-4 mr-2" /> Baixar .ics de cancelamento
+                </Button>
+              )}
             </motion.div>
           ) : (
             <motion.div
