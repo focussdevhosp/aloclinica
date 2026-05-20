@@ -187,6 +187,10 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
   const handleCancel = async () => {
     const finalReason = reason === "Outro motivo" ? customReason.trim() : reason;
     if (!finalReason) { toast.error("Informe o motivo do cancelamento"); return; }
+    if (reason === "Outro motivo" && customReason.trim().length < 10) {
+      toast.error("Descrição muito curta", { description: "Informe pelo menos 10 caracteres para o motivo do cancelamento." });
+      return;
+    }
 
     // Revalida status atual da consulta — evita cancelar algo já cancelado/concluído/passado
     const { data: current } = await db.from("appointments")
