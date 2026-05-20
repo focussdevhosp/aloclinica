@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { CheckCircle2, Calendar, Clock, Video, ArrowRight, Stethoscope, Download, Home, ListChecks, Loader2 } from "lucide-react";
+import { CheckCircle2, Calendar, Clock, Video, ArrowRight, Stethoscope, Download, Home, ListChecks, Loader2, Copy, Wifi, Mic, Camera, FileText } from "lucide-react";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
@@ -117,6 +118,18 @@ const AppointmentConfirmed = () => {
 
   const date = new Date(appt.scheduled_at);
   const isPaid = ["approved", "confirmed", "received", "paid"].includes(String(appt.payment_status));
+  const minutesUntil = Math.round((date.getTime() - Date.now()) / 60000);
+  const canJoinSoon = minutesUntil <= 15 && minutesUntil >= -120;
+  const roomUrl = `${window.location.origin}/dashboard/consultation/${appt.id}`;
+
+  const copyRoomLink = async () => {
+    try {
+      await navigator.clipboard.writeText(roomUrl);
+      toast.success("Link da consulta copiado!");
+    } catch {
+      toast.error("Não foi possível copiar o link");
+    }
+  };
 
   return (
     <DashboardLayout title="Consulta confirmada" nav={nav}>
@@ -225,24 +238,74 @@ const AppointmentConfirmed = () => {
           transition={{ delay: 0.5 }}
           className="mt-6 space-y-2.5"
         >
+          {isPaid && (
+            <Button
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold shadow-md"
+              onClick={() => navigate(`/dashboard/consultation/${appt.id}`)}
+              disabled={!canJoinSoon}
+            >
+              <Video className="w-4 h-4 mr-2" />
+              {canJoinSoon ? "Entrar na sala da consulta" : "Sala abre 15 min antes"}
+              <ArrowRight className="w-4 h-4 ml-auto" />
+            </Button>
+          )}
+
           <Button
-            className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold shadow-md"
+            variant={isPaid ? "outline" : "default"}
+            className={`w-full h-12 rounded-xl font-bold ${isPaid ? "" : "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md"}`}
             onClick={() => navigate(`/dashboard/appointments`)}
           >
             <ListChecks className="w-4 h-4 mr-2" /> Ver minhas consultas
             <ArrowRight className="w-4 h-4 ml-auto" />
           </Button>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-3 gap-2.5">
             <Button asChild variant="outline" className="h-11 rounded-xl">
               <a href={buildIcsDataUri(appt)} download={`consulta-${appt.id}.ics`}>
-                <Download className="w-4 h-4 mr-2" /> Adicionar à agenda
+                <Download className="w-4 h-4 mr-1.5" /> Agenda
               </a>
             </Button>
+            <Button variant="outline" className="h-11 rounded-xl" onClick={copyRoomLink}>
+              <Copy className="w-4 h-4 mr-1.5" /> Copiar link
+            </Button>
             <Button variant="outline" className="h-11 rounded-xl" onClick={() => navigate("/dashboard")}>
-              <Home className="w-4 h-4 mr-2" /> Início
+              <Home className="w-4 h-4 mr-1.5" /> Início
             </Button>
           </div>
+        </motion.div>
+
+        {/* Preparation checklist */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-6"
+        >
+          <Card className="border-border/60">
+            <CardContent className="p-5">
+              <p className="text-[11px] uppercase tracking-wider font-bold text-primary mb-3">
+                Como se preparar
+              </p>
+              <ul className="space-y-2.5 text-sm text-foreground">
+                <li className="flex items-start gap-2.5">
+                  <Wifi className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                  Conexão estável de internet (Wi-Fi ou 4G).
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Camera className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                  Câmera e microfone funcionando — testaremos antes de entrar.
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Mic className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                  Ambiente silencioso e privado para a conversa.
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <FileText className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                  Tenha em mãos exames recentes, receitas e lista de medicamentos.
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Trust strip */}
