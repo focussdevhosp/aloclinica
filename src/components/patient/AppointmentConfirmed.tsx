@@ -74,7 +74,8 @@ const buildIcsDataUri = (appt: ConfirmedAppointment, roomUrl: string, reminderMi
   ];
 
   const description = escapeIcs(
-    `Consulta online AloClínica com ${appt.doctor_name}.\n` +
+    `Consulta online AloClínica\n` +
+    `Médico: ${appt.doctor_name}${appt.doctor_specialty ? ` (${appt.doctor_specialty})` : ""}${appt.doctor_crm ? ` — CRM-${appt.doctor_crm_state || "XX"} ${appt.doctor_crm}` : ""}.\n` +
     `Duração: ${duration} minutos.\n` +
     `Link da sala: ${roomUrl}\n` +
     `Entre 5 minutos antes para testar câmera e microfone.`
