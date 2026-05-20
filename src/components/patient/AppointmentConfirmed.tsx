@@ -378,11 +378,45 @@ const AppointmentConfirmed = () => {
           </Button>
 
           <div className="grid grid-cols-3 gap-2.5">
-            <Button asChild variant="outline" className="h-11 rounded-xl">
-              <a href={buildIcsDataUri(appt, roomUrl)} download={`consulta-${appt.id}.ics`}>
-                <Download className="w-4 h-4 mr-1.5" /> Agenda
-              </a>
-            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="h-11 rounded-xl">
+                  <Download className="w-4 h-4 mr-1.5" /> Agenda
+                  <ChevronDown className="w-3.5 h-3.5 ml-1 opacity-60" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-64 p-3">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <BellRing className="w-3.5 h-3.5 text-primary" /> Lembrete antes da consulta
+                </Label>
+                <div className="mt-2 max-h-56 overflow-auto -mx-1 px-1">
+                  {REMINDER_OPTIONS.map((opt) => {
+                    const selected = opt.value === reminderMinutes;
+                    return (
+                      <button
+                        key={String(opt.value)}
+                        type="button"
+                        onClick={() => persistReminder(opt.value)}
+                        className={`w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-md text-sm text-left transition-colors ${
+                          selected ? "bg-primary/10 text-primary font-semibold" : "hover:bg-muted"
+                        }`}
+                      >
+                        <span>{opt.label}</span>
+                        {selected && <Check className="w-4 h-4" />}
+                      </button>
+                    );
+                  })}
+                </div>
+                <Button asChild className="w-full h-10 mt-3 rounded-lg">
+                  <a
+                    href={buildIcsDataUri(appt, roomUrl, reminderMinutes)}
+                    download={`consulta-${appt.id}.ics`}
+                  >
+                    <Download className="w-4 h-4 mr-2" /> Baixar .ics
+                  </a>
+                </Button>
+              </PopoverContent>
+            </Popover>
             <Button variant="outline" className="h-11 rounded-xl" onClick={copyRoomLink}>
               <Copy className="w-4 h-4 mr-1.5" /> Copiar link
             </Button>
