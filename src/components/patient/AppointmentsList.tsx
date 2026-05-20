@@ -294,6 +294,27 @@ const AppointmentsList = () => {
                     {config.label}
                   </span>
 
+                  {appt.status === "cancelled" && appt.refund_status && (
+                    <span
+                      className={cn(
+                        "flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full",
+                        appt.refund_status === "refunded" && "bg-emerald-500/15 text-emerald-700",
+                        appt.refund_status === "approved" && "bg-blue-500/15 text-blue-700",
+                        appt.refund_status === "rejected" && "bg-destructive/15 text-destructive",
+                        appt.refund_status === "pending" && "bg-amber-500/15 text-amber-700",
+                      )}
+                      title={appt.refund_amount_cents != null ? `R$ ${(appt.refund_amount_cents / 100).toFixed(2).replace(".", ",")}` : undefined}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      Reembolso: {
+                        appt.refund_status === "pending" ? "Pendente" :
+                        appt.refund_status === "approved" ? "Aprovado" :
+                        appt.refund_status === "refunded" ? "Reembolsado" :
+                        "Rejeitado"
+                      }
+                    </span>
+                  )}
+
                   {isActive && (
                     <Button
                       size="sm"
