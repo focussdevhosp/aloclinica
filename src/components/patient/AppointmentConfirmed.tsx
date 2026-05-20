@@ -29,6 +29,8 @@ interface ConfirmedAppointment {
   doctor_crm: string | null;
   doctor_crm_state: string | null;
   duration_minutes: number;
+  clinic_id: string | null;
+  clinic_name: string | null;
 }
 
 const formatBRL = (v: number | null | undefined) =>
