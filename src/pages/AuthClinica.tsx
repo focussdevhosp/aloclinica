@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 type Step = "welcome" | "register" | "login";
 
 const benefits: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Hospital, title: "Gestão de exames", desc: "Envie exames para telelaudo com um clique." },
+  { icon: Hospital, title: "Gestão clínica", desc: "Agenda, equipe e pacientes em um só painel." },
   { icon: Users, title: "Equipe conectada", desc: "Recepção, médicos e gestão num só painel." },
   { icon: BarChart3, title: "Relatórios em tempo real", desc: "SLA, volume e faturamento à mão." },
   { icon: ShieldCheck, title: "Conformidade LGPD", desc: "Dados clínicos criptografados e auditáveis." },
@@ -124,7 +124,7 @@ const AuthClinica = () => {
       eyebrow="Portal Institucional"
       headline="Sua clínica conectada à medicina digital"
       highlightWord="medicina digital"
-      description="Envie exames para telelaudo, gerencie equipe e tenha relatórios completos. Tudo numa plataforma segura e certificada."
+      description="Gerencie equipe, agenda e pacientes com relatórios completos. Plataforma segura e certificada."
       mascotSrc={pingoReception}
       theme={{
         panelGradient: "from-[hsl(220,55%,14%)] via-[hsl(222,50%,18%)] to-[hsl(225,45%,22%)]",
