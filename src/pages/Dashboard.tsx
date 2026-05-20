@@ -47,6 +47,7 @@ const PanelCenter = lazy(() => import("@/components/admin/PanelCenter"));
 const BookAppointment = lazy(() => import("@/components/patient/BookAppointment"));
 const AppointmentDetail = lazy(() => import("@/components/patient/AppointmentDetail"));
 const AppointmentConfirmed = lazy(() => import("@/components/patient/AppointmentConfirmed"));
+const AppointmentReceipt = lazy(() => import("@/components/patient/AppointmentReceipt"));
 const MedicalHistory = lazy(() => import("@/components/patient/MedicalHistory"));
 const PaymentHistory = lazy(() => import("@/components/patient/PaymentHistory"));
 const PatientExamUpload = lazy(() => import("@/components/patient/PatientExamUpload"));
@@ -266,6 +267,7 @@ const Dashboard = () => {
       <Route path="appointments" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AppointmentsList /></ContextGuard></RoleGuard>} />
       <Route path="appointments/:appointmentId" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AppointmentDetail /></ContextGuard></RoleGuard>} />
       <Route path="appointments/:appointmentId/confirmed" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AppointmentConfirmed /></ContextGuard></RoleGuard>} />
+      <Route path="appointments/:appointmentId/recibo" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AppointmentReceipt /></ContextGuard></RoleGuard>} />
       <Route path="schedule" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><DoctorSearch /></ContextGuard></RoleGuard>} />
       <Route path="schedule/:doctorId" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><KycRequiredGate reason="Antes de marcar uma consulta, precisamos confirmar sua identidade. É exigência regulatória da telemedicina (CFM Resolução 2.314/2022)."><BookAppointment /></KycRequiredGate></ContextGuard></RoleGuard>} />
       
