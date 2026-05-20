@@ -24,7 +24,6 @@ interface DbStats {
   doctors: number;
   appointments: number;
   prescriptions: number;
-  examReports: number;
   activeSubscriptions: number;
   queueWaiting: number;
   storageBuckets: number;
@@ -42,12 +41,11 @@ const SystemHealth = () => {
   useEffect(() => { runChecks(); }, []);
 
   const fetchDbStats = async () => {
-    const [patients, doctors, appts, prescriptions, reports, subs, queue] = await Promise.all([
+    const [patients, doctors, appts, prescriptions, subs, queue] = await Promise.all([
       db.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "patient"),
       db.from("doctor_profiles").select("id", { count: "exact", head: true }),
       db.from("appointments").select("id", { count: "exact", head: true }),
       db.from("prescriptions").select("id", { count: "exact", head: true }),
-      db.from("exam_reports").select("id", { count: "exact", head: true }),
       db.from("subscriptions").select("id", { count: "exact", head: true }).eq("status", "active"),
       db.from("on_demand_queue").select("id", { count: "exact", head: true }).eq("status", "waiting"),
     ]);
@@ -56,7 +54,6 @@ const SystemHealth = () => {
       doctors: doctors.count ?? 0,
       appointments: appts.count ?? 0,
       prescriptions: prescriptions.count ?? 0,
-      examReports: reports.count ?? 0,
       activeSubscriptions: subs.count ?? 0,
       queueWaiting: queue.count ?? 0,
       storageBuckets: 7,
@@ -194,7 +191,6 @@ const SystemHealth = () => {
       { name: "WhatsApp (Evolution API)", fn: "whatsapp-notify", icon: <MessageCircle className="w-5 h-5" /> },
       { name: "Mercado Pago (Pagamentos)", fn: "mercadopago-create-payment", icon: <CreditCard className="w-5 h-5" /> },
       { name: "Lovable AI Gateway", fn: "ai-assistant", icon: <Brain className="w-5 h-5" /> },
-      { name: "Sugestão de Laudo (Claude)", fn: "sugerir-laudo", icon: <Brain className="w-5 h-5" /> },
       { name: "Memed (Prescrições)", fn: "memed-prescriber", icon: <Stethoscope className="w-5 h-5" /> },
       { name: "DocuSeal (Assinatura digital)", fn: "docuseal-proxy", icon: <FileSignature className="w-5 h-5" /> },
       { name: "VidaaS (Assinatura ICP)", fn: "vidaas-sign", icon: <FileSignature className="w-5 h-5" /> },
@@ -259,7 +255,6 @@ const SystemHealth = () => {
     { label: "Médicos", value: dbStats.doctors, icon: Users, color: "text-secondary" },
     { label: "Consultas", value: dbStats.appointments, icon: Calendar, color: "text-primary" },
     { label: "Receitas", value: dbStats.prescriptions, icon: FileText, color: "text-success" },
-    { label: "Laudos", value: dbStats.examReports, icon: FileText, color: "text-warning" },
     { label: "Assinaturas", value: dbStats.activeSubscriptions, icon: Server, color: "text-success" },
     { label: "Fila Urgência", value: dbStats.queueWaiting, icon: Clock, color: dbStats.queueWaiting > 0 ? "text-destructive" : "text-muted-foreground" },
     { label: "Buckets", value: dbStats.storageBuckets, icon: HardDrive, color: "text-muted-foreground" },
