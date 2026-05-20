@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { appointment_id } = await req.json();
+    const { appointment_id, resend_only } = await req.json();
     if (!appointment_id) {
       return new Response(JSON.stringify({ error: "appointment_id required" }), {
         status: 400,
