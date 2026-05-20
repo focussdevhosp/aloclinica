@@ -48,6 +48,8 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
     dateTime: string;
     cancelledAt: string;
     refundTier: "full" | "partial" | "none";
+    refundStatus?: "pending" | "approved" | "refunded" | "rejected" | null;
+    refundAmountCents?: number | null;
   } | null>(null);
 
   // Reschedule state
