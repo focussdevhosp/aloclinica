@@ -14,6 +14,80 @@ import { toast } from "sonner";
 import { format, setHours, setMinutes, differenceInHours, isBefore, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
+import { Download } from "lucide-react";
+
+// ---- ICS cancellation helpers ----------------------------------------------
+// Mesma UID usada em AppointmentConfirmed.tsx para que o evento original seja
+// SUBSTITUÍDO no calendário (Google/Apple/Outlook) em vez de duplicado.
+const fmtLocalSP = (d: Date) => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  }).formatToParts(d).reduce<Record<string, string>>((acc, p) => {
+    if (p.type !== "literal") acc[p.type] = p.value;
+    return acc;
+  }, {});
+  return `${parts.year}${parts.month}${parts.day}T${parts.hour}${parts.minute}${parts.second}`;
+};
+const fmtUtc = (d: Date) =>
+  d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+const escapeIcs = (s: string) =>
+  String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+
+const buildCancelIcs = (params: {
+  appointmentId: string;
+  scheduledAt: string;
+  doctorName: string;
+  durationMinutes?: number;
+  reason?: string;
+}) => {
+  const start = new Date(params.scheduledAt);
+  const duration = Math.max(5, Number(params.durationMinutes) || 30);
+  const end = new Date(start.getTime() + duration * 60 * 1000);
+  // SEQUENCE alta o suficiente para sobrescrever versões anteriores sem
+  // precisar persistir contador no banco. Segundos desde epoch mod 2^31.
+  const sequence = Math.floor(Date.now() / 1000) % 2147483647;
+  const reasonLine = params.reason ? `\nMotivo: ${params.reason}` : "";
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//AloClinica//Telemedicina//PT-BR",
+    "CALSCALE:GREGORIAN",
+    "METHOD:CANCEL",
+    "BEGIN:VEVENT",
+    `UID:${params.appointmentId}@aloclinica`,
+    `DTSTAMP:${fmtUtc(new Date())}`,
+    `DTSTART;TZID=America/Sao_Paulo:${fmtLocalSP(start)}`,
+    `DTEND;TZID=America/Sao_Paulo:${fmtLocalSP(end)}`,
+    `SEQUENCE:${sequence}`,
+    "STATUS:CANCELLED",
+    "TRANSP:TRANSPARENT",
+    `SUMMARY:${escapeIcs(`[CANCELADA] Teleconsulta — ${params.doctorName}`)}`,
+    `DESCRIPTION:${escapeIcs(`Esta teleconsulta foi cancelada.${reasonLine}`)}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+};
+
+const downloadCancelIcs = (params: Parameters<typeof buildCancelIcs>[0]) => {
+  try {
+    const ics = buildCancelIcs(params);
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `consulta-${params.appointmentId}-cancelada.ics`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 interface CancelRescheduleDialogProps {
   appointmentId: string;
