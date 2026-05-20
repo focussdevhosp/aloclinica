@@ -361,14 +361,24 @@ const PingoCard = () => {
                         ))}
                       </ul>
 
-                      <Button
-                        size="lg"
-                        className="w-full"
-                        variant={plan.is_highlighted ? "default" : "outline"}
-                        onClick={() => handleSubscribe(plan)}
-                      >
-                        Assinar agora
-                      </Button>
+                      <div className="flex flex-col gap-3">
+                        <Button
+                          size="lg"
+                          className="w-full"
+                          variant={plan.is_highlighted ? "default" : "outline"}
+                          onClick={() => handleSubscribe(plan)}
+                        >
+                          Assinar agora
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant={plan.is_highlighted ? "outline" : "ghost"}
+                          className="w-full"
+                          onClick={() => document.getElementById("comparativo")?.scrollIntoView({ behavior: "smooth" })}
+                        >
+                          Conhecer planos
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
