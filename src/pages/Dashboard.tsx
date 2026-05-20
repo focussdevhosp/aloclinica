@@ -47,6 +47,7 @@ const PanelCenter = lazy(() => import("@/components/admin/PanelCenter"));
 const BookAppointment = lazy(() => import("@/components/patient/BookAppointment"));
 const AppointmentDetail = lazy(() => import("@/components/patient/AppointmentDetail"));
 const AppointmentConfirmed = lazy(() => import("@/components/patient/AppointmentConfirmed"));
+const AppointmentReceipt = lazy(() => import("@/components/patient/AppointmentReceipt"));
 const MedicalHistory = lazy(() => import("@/components/patient/MedicalHistory"));
 const PaymentHistory = lazy(() => import("@/components/patient/PaymentHistory"));
 const PatientExamUpload = lazy(() => import("@/components/patient/PatientExamUpload"));
