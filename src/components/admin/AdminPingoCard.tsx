@@ -27,6 +27,9 @@ interface Plan {
   consultation_discount_percent: number; exam_discount_percent: number; partner_discount_percent: number;
   max_dependents: number; benefits: string[]; color: string;
   is_highlighted: boolean; is_active: boolean; display_order: number;
+  pingo_ticket_monthly_credit?: number;
+  trial_days?: number;
+  cta_label?: string;
 }
 
 interface Partner {
@@ -50,6 +53,7 @@ const emptyPlan: Partial<Plan> = {
   price_monthly: 0, price_yearly: 0,
   consultation_discount_percent: 0, exam_discount_percent: 0, partner_discount_percent: 0,
   max_dependents: 0, benefits: [], color: "blue",
+  pingo_ticket_monthly_credit: 0, trial_days: 0, cta_label: "Assinar agora",
   is_highlighted: false, is_active: true, display_order: 0,
 };
 
