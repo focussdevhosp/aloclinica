@@ -150,65 +150,84 @@ const BookAppointment = () => {
     const hasPending = pixQrCode || boletoUrl;
     if (!hasPending) return;
 
-    let pollTimeout: NodeJS.Timeout | null = null;
-    let pollInterval: NodeJS.Timeout | null = null;
     let isSubscribed = true;
+    let pollTimer: NodeJS.Timeout | null = null;
+    let attempt = 0;
+    const PAID = ["approved", "confirmed", "received"] as const;
 
-    // Realtime listener
-    const channel = db
-      .channel(`payment-${appointmentId}`)
-      .on("postgres_changes", {
-        event: "UPDATE",
-        schema: "public",
-        table: "appointments",
-        filter: `id=eq.${appointmentId}`
-      }, (payload) => {
-        if (isSubscribed && ["approved", "confirmed", "received"].includes(payload.new.payment_status)) {
-          cleanup();
-          toast.success("✅ Pagamento confirmado! Consulta garantida.");
-          navigate(`/dashboard/appointments/${appointmentId}/confirmed`);
-        }
-      })
-      .subscribe((status) => {
-        if (status === "SUBSCRIBED") {
-          // Reset fallback when realtime connects
-          if (pollInterval) clearInterval(pollInterval);
-        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          // Start fallback polling if realtime fails
-          startFallbackPoll();
-        }
-      });
-
-    const cleanup = () => {
-      isSubscribed = false;
-      if (pollTimeout) clearTimeout(pollTimeout);
-      if (pollInterval) clearInterval(pollInterval);
-      channel.unsubscribe();
+    const onConfirmed = () => {
+      if (!isSubscribed) return;
+      cleanup();
+      toast.success("✅ Pagamento confirmado! Consulta garantida.");
+      navigate(`/dashboard/appointments/${appointmentId}/confirmed`);
     };
 
-    const startFallbackPoll = () => {
-      if (!isSubscribed) return;
-      pollInterval = setInterval(async () => {
+    const checkOnce = async () => {
+      if (!isSubscribed) return false;
+      try {
         const { data } = await db
           .from("appointments")
           .select("payment_status")
           .eq("id", appointmentId)
-          .in("payment_status", ["approved", "confirmed", "received"])
-          .limit(1);
-        if (data && data.length > 0) {
-          cleanup();
-          toast.success("✅ Pagamento confirmado! Consulta garantida.");
-          navigate(`/dashboard/appointments/${appointmentId}/confirmed`);
+          .maybeSingle();
+        if (data && PAID.includes(data.payment_status as any)) {
+          onConfirmed();
+          return true;
         }
-      }, 8000);
+      } catch {
+        /* network blip — try again next tick */
+      }
+      return false;
     };
 
-    // Start fallback polling after 10 seconds if realtime not connected
-    pollTimeout = setTimeout(() => {
-      if ((channel as any).state !== "SUBSCRIBED") {
-        startFallbackPoll();
-      }
-    }, 10000);
+    // Polling com backoff: 3s → 5s → 8s → 12s (cap)
+    const scheduleNext = () => {
+      if (!isSubscribed) return;
+      const delays = [3000, 3000, 5000, 5000, 8000];
+      const delay = delays[Math.min(attempt, delays.length - 1)] ?? 12000;
+      attempt += 1;
+      pollTimer = setTimeout(async () => {
+        const done = await checkOnce();
+        if (!done) scheduleNext();
+      }, delay);
+    };
+
+    // Realtime listener (caminho primário)
+    const channel = db
+      .channel(`payment-${appointmentId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "appointments",
+          filter: `id=eq.${appointmentId}`,
+        },
+        (payload) => {
+          if (isSubscribed && PAID.includes(payload.new?.payment_status)) {
+            onConfirmed();
+          }
+        }
+      )
+      .subscribe();
+
+    // Reagir ao voltar para a aba (PIX é frequentemente pago em outro app)
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") checkOnce();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onVisibility);
+
+    function cleanup() {
+      isSubscribed = false;
+      if (pollTimer) clearTimeout(pollTimer);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onVisibility);
+      try { channel.unsubscribe(); } catch { /* noop */ }
+    }
+
+    // Checagem imediata + iniciar polling em paralelo ao realtime
+    checkOnce().then((done) => { if (!done) scheduleNext(); });
 
     return cleanup;
   }, [paymentStep, appointmentId, pixQrCode, boletoUrl]);
