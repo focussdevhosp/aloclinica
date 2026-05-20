@@ -380,10 +380,21 @@ const AppointmentReceipt = () => {
               <span className="text-2xl font-black text-foreground tabular-nums">{formatBRL(data.price_at_booking)}</span>
             </div>
 
-            <p className="text-[10px] text-muted-foreground mt-8 leading-relaxed">
-              Este recibo é gerado automaticamente pela plataforma AloClínica e tem validade como comprovante de pagamento da teleconsulta indicada acima.
-              Para reembolso junto ao seu plano de saúde, anexe este documento junto à nota fiscal emitida pelo profissional.
-            </p>
+            <div className="mt-8 flex items-start gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Este recibo é gerado automaticamente pela plataforma AloClínica e tem validade como comprovante de pagamento da teleconsulta indicada acima.
+                  Para reembolso junto ao seu plano de saúde, anexe este documento junto à nota fiscal emitida pelo profissional.
+                </p>
+              </div>
+              <div className="shrink-0 text-center">
+                <div className="p-2 bg-white rounded-lg border border-border">
+                  <QRCodeSVG value={verifyUrl} size={80} level="M" />
+                </div>
+                <p className="text-[9px] uppercase tracking-wider text-muted-foreground mt-1.5">Verificar</p>
+                <p className="font-mono text-[10px] font-bold text-foreground">{receiptCode}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
