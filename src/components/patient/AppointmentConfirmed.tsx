@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { CheckCircle2, Calendar, Clock, Video, ArrowRight, Stethoscope, Download, Home, ListChecks, Loader2, Copy, Wifi, Mic, Camera, FileText, Receipt, RefreshCw, X } from "lucide-react";
+import { CheckCircle2, Calendar, Clock, Video, ArrowRight, Stethoscope, Download, Home, ListChecks, Loader2, Copy, Wifi, Mic, Camera, FileText, Receipt, RefreshCw, X, ShieldCheck, AlertTriangle, Info } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -187,6 +187,13 @@ const AppointmentConfirmed = () => {
   const minutesUntil = Math.round((date.getTime() - now) / 60000);
   const canJoinSoon = minutesUntil <= 15 && minutesUntil >= -120;
   const canReschedule = minutesUntil >= 120; // até 2h antes
+  const hoursUntil = minutesUntil / 60;
+  // Regras de reembolso (em horas até a consulta):
+  // >= 24h: reembolso integral (100%)
+  // 2h–24h: reembolso parcial (50%) — taxa de remarcação
+  // < 2h: sem reembolso e sem remarcação online
+  const refundTier: "full" | "partial" | "none" =
+    hoursUntil >= 24 ? "full" : hoursUntil >= 2 ? "partial" : "none";
   const joinLabel = canJoinSoon
     ? "Entrar na sala da consulta"
     : minutesUntil > 15
@@ -360,6 +367,7 @@ const AppointmentConfirmed = () => {
           )}
 
           {canReschedule ? (
+            <>
             <div className="grid grid-cols-2 gap-2.5">
               <CancelRescheduleDialog
                 appointmentId={appt.id}
@@ -396,10 +404,48 @@ const AppointmentConfirmed = () => {
                 }
               />
             </div>
+            {isPaid && (
+              <div className={`mt-2 rounded-xl border p-3 text-[11px] leading-relaxed ${
+                refundTier === "full"
+                  ? "border-emerald-200 dark:border-emerald-900/60 bg-emerald-500/5 text-emerald-800 dark:text-emerald-300"
+                  : "border-amber-200 dark:border-amber-900/60 bg-amber-500/5 text-amber-800 dark:text-amber-300"
+              }`}>
+                <div className="flex items-start gap-2">
+                  {refundTier === "full" ? (
+                    <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                  )}
+                  <div className="space-y-1">
+                    <p className="font-semibold">
+                      {refundTier === "full"
+                        ? "Reembolso integral disponível"
+                        : "Janela de reembolso parcial"}
+                    </p>
+                    <p className="opacity-90">
+                      {refundTier === "full"
+                        ? "Cancelando agora você recebe 100% do valor de volta. Remarcação é gratuita."
+                        : "Faltam menos de 24h — cancelamentos têm reembolso de 50% e remarcações podem ter taxa de reagendamento."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>
           ) : (
-            <p className="text-center text-[11px] text-muted-foreground">
-              Cancelamento e remarcação disponíveis somente até 2h antes do horário.
-            </p>
+            <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-[11px] leading-relaxed text-muted-foreground">
+              <div className="flex items-start gap-2">
+                <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">Prazo encerrado</p>
+                  <p>
+                    Cancelamentos e remarcações online só podem ser feitos até 2h antes do horário marcado.
+                    {isPaid && " Cancelamentos neste prazo não são reembolsáveis."}
+                    {" "}Para urgências, entre em contato com o suporte.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </motion.div>
 
