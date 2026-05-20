@@ -275,6 +275,21 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
         refundStatus,
         refundAmountCents,
       });
+      // Atualiza o calendário do paciente automaticamente — mesmo UID,
+      // METHOD:CANCEL faz o evento sumir/marcar como cancelado.
+      if (scheduledAt) {
+        const ok = downloadCancelIcs({
+          appointmentId,
+          scheduledAt,
+          doctorName,
+          reason: finalReason,
+        });
+        if (ok) {
+          toast.success("Calendário atualizado", {
+            description: "Baixamos um .ics de cancelamento — abra para remover o evento.",
+          });
+        }
+      }
       onSuccess(); // sincroniza lista imediatamente, antes de mostrar confirmação
       setShowConfirmation(true);
     }
