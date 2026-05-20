@@ -19,7 +19,6 @@ const AdminDashboard = lazy(() => import("@/components/dashboards/AdminDashboard
 const ReceptionDashboard = lazy(() => import("@/components/dashboards/ReceptionDashboard")); // kept for admin view-as
 const SupportDashboard = lazy(() => import("@/components/dashboards/SupportDashboard"));
 const PartnerDashboard = lazy(() => import("@/components/dashboards/PartnerDashboard")); // kept for admin view-as
-const LaudistaDashboard = lazy(() => import("@/components/dashboards/LaudistaDashboard"));
 const CartaoDashboard = lazy(() => import("@/components/dashboards/CartaoDashboard"));
 
 // ── Cartão Benefícios sub-pages ──
@@ -56,27 +55,17 @@ const PatientSupportChat = lazy(() => import("@/components/patient/PatientSuppor
 const DependentsManager = lazy(() => import("@/components/patient/DependentsManager"));
 const HealthTimeline = lazy(() => import("@/components/patient/HealthTimeline"));
 const SymptomDiary = lazy(() => import("@/components/patient/SymptomDiary"));
-const PatientExamResults = lazy(() => import("@/components/patient/PatientExamResults"));
 const DoctorPrescriptions = lazy(() => import("@/components/doctor/DoctorPrescriptions"));
 const DoctorEarnings = lazy(() => import("@/components/doctor/DoctorEarnings"));
 const MedicalCertificate = lazy(() => import("@/components/doctor/MedicalCertificate"));
 const DoctorWaitingRoom = lazy(() => import("@/components/doctor/DoctorWaitingRoom"));
 const PatientDocuments = lazy(() => import("@/components/doctor/PatientDocuments"));
 const DoctorPublicProfile = lazy(() => import("@/components/doctor/DoctorPublicProfile"));
-const ExamReportQueue = lazy(() => import("@/components/doctor/ExamReportQueue"));
-const ExamReportEditor = lazy(() => import("@/components/doctor/ExamReportEditor"));
-const ExamRequestForm = lazy(() => import("@/components/doctor/ExamRequestForm"));
 const SimplePrescription = lazy(() => import("@/components/doctor/SimplePrescription"));
 const UrgentCareQueue = lazy(() => import("@/components/patient/UrgentCareQueue"));
 const PrescriptionRenewalForm = lazy(() => import("@/components/patient/PrescriptionRenewalForm"));
 const DoctorOnDutyPanel = lazy(() => import("@/components/doctor/DoctorOnDutyPanel"));
-const LaudistaReportQueue = lazy(() => import("@/components/laudista/LaudistaReportQueue"));
-const LaudistaMyReports = lazy(() => import("@/components/laudista/LaudistaMyReports"));
-
-const LaudistaFinanceiro = lazy(() => import("@/components/laudista/LaudistaFinanceiro"));
 const DoctorWallet = lazy(() => import("@/components/doctor/DoctorWallet"));
-const LaudistaExamRequest = lazy(() => import("@/components/doctor/ExamRequestForm"));
-const LaudistaReportEditor = lazy(() => import("@/components/doctor/ExamReportEditor"));
 const RenewalQueue = lazy(() => import("@/components/doctor/RenewalQueue"));
 const VideoRoom = lazy(() => import("@/components/consultation/VideoRoom"));
 
