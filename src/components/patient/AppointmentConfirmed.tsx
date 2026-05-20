@@ -104,7 +104,7 @@ const buildIcsDataUri = (appt: ConfirmedAppointment, roomUrl: string, reminderMi
     `DTSTART;TZID=America/Sao_Paulo:${fmtLocalSP(start)}`,
     `DTEND;TZID=America/Sao_Paulo:${fmtLocalSP(end)}`,
     `DURATION:PT${duration}M`,
-    `SUMMARY:${escapeIcs(`Teleconsulta com ${appt.doctor_name}`)}`,
+    `SUMMARY:${escapeIcs(`Teleconsulta — ${appt.doctor_name}${appt.doctor_specialty ? ` (${appt.doctor_specialty})` : ""}${appt.doctor_crm ? `, CRM-${appt.doctor_crm_state || "XX"} ${appt.doctor_crm}` : ""}`)}`,
     `DESCRIPTION:${description}`,
     `URL:${roomUrl}`,
     `LOCATION:${escapeIcs(roomUrl)}`,
