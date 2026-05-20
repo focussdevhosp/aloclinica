@@ -469,6 +469,15 @@ const VideoRoom = () => {
 
     setAppointment(data);
 
+    // If participation blocked, do not start the consultation or notify peers
+    if (
+      (isDoctor && participationBlocked) ||
+      (!isDoctor && (participationBlocked || data.payment_status === "pending"))
+    ) {
+      setLoading(false);
+      return;
+    }
+
     if (isDoctor) {
       // Check if doctor previously opted into Jitsi for this appointment
       const savedJitsi = localStorage.getItem(`jitsi_${appointmentId}`);
