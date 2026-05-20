@@ -32,6 +32,8 @@ interface Appointment {
   doctor_name: string;
   doctor_crm: string;
   specialties: string[];
+  refund_status?: "pending" | "approved" | "refunded" | "rejected" | null;
+  refund_amount_cents?: number | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; dot: string; stripe: string }> = {
@@ -109,9 +111,14 @@ const AppointmentsList = () => {
       .in("id", doctorIds);
 
     const userIds = doctors?.map(d => d.user_id) ?? [];
-    const [profilesRes, specsRes] = await Promise.all([
+    const apptIds = data.map(a => a.id);
+    const [profilesRes, specsRes, refundsRes] = await Promise.all([
       db.from("profiles").select("user_id, first_name, last_name").in("user_id", userIds),
       db.from("doctor_specialties").select("doctor_id, specialties(name)").in("doctor_id", doctorIds),
+      db.from("refund_requests")
+        .select("appointment_id, status, amount_cents, requested_at")
+        .in("appointment_id", apptIds)
+        .order("requested_at", { ascending: false }),
     ]);
 
     const doctorMap = new Map(doctors?.map(d => [d.id, d]) ?? []);
@@ -122,11 +129,19 @@ const AppointmentsList = () => {
       arr.push(s.specialties?.name ?? "");
       specMap.set(s.doctor_id, arr);
     });
+    // Mantém apenas a solicitação mais recente por consulta
+    const refundMap = new Map<string, { status: string; amount_cents: number | null }>();
+    refundsRes.data?.forEach((r: any) => {
+      if (!refundMap.has(r.appointment_id)) {
+        refundMap.set(r.appointment_id, { status: r.status, amount_cents: r.amount_cents });
+      }
+    });
 
     setAppointments(data.map((a: any) => {
       const doc = doctorMap.get(a.doctor_id) as any;
       const profile = doc ? (profileMap.get(doc.user_id) as any) : null;
       const displayStatus = (a.status === "scheduled" && a.payment_status === "pending") ? "payment_pending" : a.status;
+      const refund = refundMap.get(a.id);
       return {
         id: a.id,
         scheduled_at: a.scheduled_at,
@@ -137,6 +152,8 @@ const AppointmentsList = () => {
         doctor_name: profile ? `Dr(a). ${profile.first_name} ${profile.last_name}` : "Médico",
         doctor_crm: doc ? `${doc.crm}/${doc.crm_state}` : "",
         specialties: specMap.get(a.doctor_id) ?? [],
+        refund_status: (refund?.status as any) ?? null,
+        refund_amount_cents: refund?.amount_cents ?? null,
       };
     }));
     setLoading(false);
@@ -276,6 +293,27 @@ const AppointmentsList = () => {
                     <span className={cn("w-1.5 h-1.5 rounded-full", config.dot)} />
                     {config.label}
                   </span>
+
+                  {appt.status === "cancelled" && appt.refund_status && (
+                    <span
+                      className={cn(
+                        "flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full",
+                        appt.refund_status === "refunded" && "bg-emerald-500/15 text-emerald-700",
+                        appt.refund_status === "approved" && "bg-blue-500/15 text-blue-700",
+                        appt.refund_status === "rejected" && "bg-destructive/15 text-destructive",
+                        appt.refund_status === "pending" && "bg-amber-500/15 text-amber-700",
+                      )}
+                      title={appt.refund_amount_cents != null ? `R$ ${(appt.refund_amount_cents / 100).toFixed(2).replace(".", ",")}` : undefined}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      Reembolso: {
+                        appt.refund_status === "pending" ? "Pendente" :
+                        appt.refund_status === "approved" ? "Aprovado" :
+                        appt.refund_status === "refunded" ? "Reembolsado" :
+                        "Rejeitado"
+                      }
+                    </span>
+                  )}
 
                   {isActive && (
                     <Button

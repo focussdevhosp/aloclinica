@@ -48,6 +48,8 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
     dateTime: string;
     cancelledAt: string;
     refundTier: "full" | "partial" | "none";
+    refundStatus?: "pending" | "approved" | "refunded" | "rejected" | null;
+    refundAmountCents?: number | null;
   } | null>(null);
 
   // Reschedule state
@@ -147,11 +149,57 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
       toast.error("Erro ao cancelar consulta");
     } else {
       notifyAppointmentCancelled(appointmentId, "Paciente", finalReason).catch(err => logError("notifyAppointmentCancelled failed", err));
+
+      // Cria solicitação de reembolso quando elegível (full/partial)
+      let refundStatus: "pending" | "approved" | "refunded" | "rejected" | null = null;
+      let refundAmountCents: number | null = null;
+      if (refundTier !== "none" && user) {
+        try {
+          const { data: tx } = await db
+            .from("payment_transactions")
+            .select("amount_cents")
+            .eq("resource_id", appointmentId)
+            .eq("resource_type", "appointment")
+            .eq("status", "paid")
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          const paidCents = tx?.amount_cents ?? null;
+          refundAmountCents = paidCents != null
+            ? Math.round(paidCents * (refundTier === "full" ? 1 : 0.5))
+            : null;
+          const { data: inserted, error: refundErr } = await db
+            .from("refund_requests")
+            .insert({
+              appointment_id: appointmentId,
+              user_id: user.id,
+              status: "pending",
+              tier: refundTier,
+              amount_cents: refundAmountCents,
+              reason: finalReason,
+            })
+            .select("status")
+            .maybeSingle();
+          if (refundErr) {
+            logError("refund_request insert failed", refundErr, { appointmentId });
+          } else {
+            refundStatus = (inserted?.status as typeof refundStatus) ?? "pending";
+            toast.success("Solicitação de reembolso registrada", {
+              description: "Você pode acompanhar o status na sua agenda.",
+            });
+          }
+        } catch (err) {
+          logError("refund_request flow failed", err, { appointmentId });
+        }
+      }
+
       setConfirmationData({
         doctorName,
         dateTime: scheduledAt ? format(new Date(scheduledAt), "EEEE, dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR }) : currentDate,
         cancelledAt: format(new Date(), "dd/MM/yyyy 'às' HH:mm"),
         refundTier,
+        refundStatus,
+        refundAmountCents,
       });
       onSuccess(); // sincroniza lista imediatamente, antes de mostrar confirmação
       setShowConfirmation(true);
@@ -355,6 +403,34 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
                     <p className="text-xs text-destructive font-medium">Sem reembolso — cancelamento com menos de 2h de antecedência.</p>
                   )}
                 </div>
+
+                {confirmationData.refundStatus && (
+                  <div className="pt-2 border-t border-border/40">
+                    <p className="text-[11px] text-muted-foreground uppercase font-semibold tracking-wider mb-1.5">Solicitação de reembolso</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                        confirmationData.refundStatus === "refunded" ? "bg-emerald-500/15 text-emerald-700" :
+                        confirmationData.refundStatus === "approved" ? "bg-blue-500/15 text-blue-700" :
+                        confirmationData.refundStatus === "rejected" ? "bg-destructive/15 text-destructive" :
+                        "bg-amber-500/15 text-amber-700"
+                      }`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        {confirmationData.refundStatus === "pending" && "Pendente"}
+                        {confirmationData.refundStatus === "approved" && "Aprovado"}
+                        {confirmationData.refundStatus === "refunded" && "Reembolsado"}
+                        {confirmationData.refundStatus === "rejected" && "Rejeitado"}
+                      </span>
+                      {confirmationData.refundAmountCents != null && (
+                        <span className="text-sm font-bold text-foreground">
+                          R$ {(confirmationData.refundAmountCents / 100).toFixed(2).replace(".", ",")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1.5">
+                      Nossa equipe analisará e processará em até 5 dias úteis. Acompanhe pela sua agenda.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <Button className="w-full h-12 rounded-xl font-bold" onClick={handleCloseConfirmation}>
