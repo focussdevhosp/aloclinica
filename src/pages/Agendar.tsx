@@ -430,6 +430,60 @@ const Agendar = () => {
                     </div>
                   </div>
 
+                  {/* Specialty quick-switch + availability filter */}
+                  <div className="mb-6 space-y-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
+                        <Filter className="w-3 h-3" /> Especialidade
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {specialties.map((s) => {
+                          const active = s.name === selectedSpecialty;
+                          return (
+                            <button
+                              key={s.name}
+                              onClick={() => handleSelectSpecialty(s.name)}
+                              className={cn(
+                                "text-[11px] font-medium px-2.5 py-1 rounded-full border transition-all",
+                                active
+                                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                  : "bg-card border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary"
+                              )}
+                            >
+                              {s.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                      <span
+                        className={cn(
+                          "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
+                          onlyAvailable ? "bg-primary" : "bg-muted"
+                        )}
+                      >
+                        <input
+                          type="checkbox"
+                          className="sr-only"
+                          checked={onlyAvailable}
+                          onChange={(e) => setOnlyAvailable(e.target.checked)}
+                        />
+                        <span
+                          className={cn(
+                            "inline-block h-4 w-4 rounded-full bg-background shadow transition-transform",
+                            onlyAvailable ? "translate-x-4" : "translate-x-0.5"
+                          )}
+                        />
+                      </span>
+                      <span className="text-xs font-medium text-foreground inline-flex items-center gap-1.5">
+                        <CalendarClock className="w-3.5 h-3.5 text-primary" />
+                        Apenas com horários disponíveis
+                      </span>
+                    </label>
+                  </div>
+
                   {/* Doctor List */}
                   {loading ? (
                     <div className="space-y-4">
