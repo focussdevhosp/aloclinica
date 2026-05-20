@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { CheckCircle2, Calendar, Clock, Video, ArrowRight, Stethoscope, Download, Home, ListChecks, Loader2, Copy, Wifi, Mic, Camera, FileText, Receipt } from "lucide-react";
+import { CheckCircle2, Calendar, Clock, Video, ArrowRight, Stethoscope, Download, Home, ListChecks, Loader2, Copy, Wifi, Mic, Camera, FileText, Receipt, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { getPatientNav } from "./patientNav";
+import CancelRescheduleDialog from "./CancelRescheduleDialog";
 
 interface ConfirmedAppointment {
   id: string;
@@ -185,6 +186,7 @@ const AppointmentConfirmed = () => {
   const isPaid = ["approved", "confirmed", "received", "paid"].includes(String(appt.payment_status));
   const minutesUntil = Math.round((date.getTime() - now) / 60000);
   const canJoinSoon = minutesUntil <= 15 && minutesUntil >= -120;
+  const canReschedule = minutesUntil >= 120; // até 2h antes
   const joinLabel = canJoinSoon
     ? "Entrar na sala da consulta"
     : minutesUntil > 15
@@ -355,6 +357,30 @@ const AppointmentConfirmed = () => {
             >
               <Receipt className="w-4 h-4 mr-2" /> Baixar recibo da consulta
             </Button>
+          )}
+
+          {canReschedule ? (
+            <CancelRescheduleDialog
+              appointmentId={appt.id}
+              doctorId={appt.doctor_id}
+              currentDate={format(date, "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+              scheduledAt={appt.scheduled_at}
+              doctorName={appt.doctor_name}
+              defaultMode="reschedule"
+              onSuccess={() => navigate("/dashboard/appointments")}
+              trigger={
+                <Button
+                  variant="outline"
+                  className="w-full h-11 rounded-xl border-secondary/40 text-secondary hover:bg-secondary/5"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" /> Remarcar consulta
+                </Button>
+              }
+            />
+          ) : (
+            <p className="text-center text-[11px] text-muted-foreground">
+              Remarcação disponível somente até 2h antes do horário.
+            </p>
           )}
         </motion.div>
 
