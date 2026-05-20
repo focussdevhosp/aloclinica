@@ -119,8 +119,10 @@ const AppointmentReceipt = () => {
   const isPaid = ["approved", "confirmed", "received", "paid"].includes(String(data.payment_status));
   const paidAt = data.payment_confirmed_at ? new Date(data.payment_confirmed_at) : null;
   const issuedAt = paidAt ?? (data.created_at ? new Date(data.created_at) : new Date());
+  const receiptCode = data.id.slice(0, 8).toUpperCase();
+  const verifyUrl = `${window.location.origin}/dashboard/appointments/${data.id}/recibo`;
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     if (!data) return;
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const W = doc.internal.pageSize.getWidth();
