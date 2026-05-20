@@ -10,6 +10,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
 import { db } from "@/integrations/supabase/untyped";
+import { useAuth } from "@/contexts/AuthContext";
+import { PingoSubscribeDialog } from "@/components/patient/PingoSubscribeDialog";
 import pingoCardHero from "@/assets/pingo-card-hero.png";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
@@ -55,10 +57,22 @@ const formatBRL = (v: number) =>
 
 const PingoCard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [plans, setPlans] = useState<PingoPlan[]>([]);
   const [partners, setPartners] = useState<PingoPartner[]>([]);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [partnerCategory, setPartnerCategory] = useState<string>("todas");
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PingoPlan | null>(null);
+
+  const handleSubscribe = (plan: PingoPlan) => {
+    if (!user) {
+      navigate(`/paciente?next=/pingo-card%23planos`);
+      return;
+    }
+    setSelectedPlan(plan);
+    setSubscribeOpen(true);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -351,7 +365,7 @@ const PingoCard = () => {
                         size="lg"
                         className="w-full"
                         variant={plan.is_highlighted ? "default" : "outline"}
-                        onClick={() => navigate(`/paciente?next=/dashboard/patient/pingo-card`)}
+                        onClick={() => handleSubscribe(plan)}
                       >
                         Assinar agora
                       </Button>
