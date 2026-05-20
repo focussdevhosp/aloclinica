@@ -53,7 +53,6 @@ export const getPatientNav = (active: string, t: Translator = fallback) => {
     // ── Saúde Digital ──
     { label: t("patientNav.health"), href: "/dashboard/patient/health?role=patient", icon: <NavIcon icon={<Heart size={16} weight="fill" />} color="rose" />, active: active === "health", group: health },
     { label: t("patientNav.prescriptions"), href: "/dashboard/history?role=patient", icon: <NavIcon icon={<FileText size={16} weight="fill" />} color="emerald" />, active: active === "history", group: health },
-    { label: t("patientNav.examResults"), href: "/dashboard/patient/exam-results?role=patient", icon: <NavIcon icon={<ClipboardText size={16} weight="fill" />} color="purple" />, active: active === "exam-results", group: health },
     { label: t("patientNav.uploadExams"), href: "/dashboard/patient/documents?role=patient", icon: <NavIcon icon={<Upload size={16} weight="fill" />} color="cyan" />, active: active === "documents", group: health },
     { label: t("patientNav.renewal"), href: "/dashboard/prescription-renewal?role=patient", icon: <NavIcon icon={<BookOpen size={16} weight="fill" />} color="emerald" />, active: active === "renewal", group: health },
 
