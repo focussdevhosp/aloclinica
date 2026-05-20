@@ -148,7 +148,6 @@ const RoleGuard = ({ allowed, roles, children }: { allowed: string[]; roles: str
 
 /**
  * ContextGuard: ensures the active ?role= context matches the panel being accessed.
- * Prevents e.g. a doctor+laudista user on ?role=laudista from accessing doctor-only routes.
  */
 const ContextGuard = ({ panel, forceRole, roles, children }: { panel: string; forceRole: string | null; roles: string[]; children: ReactNode }) => {
   const isAdmin = roles.includes("admin");
@@ -292,7 +291,7 @@ const Dashboard = () => {
       
       <Route path="book" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><DoctorSearch /></ContextGuard></RoleGuard>} />
 
-      {/* Doctor routes — blocked when ?role=laudista */}
+      {/* Doctor routes */}
       <Route path="availability" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><DoctorAvailability /></ContextGuard></RoleGuard>} />
       <Route path="patients" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><DoctorPatients /></ContextGuard></RoleGuard>} />
       <Route path="patients/:patientUserId/emr" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><PatientEMRPage /></ContextGuard></RoleGuard>} />
@@ -340,7 +339,7 @@ const Dashboard = () => {
       <Route path="support/online" element={<RoleGuard allowed={["support"]} roles={roles}><ContextGuard panel="support" forceRole={forceRole} roles={roles}><SupportDashboard /></ContextGuard></RoleGuard>} />
       <Route path="support/audit" element={<RoleGuard allowed={["support"]} roles={roles}><ContextGuard panel="support" forceRole={forceRole} roles={roles}><SupportDashboard /></ContextGuard></RoleGuard>} />
 
-      {/* Partner/Reception removed — platform focused on telelaudo + consultas avulsas */}
+      {/* Partner/Reception removed — platform focused on telemedicina + consultas avulsas */}
 
       {/* Admin */}
       <Route path="admin/doctors" element={<RoleGuard allowed={[]} roles={roles}><AdminDoctors /></RoleGuard>} />
