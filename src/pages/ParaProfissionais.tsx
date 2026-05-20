@@ -218,23 +218,6 @@ const professions = [
     ],
     gradient: "from-blue-500 to-cyan-500",
   },
-  {
-    id: 3,
-    title: "Sou Clínica",
-    description: "Digitalize seus exames. Envie, receba laudos assinados em 24h. Integração fácil, zero papel, mais eficiência e receita extra.",
-    icon: "🏥",
-    href: "/para-clinicas",
-    badge: "🚀 Crescimento B2B",
-    stats: "100+ clínicas • 50k+ exames/mês",
-    benefits: [
-      "API para integração com seu sistema",
-      "Laudistas verificados e certificados",
-      "SLA 24h garantido",
-      "Gestor de relacionamento dedicado",
-      "Relatórios de performance",
-    ],
-    gradient: "from-purple-500 to-fuchsia-500",
-  },
 ];
 
 const ParaProfissionais = forwardRef<HTMLDivElement>((_, ref) => {
@@ -245,8 +228,8 @@ const ParaProfissionais = forwardRef<HTMLDivElement>((_, ref) => {
       <div className="absolute inset-0 -z-10 bg-[image:var(--landing-bg)] pointer-events-none" />
 
       <SEOHead
-        title="Para Profissionais | AloClínica - Médicos, Laudistas e Clínicas"
-        description="Oportunidades para médicos, laudistas e clínicas. Cadastre-se e comece a ganhar com telemedicina."
+        title="Para Profissionais | AloClínica - Médicos"
+        description="Oportunidades para médicos. Cadastre-se e comece a ganhar com telemedicina."
         canonical="https://aloclinica.com.br/para-profissionais"
       />
 
@@ -268,7 +251,7 @@ const ParaProfissionais = forwardRef<HTMLDivElement>((_, ref) => {
               Profissionais de <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Saúde Ganham Aqui</span>
             </h1>
             <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium mb-4">
-              Médicos, laudistas e clínicas — expanda sua renda, controle sua agenda, atenda quantas vezes quiser.
+              Médicos — expanda sua renda, controle sua agenda, atenda quantas vezes quiser.
             </p>
             <p className="text-base text-muted-foreground/80 max-w-2xl mx-auto">
               500+ profissionais já ganham R$ 3k+/mês. Você pode ser o próximo.
@@ -775,17 +758,6 @@ const ParaProfissionais = forwardRef<HTMLDivElement>((_, ref) => {
               >
                 <span className="flex items-center gap-2">
                   👨‍⚕️ Cadastro Médico
-                  <ArrowRight className="w-5 h-5" weight="bold" />
-                </span>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-xl px-10 h-14 font-bold text-base"
-                onClick={() => navigate("/para-clinicas")}
-              >
-                <span className="flex items-center gap-2">
-                  🏢 Para Clínicas
                   <ArrowRight className="w-5 h-5" weight="bold" />
                 </span>
               </Button>
