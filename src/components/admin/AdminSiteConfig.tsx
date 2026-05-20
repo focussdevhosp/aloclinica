@@ -535,14 +535,14 @@ const AdminSiteConfig = () => {
                     <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Prévia no Google</p>
                     <div className="space-y-0.5">
                       <p className="text-blue-600 dark:text-blue-400 text-base font-medium leading-tight hover:underline cursor-default">
-                        {values["seo_title"] || "AlôMédico — Telemedicina e Tele-laudos"}
+                        {values["seo_title"] || "AlôMédico — Telemedicina"}
                       </p>
                       <p className="text-emerald-700 dark:text-emerald-500 text-xs flex items-center gap-1">
                         <Globe className="w-3 h-3" />
                         alomedico.com.br
                       </p>
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                        {values["seo_description"] || "Consultas online com especialistas, laudos médicos e muito mais."}
+                        {values["seo_description"] || "Consultas online com especialistas e muito mais."}
                       </p>
                     </div>
                   </div>
