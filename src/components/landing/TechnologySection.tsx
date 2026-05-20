@@ -54,17 +54,13 @@ const TechnologySection = ({ config }: { config?: any }) => {
               transition={{ duration: 0.6 }}
             >
               {/* Floating glass widget — top right */}
-              <motion.div
-                className="absolute top-0 right-0 sm:right-4 z-20 w-40 sm:w-44 bg-white/70 backdrop-blur-md rounded-2xl border border-white shadow-xl px-4 py-3"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
+              <div className="absolute top-0 right-0 sm:right-4 z-20 w-40 sm:w-44 bg-white/70 backdrop-blur-md rounded-2xl border border-white shadow-xl px-4 py-3 animate-float-up">
                 <div className="w-10 h-1.5 bg-secondary rounded-full mb-3" />
                 <div className="space-y-1.5">
                   <div className="w-24 h-1 bg-slate-200 rounded-full" />
                   <div className="w-16 h-1 bg-slate-200 rounded-full" />
                 </div>
-              </motion.div>
+              </div>
 
               {/* Floating glass widget — bottom left */}
               <motion.div
