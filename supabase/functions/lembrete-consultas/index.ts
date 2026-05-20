@@ -74,7 +74,7 @@ serve(async (req) => {
             body: JSON.stringify({
               tipo: "lembrete_1h",
               user_id: appt.patient_id,
-              dados: { nome_medico: doctorName, hora },
+              dados: { nome_medico: doctorName, hora, appointment_id: appt.id },
             }),
           });
           results.push(`${appt.id}: sent`);
