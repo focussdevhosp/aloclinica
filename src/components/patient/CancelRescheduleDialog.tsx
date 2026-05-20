@@ -403,6 +403,34 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
                     <p className="text-xs text-destructive font-medium">Sem reembolso — cancelamento com menos de 2h de antecedência.</p>
                   )}
                 </div>
+
+                {confirmationData.refundStatus && (
+                  <div className="pt-2 border-t border-border/40">
+                    <p className="text-[11px] text-muted-foreground uppercase font-semibold tracking-wider mb-1.5">Solicitação de reembolso</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                        confirmationData.refundStatus === "refunded" ? "bg-emerald-500/15 text-emerald-700" :
+                        confirmationData.refundStatus === "approved" ? "bg-blue-500/15 text-blue-700" :
+                        confirmationData.refundStatus === "rejected" ? "bg-destructive/15 text-destructive" :
+                        "bg-amber-500/15 text-amber-700"
+                      }`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        {confirmationData.refundStatus === "pending" && "Pendente"}
+                        {confirmationData.refundStatus === "approved" && "Aprovado"}
+                        {confirmationData.refundStatus === "refunded" && "Reembolsado"}
+                        {confirmationData.refundStatus === "rejected" && "Rejeitado"}
+                      </span>
+                      {confirmationData.refundAmountCents != null && (
+                        <span className="text-sm font-bold text-foreground">
+                          R$ {(confirmationData.refundAmountCents / 100).toFixed(2).replace(".", ",")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1.5">
+                      Nossa equipe analisará e processará em até 5 dias úteis. Acompanhe pela sua agenda.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <Button className="w-full h-12 rounded-xl font-bold" onClick={handleCloseConfirmation}>
