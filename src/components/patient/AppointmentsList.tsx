@@ -111,9 +111,14 @@ const AppointmentsList = () => {
       .in("id", doctorIds);
 
     const userIds = doctors?.map(d => d.user_id) ?? [];
-    const [profilesRes, specsRes] = await Promise.all([
+    const apptIds = data.map(a => a.id);
+    const [profilesRes, specsRes, refundsRes] = await Promise.all([
       db.from("profiles").select("user_id, first_name, last_name").in("user_id", userIds),
       db.from("doctor_specialties").select("doctor_id, specialties(name)").in("doctor_id", doctorIds),
+      db.from("refund_requests")
+        .select("appointment_id, status, amount_cents, requested_at")
+        .in("appointment_id", apptIds)
+        .order("requested_at", { ascending: false }),
     ]);
 
     const doctorMap = new Map(doctors?.map(d => [d.id, d]) ?? []);
@@ -124,11 +129,19 @@ const AppointmentsList = () => {
       arr.push(s.specialties?.name ?? "");
       specMap.set(s.doctor_id, arr);
     });
+    // Mantém apenas a solicitação mais recente por consulta
+    const refundMap = new Map<string, { status: string; amount_cents: number | null }>();
+    refundsRes.data?.forEach((r: any) => {
+      if (!refundMap.has(r.appointment_id)) {
+        refundMap.set(r.appointment_id, { status: r.status, amount_cents: r.amount_cents });
+      }
+    });
 
     setAppointments(data.map((a: any) => {
       const doc = doctorMap.get(a.doctor_id) as any;
       const profile = doc ? (profileMap.get(doc.user_id) as any) : null;
       const displayStatus = (a.status === "scheduled" && a.payment_status === "pending") ? "payment_pending" : a.status;
+      const refund = refundMap.get(a.id);
       return {
         id: a.id,
         scheduled_at: a.scheduled_at,
@@ -139,6 +152,8 @@ const AppointmentsList = () => {
         doctor_name: profile ? `Dr(a). ${profile.first_name} ${profile.last_name}` : "Médico",
         doctor_crm: doc ? `${doc.crm}/${doc.crm_state}` : "",
         specialties: specMap.get(a.doctor_id) ?? [],
+        refund_status: (refund?.status as any) ?? null,
+        refund_amount_cents: refund?.amount_cents ?? null,
       };
     }));
     setLoading(false);
