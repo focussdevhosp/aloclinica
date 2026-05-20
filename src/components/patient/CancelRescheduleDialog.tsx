@@ -313,7 +313,7 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
 
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setOpen(false)}>Voltar</Button>
-                <Button variant="destructive" className="flex-1" onClick={handleCancel} disabled={submitting || !reason}>
+                <Button variant="destructive" className="flex-1" onClick={handleCancel} disabled={submitting || !reason || isPastAppointment}>
                   {submitting ? "Cancelando..." : "Confirmar Cancelamento"}
                 </Button>
               </div>
@@ -360,7 +360,7 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
 
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setOpen(false)}>Voltar</Button>
-                <Button className="flex-1 bg-gradient-hero text-primary-foreground" onClick={handleReschedule} disabled={submitting || !newDate || !newTime}>
+                <Button className="flex-1 bg-gradient-hero text-primary-foreground" onClick={handleReschedule} disabled={submitting || !newDate || !newTime || isPastAppointment}>
                   {submitting ? "Reagendando..." : "Confirmar Reagendamento"}
                 </Button>
               </div>
