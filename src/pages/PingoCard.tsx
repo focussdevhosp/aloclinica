@@ -602,7 +602,11 @@ const PingoCard = () => {
             <p className="text-lg md:text-xl opacity-90 mb-8">
               Junte-se a milhares de famílias que já cuidam mais por menos com o Pingo Card.
             </p>
-            <Button size="lg" className="bg-amber-400 text-amber-950 hover:bg-amber-300 font-semibold" onClick={() => navigate("/paciente?next=/dashboard/patient/pingo-card")}>
+            <Button size="lg" className="bg-amber-400 text-amber-950 hover:bg-amber-300 font-semibold" onClick={() => {
+              const target = plans.find(p => p.is_highlighted) ?? plans[0];
+              if (target) handleSubscribe(target);
+              else document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" });
+            }}>
               Começar agora <ArrowRight size={18} className="ml-2" weight="bold" />
             </Button>
           </motion.div>
@@ -612,6 +616,14 @@ const PingoCard = () => {
       <Suspense fallback={null}>
         <Footer />
       </Suspense>
+
+      <PingoSubscribeDialog
+        open={subscribeOpen}
+        onOpenChange={setSubscribeOpen}
+        plan={selectedPlan}
+        billingCycle={billing}
+        onSubscribed={() => navigate("/dashboard/cartao/carteirinha?role=cartao_beneficios")}
+      />
     </div>
   );
 };
