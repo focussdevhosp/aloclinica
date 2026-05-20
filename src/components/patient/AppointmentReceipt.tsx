@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Printer, Loader2, FileText, CheckCircle2, Download } from "lucide-react";
+import { ArrowLeft, Printer, Loader2, FileText, CheckCircle2, Download, ShieldAlert } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getPatientNav } from "./patientNav";
@@ -48,10 +48,11 @@ const AppointmentReceipt = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<ReceiptData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [unauthorized, setUnauthorized] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
-      if (!appointmentId || !user) return;
+      if (!appointmentId || !user) { setLoading(false); return; }
 
       const { data: appt } = await db
         .from("appointments")
@@ -60,6 +61,12 @@ const AppointmentReceipt = () => {
         .maybeSingle();
 
       if (!appt) { setLoading(false); return; }
+
+      if (appt.patient_id !== user.id) {
+        setUnauthorized(true);
+        setLoading(false);
+        return;
+      }
 
       const [docRes, patRes] = await Promise.all([
         db.from("doctor_profiles_public" as any)
@@ -99,6 +106,23 @@ const AppointmentReceipt = () => {
       <DashboardLayout title="Recibo" nav={nav}>
         <div className="flex items-center justify-center py-32">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (unauthorized) {
+    return (
+      <DashboardLayout title="Acesso negado" nav={nav}>
+        <div className="text-center py-20 max-w-md mx-auto">
+          <ShieldAlert className="w-12 h-12 mx-auto text-destructive/70 mb-3" />
+          <h2 className="text-lg font-semibold text-foreground mb-1">Acesso restrito</h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            Você não tem permissão para visualizar este recibo. Ele pertence a outro paciente.
+          </p>
+          <Button variant="outline" onClick={() => navigate("/dashboard/patient/appointments")} className="rounded-xl">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Voltar às minhas consultas
+          </Button>
         </div>
       </DashboardLayout>
     );
