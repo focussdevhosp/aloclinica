@@ -595,7 +595,7 @@ const PingoCard = () => {
       {/* CTA FINAL */}
       <section className="py-16 md:py-24 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
               Pronto para economizar com sua saúde?
             </h2>
