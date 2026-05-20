@@ -19,7 +19,6 @@ const AdminDashboard = lazy(() => import("@/components/dashboards/AdminDashboard
 const ReceptionDashboard = lazy(() => import("@/components/dashboards/ReceptionDashboard")); // kept for admin view-as
 const SupportDashboard = lazy(() => import("@/components/dashboards/SupportDashboard"));
 const PartnerDashboard = lazy(() => import("@/components/dashboards/PartnerDashboard")); // kept for admin view-as
-const LaudistaDashboard = lazy(() => import("@/components/dashboards/LaudistaDashboard"));
 const CartaoDashboard = lazy(() => import("@/components/dashboards/CartaoDashboard"));
 
 // ── Cartão Benefícios sub-pages ──
@@ -56,27 +55,17 @@ const PatientSupportChat = lazy(() => import("@/components/patient/PatientSuppor
 const DependentsManager = lazy(() => import("@/components/patient/DependentsManager"));
 const HealthTimeline = lazy(() => import("@/components/patient/HealthTimeline"));
 const SymptomDiary = lazy(() => import("@/components/patient/SymptomDiary"));
-const PatientExamResults = lazy(() => import("@/components/patient/PatientExamResults"));
 const DoctorPrescriptions = lazy(() => import("@/components/doctor/DoctorPrescriptions"));
 const DoctorEarnings = lazy(() => import("@/components/doctor/DoctorEarnings"));
 const MedicalCertificate = lazy(() => import("@/components/doctor/MedicalCertificate"));
 const DoctorWaitingRoom = lazy(() => import("@/components/doctor/DoctorWaitingRoom"));
 const PatientDocuments = lazy(() => import("@/components/doctor/PatientDocuments"));
 const DoctorPublicProfile = lazy(() => import("@/components/doctor/DoctorPublicProfile"));
-const ExamReportQueue = lazy(() => import("@/components/doctor/ExamReportQueue"));
-const ExamReportEditor = lazy(() => import("@/components/doctor/ExamReportEditor"));
-const ExamRequestForm = lazy(() => import("@/components/doctor/ExamRequestForm"));
 const SimplePrescription = lazy(() => import("@/components/doctor/SimplePrescription"));
 const UrgentCareQueue = lazy(() => import("@/components/patient/UrgentCareQueue"));
 const PrescriptionRenewalForm = lazy(() => import("@/components/patient/PrescriptionRenewalForm"));
 const DoctorOnDutyPanel = lazy(() => import("@/components/doctor/DoctorOnDutyPanel"));
-const LaudistaReportQueue = lazy(() => import("@/components/laudista/LaudistaReportQueue"));
-const LaudistaMyReports = lazy(() => import("@/components/laudista/LaudistaMyReports"));
-
-const LaudistaFinanceiro = lazy(() => import("@/components/laudista/LaudistaFinanceiro"));
 const DoctorWallet = lazy(() => import("@/components/doctor/DoctorWallet"));
-const LaudistaExamRequest = lazy(() => import("@/components/doctor/ExamRequestForm"));
-const LaudistaReportEditor = lazy(() => import("@/components/doctor/ExamReportEditor"));
 const RenewalQueue = lazy(() => import("@/components/doctor/RenewalQueue"));
 const VideoRoom = lazy(() => import("@/components/consultation/VideoRoom"));
 
@@ -95,9 +84,6 @@ const MedicalRecords = lazy(() => import("@/components/medical/MedicalRecords"))
 const AIAssistantPanel = lazy(() => import("@/components/ai/AIAssistantPanel"));
 // Clinic components (kept minimal for admin view-as)
 const ClinicDoctorsManagement = lazy(() => import("@/components/clinic/ClinicDoctorsManagement"));
-const ClinicMyExams = lazy(() => import("@/components/clinic/ClinicMyExams"));
-const ClinicExamUpload = lazy(() => import("@/components/clinic/ClinicExamUpload"));
-const ClinicExamList = lazy(() => import("@/components/clinic/ClinicExamList"));
 const ClinicSchedules = lazy(() => import("@/components/clinic/ClinicSchedules"));
 const ClinicPatients = lazy(() => import("@/components/clinic/ClinicPatients"));
 const ClinicWaitingRoom = lazy(() => import("@/components/clinic/ClinicWaitingRoom"));
@@ -118,7 +104,6 @@ const AdminNotificationTemplates = lazy(() => import("@/components/admin/AdminNo
 const AdminSecurity = lazy(() => import("@/components/admin/AdminSecurity"));
 const AdminLgpdExports = lazy(() => import("@/components/admin/AdminLgpdExports"));
 const AdminThemeEditor = lazy(() => import("@/components/admin/AdminThemeEditor"));
-const AdminSlaMedicos = lazy(() => import("@/components/admin/AdminSlaMedicos"));
 const BillingPortal = lazy(() => import("@/components/billing/BillingPortal"));
 const AdminSwitchPanel = lazy(() => import("@/components/admin/AdminSwitchPanel"));
 const AdminNPS = lazy(() => import("@/components/admin/AdminNPS"));
@@ -220,7 +205,7 @@ const Dashboard = () => {
   if (!user) return <Navigate to="/paciente" replace />;
 
   const isAdmin = roles.includes("admin");
-  const validForceRoles = ["patient", "doctor", "support", "admin", "laudista", "ophthalmologist", "cartao_beneficios"];
+  const validForceRoles = ["patient", "doctor", "support", "admin", "ophthalmologist", "cartao_beneficios"];
 
   // Allow any user to use ?role= IF they actually have that role (not just admins)
   const primaryRole = (() => {
@@ -232,9 +217,6 @@ const Dashboard = () => {
     }
     // Default role resolution
     if (isAdmin) return "admin";
-    // Laudista takes priority over doctor if user has laudista role
-    // (laudistas also have doctor role but their primary context is laudista)
-    if (roles.includes("laudista")) return "laudista";
     if (roles.includes("ophthalmologist")) return "ophthalmologist";
     if (roles.includes("doctor")) return "doctor";
     if (roles.includes("receptionist")) return "receptionist";
@@ -250,7 +232,6 @@ const Dashboard = () => {
     switch (primaryRole) {
       case "admin": return <AdminDashboard />;
       case "doctor": return <DoctorDashboard />;
-      case "laudista": return <LaudistaDashboard />;
       case "ophthalmologist": return <DoctorDashboard />;
       case "receptionist": return <ReceptionDashboard />;
       case "support": return <SupportDashboard />;
@@ -301,7 +282,6 @@ const Dashboard = () => {
       <Route path="patient/diary" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><SymptomDiary /></ContextGuard></RoleGuard>} />
       <Route path="urgent-care" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><UrgentCareQueue /></ContextGuard></RoleGuard>} />
       <Route path="prescription-renewal" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><PrescriptionRenewalForm /></ContextGuard></RoleGuard>} />
-      <Route path="patient/exam-results" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><PatientExamResults /></ContextGuard></RoleGuard>} />
       <Route path="patient/health-card" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><HealthCardPage /></ContextGuard></RoleGuard>} />
       <Route path="patient/care-plans" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><CarePlansPage /></ContextGuard></RoleGuard>} />
       <Route path="patient/vaccinations" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><VaccinationsPage /></ContextGuard></RoleGuard>} />
@@ -326,9 +306,6 @@ const Dashboard = () => {
       <Route path="doctor/documents" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><PatientDocuments /></ContextGuard></RoleGuard>} />
       <Route path="doctor/on-duty" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><DoctorOnDutyPanel /></ContextGuard></RoleGuard>} />
       <Route path="doctor/renewal-queue" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><RenewalQueue /></ContextGuard></RoleGuard>} />
-      <Route path="doctor/report-queue" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><ExamReportQueue /></ContextGuard></RoleGuard>} />
-      <Route path="doctor/report-editor/:examId" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><ExamReportEditor /></ContextGuard></RoleGuard>} />
-      <Route path="doctor/exam-request" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><ExamRequestForm /></ContextGuard></RoleGuard>} />
       <Route path="doctor/simple-prescription" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><SimplePrescription /></ContextGuard></RoleGuard>} />
       <Route path="doctor/wallet" element={<RoleGuard allowed={["doctor"]} roles={roles}><ContextGuard panel="doctor" forceRole={forceRole} roles={roles}><DoctorWallet /></ContextGuard></RoleGuard>} />
 
@@ -354,10 +331,6 @@ const Dashboard = () => {
       <Route path="clinic/waiting-room" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><ClinicWaitingRoom /></ContextGuard></RoleGuard>} />
       <Route path="clinic/finance" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><AdminFinancial /></ContextGuard></RoleGuard>} />
       <Route path="clinic/reports" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><AdminReports /></ContextGuard></RoleGuard>} />
-      <Route path="clinic/exam-request" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><LaudistaExamRequest /></ContextGuard></RoleGuard>} />
-      <Route path="clinic/my-exams" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><ClinicMyExams /></ContextGuard></RoleGuard>} />
-      <Route path="clinic/exam-upload" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><ClinicExamUpload /></ContextGuard></RoleGuard>} />
-      <Route path="clinic/exam-list" element={<RoleGuard allowed={["clinic"]} roles={roles}><ContextGuard panel="clinic" forceRole={forceRole} roles={roles}><ClinicExamList /></ContextGuard></RoleGuard>} />
 
       {/* Support */}
       <Route path="support/inbox" element={<RoleGuard allowed={["support"]} roles={roles}><ContextGuard panel="support" forceRole={forceRole} roles={roles}><SupportDashboard /></ContextGuard></RoleGuard>} />
@@ -388,7 +361,6 @@ const Dashboard = () => {
       <Route path="admin/security" element={<RoleGuard allowed={[]} roles={roles}><AdminSecurity /></RoleGuard>} />
       <Route path="admin/lgpd-exports" element={<RoleGuard allowed={[]} roles={roles}><AdminLgpdExports /></RoleGuard>} />
       <Route path="admin/theme" element={<RoleGuard allowed={[]} roles={roles}><AdminThemeEditor /></RoleGuard>} />
-      <Route path="admin/sla-medicos" element={<RoleGuard allowed={[]} roles={roles}><AdminSlaMedicos /></RoleGuard>} />
       <Route path="admin/doctor-applications" element={<RoleGuard allowed={[]} roles={roles}><AdminDoctorApplications /></RoleGuard>} />
       <Route path="admin/switch-panel" element={<RoleGuard allowed={[]} roles={roles}><AdminSwitchPanel /></RoleGuard>} />
       <Route path="admin/nps" element={<RoleGuard allowed={[]} roles={roles}><AdminNPS /></RoleGuard>} />
@@ -406,13 +378,6 @@ const Dashboard = () => {
       <Route path="admin/payment-test" element={<RoleGuard allowed={[]} roles={roles}><AdminPaymentTest /></RoleGuard>} />
       <Route path="admin/payouts" element={<RoleGuard allowed={[]} roles={roles}><AdminPayouts /></RoleGuard>} />
 
-
-      {/* Laudista — blocked when ?role=doctor */}
-      <Route path="laudista" element={<RoleGuard allowed={["doctor", "laudista"]} roles={roles}><ContextGuard panel="laudista" forceRole={forceRole} roles={roles}><LaudistaDashboard /></ContextGuard></RoleGuard>} />
-      <Route path="laudista/queue" element={<RoleGuard allowed={["doctor", "laudista"]} roles={roles}><ContextGuard panel="laudista" forceRole={forceRole} roles={roles}><LaudistaReportQueue /></ContextGuard></RoleGuard>} />
-      <Route path="laudista/my-reports" element={<RoleGuard allowed={["doctor", "laudista"]} roles={roles}><ContextGuard panel="laudista" forceRole={forceRole} roles={roles}><LaudistaMyReports /></ContextGuard></RoleGuard>} />
-      <Route path="laudista/report-editor/:examId" element={<RoleGuard allowed={["doctor", "laudista"]} roles={roles}><ContextGuard panel="laudista" forceRole={forceRole} roles={roles}><LaudistaReportEditor /></ContextGuard></RoleGuard>} />
-      <Route path="laudista/financeiro" element={<RoleGuard allowed={["doctor", "laudista"]} roles={roles}><ContextGuard panel="laudista" forceRole={forceRole} roles={roles}><LaudistaFinanceiro /></ContextGuard></RoleGuard>} />
 
       {/* ─── Cartão Benefícios ─── */}
       <Route path="cartao" element={<RoleGuard allowed={["cartao_beneficios"]} roles={roles}><ContextGuard panel="cartao_beneficios" forceRole={forceRole} roles={roles}><CartaoDashboard /></ContextGuard></RoleGuard>} />

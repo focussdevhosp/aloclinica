@@ -57,7 +57,7 @@ const AdminDashboard = () => {
     total_revenue: 0, active_subs: 0, overdue_subs: 0, total_patients: 0,
     total_doctors: 0, monthly_appts: 0,
     live_now: 0, waiting_now: 0, no_show_rate: 0, cancel_rate: 0, avg_rating: 0,
-    total_laudos: 0, avg_nps: 0,
+    avg_nps: 0,
   });
   const [recentSubs, setRecentSubs] = useState<any[]>([]);
   const [overdueSubs, setOverdueSubs] = useState<any[]>([]);
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
     else if (periodFilter === "last6") { periodStart = startOfMonth(subMonths(now, 5)); }
     else { periodStart = new Date("2020-01-01"); }
 
-    const [patientsRes, doctorsRes, activeSubsRes, expiredSubsRes, monthApptsRes, pendingRes, allSubsRes, cancelledRes, noShowRes, totalMonthRes, ratingsRes, laudosRes, npsRes] = await Promise.all([
+    const [patientsRes, doctorsRes, activeSubsRes, expiredSubsRes, monthApptsRes, pendingRes, allSubsRes, cancelledRes, noShowRes, totalMonthRes, ratingsRes, npsRes] = await Promise.all([
       db.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "patient"),
       db.from("doctor_profiles").select("id", { count: "exact", head: true }),
       db.from("subscriptions").select("id", { count: "exact", head: true }).eq("status", "active"),
@@ -147,8 +147,6 @@ const AdminDashboard = () => {
       db.from("appointments").select("id", { count: "exact", head: true })
         .gte("scheduled_at", periodStart.toISOString()),
       db.from("doctor_profiles").select("rating").gt("rating", 0),
-      db.from("exam_reports").select("id", { count: "exact", head: true })
-        .gte("created_at", periodStart.toISOString()),
       db.from("satisfaction_surveys").select("nps_score")
         .gte("created_at", periodStart.toISOString()),
     ]);
@@ -174,7 +172,7 @@ const AdminDashboard = () => {
       overdue_subs: expiredSubsRes.data?.length ?? 0, total_patients: patientsRes.count ?? 0,
       total_doctors: doctorsRes.count ?? 0, monthly_appts: monthApptsRes.count ?? 0,
       live_now: 0, waiting_now: 0, cancel_rate: cancelRate, no_show_rate: noShowRate, avg_rating: avgRating,
-      total_laudos: laudosRes.count ?? 0, avg_nps: avgNps,
+      avg_nps: avgNps,
     });
 
     const allSubs = [...(allSubsRes.data ?? []), ...(expiredSubsRes.data ?? [])];
@@ -312,7 +310,6 @@ const AdminDashboard = () => {
           { label: "Receita mensal", value: `R$${(stats.total_revenue / 1000).toFixed(1)}k`, icon: "💰", iconBg: "bg-emerald-50 dark:bg-emerald-950/30", valueClass: "text-emerald-700 dark:text-emerald-400", trend: 18 , accentClass: "bg-emerald-500" },
           { label: "Consultas/mês", value: stats.monthly_appts, icon: "📅", iconBg: "bg-blue-50 dark:bg-blue-950/30", valueClass: "text-[#1255C8] dark:text-blue-400", trend: 24 , accentClass: "bg-blue-500" },
           { label: "Avaliação média", value: stats.avg_rating > 0 ? stats.avg_rating.toFixed(1) : "—", icon: "⭐", iconBg: "bg-amber-50 dark:bg-amber-950/30", valueClass: "text-amber-600 dark:text-amber-400" },
-          { label: "Laudos emitidos", value: stats.total_laudos, icon: "📋", iconBg: "bg-violet-50 dark:bg-violet-950/30", valueClass: "text-violet-600 dark:text-violet-400", trend: 31 , accentClass: "bg-violet-500" },
         ]} />
 
         {/* Pingo Admin Banner */}
@@ -476,7 +473,6 @@ const AdminDashboard = () => {
               { label: "Pacientes", value: stats.total_patients, icon: Users, color: "text-secondary", bg: "bg-secondary/10", path: "/dashboard/admin/patients", trend: "↑" },
               { label: "Médicos", value: stats.total_doctors, icon: FileText, color: "text-warning", bg: "bg-warning/10", path: "/dashboard/admin/doctors" },
               { label: "Consultas", value: stats.monthly_appts, icon: TrendingUp, color: "text-primary", bg: "bg-primary/10", path: "/dashboard/admin/appointments" },
-              { label: "Laudos", value: stats.total_laudos, icon: FileText, color: "text-secondary", bg: "bg-secondary/10" },
               { label: "NPS Médio", value: stats.avg_nps.toFixed(1), icon: Star, color: "text-warning", bg: "bg-warning/10" },
             ].map((kpi) => (
               <button

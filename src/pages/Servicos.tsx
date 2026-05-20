@@ -32,8 +32,8 @@ const Servicos = forwardRef<HTMLDivElement>((_, ref) => {
       <div className="absolute inset-0 -z-10 bg-[image:var(--landing-bg)] pointer-events-none" />
 
       <SEOHead
-        title="Serviços | AloClínica - Telemedicina, Oftalmologia e Telelaudo"
-        description="Conheça os serviços AloClínica: Teleconsulta, Oftalmologia Digital e Telelaudo B2B para clínicas."
+        title="Serviços | AloClínica - Telemedicina"
+        description="Conheça os serviços AloClínica: Teleconsulta médica online com especialistas verificados."
         canonical="https://aloclinica.com.br/servicos"
       />
 
@@ -55,7 +55,7 @@ const Servicos = forwardRef<HTMLDivElement>((_, ref) => {
               Saúde <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Digitalizada</span>
             </h1>
             <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium mb-4">
-              Atendimento médico online, oftalmologia especializada e laudos digitais — tudo que sua saúde precisa em um só lugar.
+              Atendimento médico online com especialistas verificados — tudo que sua saúde precisa em um só lugar.
             </p>
             <p className="text-base text-muted-foreground/80 max-w-2xl mx-auto">
               De pacientes a clínicas, oferecemos a plataforma mais confiável de telemedicina do Brasil. Segurança CFM, conformidade LGPD e inovação de ponta.

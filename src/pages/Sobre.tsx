@@ -9,7 +9,7 @@ import SEOHead from "@/components/SEOHead";
 import heroDoctor from "@/assets/hero-doctor.png";
 import heroTeleconsulta from "@/assets/hero-teleconsulta.png";
 import bannerPatient from "@/assets/banner-teleconsulta-patient.jpg";
-import heroTelelaudo from "@/assets/hero-telelaudo.png";
+import heroSeguranca from "@/assets/doctor-seguranca.png";
 import pingoVideocall from "@/assets/pingo-videocall.png";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
@@ -326,7 +326,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
             <motion.div className="relative flex justify-center order-2 lg:order-1" {...fadeUp} transition={{ duration: 0.6 }}>
               <div className="absolute inset-0 bg-primary/[0.05] blur-[60px] rounded-full scale-75 -z-10" />
               <img 
-                src={heroTelelaudo} 
+                src={heroSeguranca} 
                 alt="Segurança de Dados" 
                 loading="lazy" 
                 width={512} 
