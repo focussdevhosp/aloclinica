@@ -18,18 +18,25 @@ interface NotifyRequest {
     data?: string;
     hora?: string;
     laudo_url?: string;
+    appointment_id?: string;
+    app_base_url?: string;
   };
 }
 
+const buildRoomLink = (d: NotifyRequest["dados"]) => {
+  const base = d.app_base_url || Deno.env.get("APP_BASE_URL") || "https://aloclinica.com.br";
+  return d.appointment_id ? `${base}/dashboard/consultation/${d.appointment_id}` : `${base}/dashboard`;
+};
+
 const TEMPLATES: Record<NotificationType, (d: NotifyRequest["dados"]) => string> = {
   consulta_agendada: (d) =>
-    `✅ Olá ${d.nome_paciente || ""}! Sua consulta com Dr(a). ${d.nome_medico || ""} foi confirmada para ${d.data} às ${d.hora}. Acesse: https://aloclinica.com.br/dashboard`,
+    `✅ Olá ${d.nome_paciente || ""}! Sua consulta com Dr(a). ${d.nome_medico || ""} foi confirmada para ${d.data} às ${d.hora}.\n\n📹 Entrar na sala: ${buildRoomLink(d)}\n_Login obrigatório._`,
   lembrete_1h: (d) =>
-    `⏰ Lembrete: Sua teleconsulta começa em 1 hora! Dr(a). ${d.nome_medico || ""} às ${d.hora}. Entre aqui: https://aloclinica.com.br/dashboard`,
+    `⏰ Lembrete: Sua teleconsulta começa em 1 hora! Dr(a). ${d.nome_medico || ""} às ${d.hora}.\n\n📹 Entrar na sala: ${buildRoomLink(d)}\n_Login obrigatório._`,
   laudo_disponivel: (d) =>
     `📋 Seu laudo está disponível! Médico: Dr(a). ${d.nome_medico || ""}. Acesse e baixe: ${d.laudo_url || "https://aloclinica.com.br/dashboard"}`,
   nova_consulta: (d) =>
-    `🩺 Nova consulta agendada! Paciente: ${d.nome_paciente || ""}. Data: ${d.data} às ${d.hora}. Acesse: https://aloclinica.com.br/dashboard`,
+    `🩺 Nova consulta agendada! Paciente: ${d.nome_paciente || ""}. Data: ${d.data} às ${d.hora}.\n\n📹 Entrar na sala: ${buildRoomLink(d)}`,
 };
 
 serve(async (req) => {
