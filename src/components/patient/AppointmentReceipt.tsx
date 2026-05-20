@@ -255,9 +255,25 @@ const AppointmentReceipt = () => {
     doc.setTextColor(130);
     const footer = doc.splitTextToSize(
       "Este recibo é gerado automaticamente pela plataforma AloClínica e tem validade como comprovante de pagamento da teleconsulta indicada acima. Para reembolso junto ao seu plano de saúde, anexe este documento à nota fiscal emitida pelo profissional.",
-      W - 2 * M
+      W - 2 * M - 90
     );
     doc.text(footer, M, y + 18);
+
+    // QR code (verificação)
+    try {
+      const qrDataUrl = await QRCode.toDataURL(verifyUrl, { margin: 0, width: 240 });
+      const qrSize = 72;
+      const qrX = W - M - qrSize;
+      const qrY = y + 6;
+      doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+      doc.setFontSize(7);
+      doc.setTextColor(130);
+      doc.text("Verificar recibo", qrX + qrSize / 2, qrY + qrSize + 10, { align: "center" });
+      doc.setFont("courier", "bold");
+      doc.text(receiptCode, qrX + qrSize / 2, qrY + qrSize + 20, { align: "center" });
+    } catch {
+      /* QR opcional */
+    }
 
     doc.save(`recibo-aloclinica-${data.id.slice(0, 8)}.pdf`);
   };
