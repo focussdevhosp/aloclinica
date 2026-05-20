@@ -132,15 +132,15 @@ function BenefitsGrid() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="group bg-card p-8 rounded-[2.5rem] border border-border/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center"
+              className="group bg-card p-6 sm:p-7 md:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-border/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center"
             >
-              <div className="h-36 mb-6 flex items-center justify-center">
+              <div className="w-full h-40 sm:h-44 md:h-48 mb-5 sm:mb-6 flex items-end justify-center overflow-hidden">
                 <img
                   src={c.image}
                   alt={c.title}
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-auto object-contain group-hover:scale-110 transition-transform duration-500"
+                  className="max-h-full max-w-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <h4 className="font-bold text-foreground text-lg mb-2">{c.title}</h4>
