@@ -1,0 +1,44 @@
+
+DROP VIEW IF EXISTS public.doctor_profiles_public CASCADE;
+
+CREATE VIEW public.doctor_profiles_public AS
+SELECT
+  dp.id,
+  COALESCE(NULLIF(TRIM(COALESCE(p.first_name,'') || ' ' || COALESCE(p.last_name,'')), ''), dp.display_name) AS full_name,
+  dp.display_name,
+  COALESCE(dp.professional_photo_url, p.avatar_url) AS avatar_url,
+  dp.crm,
+  dp.crm_state,
+  COALESCE(dp.crm_verified, false) AS crm_verified,
+  dp.bio,
+  NULL::text AS short_description,
+  dp.price AS consultation_price,
+  dp.consultation_duration AS consultation_duration_min,
+  COALESCE(dp.rating_avg, 0) AS rating,
+  COALESCE(dp.rating_count, 0) AS total_reviews,
+  NULL::int AS experience_years,
+  COALESCE(dp.is_on_duty, false) AS available_now,
+  (dp.doctor_type = 'telemedicina') AS available_for_telemedicine,
+  dp.areas_of_expertise AS sub_specialties,
+  NULL::text AS education,
+  dp.doctor_type,
+  COALESCE(
+    ARRAY(
+      SELECT s.name
+      FROM public.doctor_specialties ds
+      JOIN public.specialties s ON s.id = ds.specialty_id
+      WHERE ds.doctor_id = dp.id
+      ORDER BY s.name
+    ),
+    ARRAY[]::text[]
+  ) AS specialty_names,
+  EXISTS(
+    SELECT 1 FROM public.availability_slots a
+    WHERE a.doctor_id = dp.id AND COALESCE(a.is_active, true) = true
+  ) AS has_availability
+FROM public.doctor_profiles dp
+LEFT JOIN public.profiles p ON p.user_id = dp.user_id
+WHERE COALESCE(dp.is_approved, false) = true
+  AND COALESCE(dp.is_active, false) = true;
+
+GRANT SELECT ON public.doctor_profiles_public TO anon, authenticated;

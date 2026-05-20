@@ -157,6 +157,13 @@ export type Database = {
             foreignKeyName: "aloc_exames_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aloc_exames_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -217,6 +224,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aloc_laudos_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -325,6 +339,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_waitlist_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -462,6 +483,13 @@ export type Database = {
             foreignKeyName: "appointments_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -508,6 +536,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "availability_slots_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -587,6 +622,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_affiliations_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -798,6 +840,13 @@ export type Database = {
             foreignKeyName: "consultation_notes_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultation_notes_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -915,6 +964,13 @@ export type Database = {
             foreignKeyName: "doctor_absences_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_absences_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -945,6 +1001,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_care_areas_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -990,6 +1053,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_invite_codes_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -1063,6 +1133,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_payouts_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -1207,6 +1284,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_specialties_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -1376,6 +1460,13 @@ export type Database = {
             foreignKeyName: "exam_reports_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_reports_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -1456,6 +1547,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_requests_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -1615,6 +1713,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorite_doctors_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -2084,6 +2189,13 @@ export type Database = {
             foreignKeyName: "medical_records_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medical_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -2365,6 +2477,13 @@ export type Database = {
             foreignKeyName: "on_demand_queue_assigned_doctor_id_fkey"
             columns: ["assigned_doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "on_demand_queue_assigned_doctor_id_fkey"
+            columns: ["assigned_doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -2480,6 +2599,13 @@ export type Database = {
             foreignKeyName: "ophthalmology_exams_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ophthalmology_exams_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -2561,6 +2687,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ophthalmology_prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -3037,6 +3170,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_documents_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -3730,6 +3870,13 @@ export type Database = {
             foreignKeyName: "prescription_renewals_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescription_renewals_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
             referencedRelation: "doctor_sla_dashboard"
             referencedColumns: ["doctor_id"]
           },
@@ -3916,6 +4063,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -4115,6 +4269,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "satisfaction_surveys_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -5011,6 +5172,32 @@ export type Database = {
       }
     }
     Views: {
+      doctor_profiles_public: {
+        Row: {
+          available_for_telemedicine: boolean | null
+          available_now: boolean | null
+          avatar_url: string | null
+          bio: string | null
+          consultation_duration_min: number | null
+          consultation_price: number | null
+          crm: string | null
+          crm_state: string | null
+          crm_verified: boolean | null
+          display_name: string | null
+          doctor_type: string | null
+          education: string | null
+          experience_years: number | null
+          full_name: string | null
+          has_availability: boolean | null
+          id: string | null
+          rating: number | null
+          short_description: string | null
+          specialty_names: string[] | null
+          sub_specialties: string[] | null
+          total_reviews: number | null
+        }
+        Relationships: []
+      }
       doctor_sla_dashboard: {
         Row: {
           atrasados: number | null
