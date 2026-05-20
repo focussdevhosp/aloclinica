@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { notifyAppointmentCancelled, notifyAppointmentRescheduled } from "@/lib/notifications";
@@ -21,6 +21,8 @@ interface CancelRescheduleDialogProps {
   scheduledAt?: string;
   doctorName: string;
   onSuccess: () => void;
+  trigger?: ReactNode;
+  defaultMode?: "cancel" | "reschedule";
 }
 
 const CANCEL_REASONS = [
@@ -31,10 +33,10 @@ const CANCEL_REASONS = [
   "Outro motivo",
 ];
 
-const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, scheduledAt, doctorName, onSuccess }: CancelRescheduleDialogProps) => {
+const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, scheduledAt, doctorName, onSuccess, trigger, defaultMode }: CancelRescheduleDialogProps) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<"cancel" | "reschedule">("cancel");
+  const [mode, setMode] = useState<"cancel" | "reschedule">(defaultMode ?? "cancel");
   const [reason, setReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -164,18 +166,20 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setMode("cancel"); setNewDate(undefined); setNewTime(null); } }}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setMode(defaultMode ?? "cancel"); setNewDate(undefined); setNewTime(null); } }}>
       <DialogTrigger asChild>
-        <div className="flex gap-1.5">
-          <Button size="sm" variant="ghost" className="text-xs h-7 text-destructive hover:bg-destructive/10 gap-1">
-            <X className="w-3 h-3" /> Cancelar
-          </Button>
-          {doctorId && (
-            <Button size="sm" variant="ghost" className="text-xs h-7 text-primary hover:bg-primary/10 gap-1" onClick={(e) => { e.stopPropagation(); setMode("reschedule"); setOpen(true); }}>
-              <RefreshCw className="w-3 h-3" /> Reagendar
+        {trigger ?? (
+          <div className="flex gap-1.5">
+            <Button size="sm" variant="ghost" className="text-xs h-7 text-destructive hover:bg-destructive/10 gap-1">
+              <X className="w-3 h-3" /> Cancelar
             </Button>
-          )}
-        </div>
+            {doctorId && (
+              <Button size="sm" variant="ghost" className="text-xs h-7 text-primary hover:bg-primary/10 gap-1" onClick={(e) => { e.stopPropagation(); setMode("reschedule"); setOpen(true); }}>
+                <RefreshCw className="w-3 h-3" /> Reagendar
+              </Button>
+            )}
+          </div>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-sm max-h-[85vh] overflow-y-auto">
         <DialogHeader>
