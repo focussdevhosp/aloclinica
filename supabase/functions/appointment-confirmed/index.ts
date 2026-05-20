@@ -131,8 +131,8 @@ serve(async (req) => {
       }
     }
 
-    // 2. Send WhatsApp via Evolution API
-    if (patient?.phone) {
+    // 2. Send WhatsApp via Evolution API (skip on resend_only)
+    if (!resend_only && patient?.phone) {
       try {
         const receiptBlock = isPaid && Number(appt.price_at_booking ?? 0) > 0
           ? `\n\n🧾 *Recibo de pagamento:* ${receiptUrl}\nValor: ${amountBRL} · Nº ${String(appt.id).slice(0, 8).toUpperCase()}`
@@ -152,8 +152,8 @@ serve(async (req) => {
       }
     }
 
-    // 2b. Mensagem dedicada com link do recibo (somente se pago) — facilita encaminhamento ao plano de saúde
-    if (patient?.phone && isPaid && Number(appt.price_at_booking ?? 0) > 0) {
+    // 2b. Mensagem dedicada com link do recibo (somente se pago) — facilita encaminhamento ao plano de saúde (skip on resend_only)
+    if (!resend_only && patient?.phone && isPaid && Number(appt.price_at_booking ?? 0) > 0) {
       try {
         const receiptMsg = `🧾 *Recibo AloClínica*\n\nOlá ${patientName}, seu pagamento foi confirmado.\n\nValor: *${amountBRL}*\nNº do recibo: *${String(appt.id).slice(0, 8).toUpperCase()}*\nEmitido em: ${issuedAt}\n\n📄 Acessar e baixar:\n${receiptUrl}\n\n_Login obrigatório. Use este recibo para reembolso junto ao seu plano de saúde._`;
         const waReceiptRes = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp`, {
@@ -170,8 +170,8 @@ serve(async (req) => {
       }
     }
 
-    // 3. Create in-app notification
-    if (appt.patient_id) {
+    // 3. Create in-app notification (skip on resend_only)
+    if (!resend_only && appt.patient_id) {
       await supabase.from("notifications").insert({
         user_id: appt.patient_id,
         title: "Consulta Confirmada",
