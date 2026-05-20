@@ -131,6 +131,10 @@ const buildIcsText = (appt: ConfirmedAppointment, roomUrl: string, reminderMinut
       ]
     : [];
 
+  const locationLabel = appt.clinic_name
+    ? `${appt.clinic_name} — Teleconsulta Online | ${roomUrl}`
+    : `AloClínica — Teleconsulta Online | ${roomUrl}`;
+
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -148,7 +152,7 @@ const buildIcsText = (appt: ConfirmedAppointment, roomUrl: string, reminderMinut
     `DESCRIPTION:${description}`,
     `X-ALT-DESC;FMTTYPE=text/html:${htmlDesc}`,
     `URL:${roomUrl}`,
-    `LOCATION:${escapeIcs(`AloClínica — Teleconsulta Online | ${roomUrl}`)}`,
+    `LOCATION:${escapeIcs(locationLabel)}`,
     "STATUS:CONFIRMED",
     "TRANSP:OPAQUE",
     ...alarm,
