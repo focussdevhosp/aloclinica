@@ -96,8 +96,8 @@ serve(async (req) => {
       }
     }
 
-    // 1b. Send payment receipt email (only if payment was approved)
-    if (patientEmail && isPaid && Number(appt.price_at_booking ?? 0) > 0) {
+    // 1b. Send payment receipt email (only if payment was approved and not resend_only)
+    if (!resend_only && patientEmail && isPaid && Number(appt.price_at_booking ?? 0) > 0) {
       try {
         const receiptRes = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
           method: "POST",
