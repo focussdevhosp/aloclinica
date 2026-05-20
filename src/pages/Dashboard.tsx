@@ -205,7 +205,7 @@ const Dashboard = () => {
   if (!user) return <Navigate to="/paciente" replace />;
 
   const isAdmin = roles.includes("admin");
-  const validForceRoles = ["patient", "doctor", "support", "admin", "laudista", "ophthalmologist", "cartao_beneficios"];
+  const validForceRoles = ["patient", "doctor", "support", "admin", "ophthalmologist", "cartao_beneficios"];
 
   // Allow any user to use ?role= IF they actually have that role (not just admins)
   const primaryRole = (() => {
@@ -217,8 +217,6 @@ const Dashboard = () => {
     }
     // Default role resolution
     if (isAdmin) return "admin";
-    // Laudista takes priority over doctor if user has laudista role
-    // (laudistas also have doctor role but their primary context is laudista)
     if (roles.includes("ophthalmologist")) return "ophthalmologist";
     if (roles.includes("doctor")) return "doctor";
     if (roles.includes("receptionist")) return "receptionist";
