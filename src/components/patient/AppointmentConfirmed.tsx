@@ -118,8 +118,6 @@ const buildIcsText = (appt: ConfirmedAppointment, roomUrl: string, reminderMinut
   return ics;
 };
 
-const toIcsDataUri = (ics: string) =>
-  "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 
 const REMINDER_OPTIONS: { value: number | null; label: string }[] = [
   { value: null, label: "Sem lembrete" },
