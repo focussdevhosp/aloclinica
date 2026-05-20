@@ -111,8 +111,8 @@ Deno.serve(async (req) => {
       }, 400);
     }
 
-    // Pingo Card → inserir na tabela específica
-    if (plan_table === "pingo_card_plans") {
+    // Pingo Card → inserir na tabela específica (a não ser que o cliente peça pra pular)
+    if (plan_table === "pingo_card_plans" && !skip_db_insert) {
       const cardNumber = (card_last4 || "0000").padStart(4, "0");
       const displayCard = `•••• •••• •••• ${cardNumber}`;
       const periodEnd = new Date();

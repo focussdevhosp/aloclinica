@@ -27,6 +27,9 @@ interface Plan {
   consultation_discount_percent: number; exam_discount_percent: number; partner_discount_percent: number;
   max_dependents: number; benefits: string[]; color: string;
   is_highlighted: boolean; is_active: boolean; display_order: number;
+  pingo_ticket_monthly_credit?: number;
+  trial_days?: number;
+  cta_label?: string;
 }
 
 interface Partner {
@@ -50,6 +53,7 @@ const emptyPlan: Partial<Plan> = {
   price_monthly: 0, price_yearly: 0,
   consultation_discount_percent: 0, exam_discount_percent: 0, partner_discount_percent: 0,
   max_dependents: 0, benefits: [], color: "blue",
+  pingo_ticket_monthly_credit: 0, trial_days: 0, cta_label: "Assinar agora",
   is_highlighted: false, is_active: true, display_order: 0,
 };
 
@@ -393,6 +397,9 @@ const AdminPingoCard = () => {
             <div><Label>% Desconto parceiros</Label><Input type="number" value={planForm.partner_discount_percent ?? 0} onChange={(e) => setPlanForm({ ...planForm, partner_discount_percent: Number(e.target.value) })} /></div>
             <div><Label>Máx. dependentes</Label><Input type="number" value={planForm.max_dependents ?? 0} onChange={(e) => setPlanForm({ ...planForm, max_dependents: Number(e.target.value) })} /></div>
             <div className="col-span-2"><Label>Benefícios (1 por linha)</Label><Textarea rows={5} value={benefitsInput} onChange={(e) => setBenefitsInput(e.target.value)} placeholder={"15% em consultas\n10% em exames"} /></div>
+            <div><Label>Crédito Pingo Ticket / mês (R$)</Label><Input type="number" step="0.01" value={planForm.pingo_ticket_monthly_credit ?? 0} onChange={(e) => setPlanForm({ ...planForm, pingo_ticket_monthly_credit: Number(e.target.value) })} /></div>
+            <div><Label>Dias de trial</Label><Input type="number" value={planForm.trial_days ?? 0} onChange={(e) => setPlanForm({ ...planForm, trial_days: Number(e.target.value) })} /></div>
+            <div><Label>Texto do botão (CTA)</Label><Input value={planForm.cta_label ?? ""} onChange={(e) => setPlanForm({ ...planForm, cta_label: e.target.value })} placeholder="Assinar agora" /></div>
             <div><Label>Ordem</Label><Input type="number" value={planForm.display_order ?? 0} onChange={(e) => setPlanForm({ ...planForm, display_order: Number(e.target.value) })} /></div>
             <div className="space-y-2 pt-6">
               <div className="flex items-center gap-2"><Switch checked={planForm.is_highlighted ?? false} onCheckedChange={(v) => setPlanForm({ ...planForm, is_highlighted: v })} /><Label>Destaque</Label></div>
