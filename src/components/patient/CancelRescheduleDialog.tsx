@@ -26,16 +26,6 @@ interface CancelRescheduleDialogProps {
   defaultMode?: "cancel" | "reschedule";
 }
 
-interface CancelRescheduleDialogProps {
-  appointmentId: string;
-  doctorId?: string;
-  currentDate: string;
-  scheduledAt?: string;
-  doctorName: string;
-  onSuccess: () => void;
-  trigger?: ReactNode;
-  defaultMode?: "cancel" | "reschedule";
-}
 
 const CANCEL_REASONS = [
   "Problema de saúde imprevisto",
