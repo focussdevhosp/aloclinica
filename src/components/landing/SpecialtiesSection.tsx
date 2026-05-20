@@ -116,6 +116,7 @@ const SpecialtyCard = ({ name, desc, index }: { name: string; desc?: string; ind
   const navigate = useNavigate();
   const Icon = specialtyIcons[name] || Stethoscope;
   const imageSrc = getSpecialtyImage(name);
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <motion.button
@@ -137,12 +138,21 @@ const SpecialtyCard = ({ name, desc, index }: { name: string; desc?: string; ind
         </div>
         <div className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
           {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={`Pingo ${name}`}
-              className="w-full h-full object-contain object-bottom md:w-[125%] md:h-[125%] md:object-cover md:object-center pingo-float"
-              loading="lazy"
-            />
+            <>
+              {!loaded && (
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 animate-pulse" />
+              )}
+              <img
+                src={imageSrc}
+                alt={`Pingo ${name}`}
+                width={96}
+                height={96}
+                className={`w-full h-full object-contain object-bottom md:w-[125%] md:h-[125%] md:object-cover md:object-center pingo-float transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+                loading="lazy"
+                decoding="async"
+                onLoad={() => setLoaded(true)}
+              />
+            </>
           ) : (
             <div className="relative z-10 w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-secondary/10 to-primary/10 rounded-full">
               <Icon className="w-10 h-10 md:w-12 md:h-12 text-primary drop-shadow-[0_2px_8px_hsl(var(--primary)/0.3)]" weight="duotone" />
