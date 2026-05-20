@@ -217,7 +217,8 @@ const templates: Record<string, (d: Record<string, string>) => { subject: string
         <p><strong>🩺 Especialidade:</strong> ${d.specialty || "Clínica Geral"}</p>
       `)}
       <p>Acesse a plataforma <strong>5 minutos antes</strong> para entrar na sala de espera virtual.</p>
-      ${btn(URLS.patientAppointments, "Ver Minha Consulta")}
+      ${d.room_link ? btn(d.room_link, "📹 Entrar na sala") : ""}
+      ${btn(URLS.patientAppointments, "Ver Minha Consulta", BRAND.muted)}
     `, "appointment_confirmation"),
   }),
 
@@ -263,8 +264,9 @@ const templates: Record<string, (d: Record<string, string>) => { subject: string
         <p><strong>📅 Data:</strong> ${d.date}</p>
         <p><strong>⏰ Horário:</strong> ${d.time}</p>
       `)}
-      <p>Prepare-se para acessar a plataforma no horário agendado.</p>
-      ${btn(URLS.patientAppointments, "Acessar Consulta")}
+      <p>Você pode entrar na sala de espera virtual com antecedência — basta clicar no botão abaixo.</p>
+      ${btn(d.room_link || URLS.patientAppointments, "📹 Entrar na sala")}
+      <p style="font-size:12px;color:${BRAND.muted};text-align:center;margin-top:-8px;">Você precisa estar logado(a) na AloClínica para acessar a sala.</p>
     `, "appointment_reminder"),
   }),
 
