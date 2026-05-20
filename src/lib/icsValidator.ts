@@ -179,6 +179,8 @@ export function validateIcs(ics: string): IcsValidationResult {
     dtend: firstEvent?.DTEND,
     duration: firstEvent?.DURATION,
     summary: firstEvent?.SUMMARY,
+    url: firstEvent?.URL,
+    location: firstEvent?.LOCATION,
   };
 
   return { ok: errors.length === 0, errors, warnings, info };
