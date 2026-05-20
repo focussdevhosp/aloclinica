@@ -93,14 +93,6 @@ const getNavItems = (role: string): NavItem[] => {
     ...base,
   ];
 
-  if (role === "laudista") return [
-    { label: "Início", href: "/dashboard", icon: <Home className="w-4 h-4" />, group: "Laudista", shortcut: "G D" },
-    { label: "Fila de laudos", href: "/dashboard/laudista/queue", icon: <FileText className="w-4 h-4" />, group: "Laudista" },
-    { label: "Meus laudos", href: "/dashboard/laudista/reports", icon: <FileText className="w-4 h-4" />, group: "Laudista" },
-    { label: "Financeiro", href: "/dashboard/laudista/financeiro", icon: <DollarSign className="w-4 h-4" />, group: "Laudista" },
-    ...base,
-  ];
-
   return base;
 };
 
