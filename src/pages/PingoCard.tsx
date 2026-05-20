@@ -361,14 +361,24 @@ const PingoCard = () => {
                         ))}
                       </ul>
 
-                      <Button
-                        size="lg"
-                        className="w-full"
-                        variant={plan.is_highlighted ? "default" : "outline"}
-                        onClick={() => handleSubscribe(plan)}
-                      >
-                        Assinar agora
-                      </Button>
+                      <div className="flex flex-col gap-3">
+                        <Button
+                          size="lg"
+                          className="w-full"
+                          variant={plan.is_highlighted ? "default" : "outline"}
+                          onClick={() => handleSubscribe(plan)}
+                        >
+                          Assinar agora
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant={plan.is_highlighted ? "outline" : "ghost"}
+                          className="w-full"
+                          onClick={() => document.getElementById("comparativo")?.scrollIntoView({ behavior: "smooth" })}
+                        >
+                          Conhecer planos
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -449,7 +459,7 @@ const PingoCard = () => {
       </section>
 
       {/* COMPARATIVO */}
-      <section className="py-16 md:py-24 bg-muted/30">
+      <section id="comparativo" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
