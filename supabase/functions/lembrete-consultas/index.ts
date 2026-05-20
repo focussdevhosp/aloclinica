@@ -42,6 +42,15 @@ serve(async (req) => {
     const results: string[] = [];
 
     for (const appt of appointments || []) {
+      // Lock atômico: evita lembretes duplicados na janela 1h para esta consulta
+      const { error: lockErr } = await supabase
+        .from("appointment_reminder_log")
+        .insert({ appointment_id: appt.id, window_label: "1h", channel: "whatsapp" });
+      if (lockErr) {
+        results.push(`${appt.id}: skipped (duplicate window 1h) - ${lockErr.message}`);
+        continue;
+      }
+
       // Get doctor name
       const { data: docProfile } = await supabase
         .from("doctor_profiles")
