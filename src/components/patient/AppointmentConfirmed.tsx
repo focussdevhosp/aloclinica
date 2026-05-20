@@ -504,6 +504,21 @@ const AppointmentConfirmed = () => {
                 <Button onClick={handleDownloadIcs} className="w-full h-10 mt-3 rounded-lg">
                   <Download className="w-4 h-4 mr-2" /> Baixar .ics
                 </Button>
+                <Button
+                  variant="outline"
+                  className="w-full h-10 mt-2 rounded-lg"
+                  onClick={async () => {
+                    const t = toast.loading("Reenviando agenda por e-mail...");
+                    const { error } = await db.functions.invoke("appointment-confirmed", {
+                      body: { appointment_id: appt.id, resend_only: true },
+                    });
+                    toast.dismiss(t);
+                    if (error) toast.error("Não foi possível reenviar a agenda");
+                    else toast.success("Agenda reenviada para o seu e-mail!");
+                  }}
+                >
+                  <Mail className="w-4 h-4 mr-2" /> Reenviar por e-mail
+                </Button>
               </PopoverContent>
             </Popover>
             <Button variant="outline" className="h-11 rounded-xl" onClick={copyRoomLink}>
