@@ -13,7 +13,6 @@ const panelOptions = [
   { label: "Clínica", role: "clinic", icon: "🏢", description: "Gestão de médicos vinculados" },
   { label: "Parceiro", role: "partner", icon: "🤝", description: "Validação de receitas e relatórios" },
   
-  { label: "Médico Laudista", role: "laudista", icon: "🔬", description: "Fila de exames, laudos e templates" },
   { label: "Oftalmologista", role: "ophthalmologist", icon: "👁️", description: "Exames oftalmológicos e receitas" },
   { label: "Assistente IA", role: "ai-assistant", icon: "🤖", description: "Chat inteligente com IA contextual" },
 ];
