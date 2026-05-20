@@ -49,6 +49,7 @@ const ValidateDocument = lazy(() => import("./pages/ValidateDocument"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const DoctorPublicProfilePage = lazy(() => import("./pages/DoctorPublicProfilePage"));
 const MedicoProfile = lazy(() => import("./pages/MedicoProfile"));
+const BookingReview = lazy(() => import("./pages/BookingReview"));
 const PrescriptionVerification = lazy(() => import("./pages/PrescriptionVerification"));
 const KycMobile = lazy(() => import("./pages/KycMobile"));
 const Kyc = lazy(() => import("./pages/Kyc"));
@@ -174,6 +175,7 @@ const AnimatedRoutes = () => {
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/dr/:slug" element={<DoctorPublicProfilePage />} />
       <Route path="/medicos/:id" element={<MedicoProfile />} />
+      <Route path="/agendar/revisao" element={<BookingReview />} />
       <Route path="/l/:id" element={<LinkRedirect />} />
       <Route path="/validar/:id" element={<ValidateDocument />} />
       <Route path="/validar" element={<ValidateDocument />} />
