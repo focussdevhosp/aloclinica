@@ -17,7 +17,7 @@ import TrustBanner from "@/components/landing/TrustBanner";
 import PingoCardBanner from "@/components/landing/PingoCardBanner";
 import FAQSection from "@/components/landing/FAQSection";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Video, Star } from "lucide-react";
+import { ArrowRight, Video, Star, Quote } from "lucide-react";
 import { useSiteSections } from "@/lib/site-sections";
 import { motion } from "framer-motion";
 import doctorTeleconsulta from "@/assets/doctor-phone-teleconsulta.png";
@@ -128,39 +128,110 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
 
       {/* ═══════════════ DEPOIMENTOS ═══════════════ */}
       {isOn("testimonials") && (
-        <section className="relative py-20 md:py-28 overflow-hidden">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-primary/[0.03] to-background" />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-center">
-              <div className="flex flex-col items-center text-center">
-                <img src={pingoDepoimentos} alt="Depoimentos" className="w-[240px] lg:w-[340px] drop-shadow-xl mb-6" />
-                <div className="flex items-center gap-1.5 mb-2">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />)}
-                </div>
-                <p className="text-2xl font-extrabold text-foreground">4.9/5</p>
-                <p className="text-sm text-muted-foreground">Baseado em +12.000 avaliações</p>
-              </div>
+        <section className="relative py-24 md:py-32 overflow-hidden">
+          {/* Background ambiance */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-primary/[0.04] to-background" />
+          <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-primary/10 blur-3xl -z-10" />
+          <div className="absolute -bottom-32 -right-32 w-[420px] h-[420px] rounded-full bg-secondary/10 blur-3xl -z-10" />
 
-              <div className="space-y-4">
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-6">
-                  {sectionData.testimonials?.title || "O que nossos pacientes estão dizendo"}
-                </h2>
-                {(sectionData.testimonials?.reviews || []).map((t: any, i: number) => (
-                  <div key={i} className="p-5 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm">
-                    <div className="flex items-center gap-1 mb-2.5">
-                      {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}
-                      <span className="text-xs text-muted-foreground ml-2">{t.specialty}</span>
-                    </div>
-                    <p className="text-sm text-foreground mb-3 leading-relaxed">"{t.text}"</p>
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">{t.name[0]}</div>
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                        <p className="text-xs text-muted-foreground">{t.city}</p>
-                      </div>
-                    </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-[0.9fr_1.3fr] gap-16 lg:gap-20 items-center">
+              {/* Pingo + rating */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-center text-center relative"
+              >
+                <div className="relative">
+                  {/* Halo */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-secondary/15 to-transparent rounded-full blur-2xl scale-110" />
+                  <div className="absolute inset-4 bg-card rounded-full shadow-2xl" />
+                  <img
+                    src={pingoDepoimentos}
+                    alt="Pingo celebrando avaliações dos pacientes"
+                    className="relative w-[260px] lg:w-[360px] drop-shadow-2xl pingo-float"
+                  />
+                </div>
+
+                <div className="relative mt-6 px-8 py-5 rounded-[2rem] bg-card border border-border/60 shadow-[0_20px_60px_-20px_hsl(var(--primary)/0.25)]">
+                  <div className="flex items-center justify-center gap-1 mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400 drop-shadow-sm" />
+                    ))}
                   </div>
-                ))}
+                  <p className="text-4xl font-extrabold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent leading-none">
+                    4.9<span className="text-2xl text-muted-foreground font-bold">/5</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2 font-semibold uppercase tracking-wider">
+                    +12.000 avaliações reais
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Testimonials */}
+              <div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="mb-10"
+                >
+                  <span className="text-xs font-bold uppercase tracking-[0.25em] text-primary/60 mb-3 block">
+                    Depoimentos
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground tracking-tight leading-[1.05]">
+                    {sectionData.testimonials?.title || (
+                      <>
+                        O que nossos <span className="text-primary">pacientes</span> dizem
+                      </>
+                    )}
+                  </h2>
+                </motion.div>
+
+                <div className="space-y-5">
+                  {(sectionData.testimonials?.reviews || []).map((t: any, i: number) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: 24 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      className="group relative p-6 md:p-7 rounded-[1.75rem] bg-card border border-border/60 shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.12)] hover:shadow-[0_20px_50px_-20px_hsl(var(--primary)/0.25)] hover:-translate-y-1 hover:border-primary/30 transition-all duration-500 overflow-hidden"
+                    >
+                      {/* Accent bar */}
+                      <div className="absolute left-0 top-6 bottom-6 w-1 rounded-r-full bg-gradient-to-b from-primary via-primary/60 to-secondary opacity-70 group-hover:opacity-100 transition-opacity" />
+                      {/* Quote watermark */}
+                      <Quote className="absolute -top-2 -right-2 w-24 h-24 text-primary/[0.06] rotate-180" strokeWidth={1.5} />
+
+                      <div className="relative pl-3">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="flex items-center gap-0.5">
+                            {Array.from({ length: 5 }).map((_, si) => (
+                              <Star key={si} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                            ))}
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary/70 bg-primary/8 px-2.5 py-1 rounded-full border border-primary/15">
+                            {t.specialty}
+                          </span>
+                        </div>
+                        <p className="text-base md:text-lg text-foreground/90 mb-5 leading-relaxed font-medium">
+                          "{t.text}"
+                        </p>
+                        <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-extrabold text-primary-foreground text-sm shadow-md">
+                            {t.name[0]}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground leading-tight">{t.name}</p>
+                            <p className="text-xs text-muted-foreground font-medium">{t.city}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
