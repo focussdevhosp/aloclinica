@@ -5,10 +5,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Printer, Loader2, FileText, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Printer, Loader2, FileText, CheckCircle2, Download } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getPatientNav } from "./patientNav";
+import { jsPDF } from "jspdf";
 
 const nav = getPatientNav("appointments");
 
@@ -117,6 +118,146 @@ const AppointmentReceipt = () => {
   const paidAt = data.payment_confirmed_at ? new Date(data.payment_confirmed_at) : null;
   const issuedAt = paidAt ?? (data.created_at ? new Date(data.created_at) : new Date());
 
+  const downloadPdf = () => {
+    if (!data) return;
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const W = doc.internal.pageSize.getWidth();
+    const M = 48; // margem
+    let y = M;
+
+    const line = (h = 14) => { y += h; };
+    const hr = () => {
+      doc.setDrawColor(220);
+      doc.line(M, y, W - M, y);
+      line(16);
+    };
+    const label = (t: string) => {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(t.toUpperCase(), M, y);
+      line(12);
+    };
+    const value = (t: string) => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(20);
+      doc.text(t, M, y);
+      line(16);
+    };
+    const pair = (l: string, v: string, x: number) => {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(l.toUpperCase(), x, y);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(20);
+      doc.text(v, x, y + 13);
+    };
+
+    // Cabeçalho
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(30, 90, 170);
+    doc.text("RECIBO DE PAGAMENTO", M, y);
+    line(16);
+    doc.setFontSize(20);
+    doc.setTextColor(15);
+    doc.text("AloClínica", M, y);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(110);
+    doc.text("Plataforma de Telemedicina", M, y + 14);
+
+    // Bloco direito
+    doc.setFontSize(8);
+    doc.text("Nº do recibo", W - M, y - 14, { align: "right" });
+    doc.setFont("courier", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(20);
+    doc.text(data.id.slice(0, 8).toUpperCase(), W - M, y, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(110);
+    doc.text("Emitido em", W - M, y + 14, { align: "right" });
+    doc.setFontSize(10);
+    doc.setTextColor(20);
+    doc.text(format(issuedAt, "dd/MM/yyyy HH:mm", { locale: ptBR }), W - M, y + 26, { align: "right" });
+
+    y += 44;
+    hr();
+
+    // Status
+    const statusText = isPaid ? "PAGAMENTO CONFIRMADO" : "AGUARDANDO CONFIRMAÇÃO";
+    if (isPaid) doc.setFillColor(220, 252, 231); else doc.setFillColor(254, 243, 199);
+    doc.roundedRect(M, y, W - 2 * M, 24, 6, 6, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(isPaid ? 16 : 161, isPaid ? 122 : 98, isPaid ? 60 : 7);
+    doc.text(statusText, M + 12, y + 16);
+    y += 38;
+
+    // Paciente
+    label("Paciente");
+    value(data.patient_name);
+    pair("CPF", maskCPF(data.patient_cpf), M);
+    pair("Telefone", data.patient_phone ?? "—", M + 220);
+    line(34);
+
+    hr();
+
+    // Profissional
+    label("Profissional");
+    value(data.doctor_name);
+    pair("CRM", data.doctor_crm ? `${data.doctor_crm_state ?? ""} ${data.doctor_crm}`.trim() : "—", M);
+    pair("Especialidade", data.doctor_specialty ?? "—", M + 220);
+    line(34);
+
+    hr();
+
+    // Serviço
+    label("Serviço prestado");
+    doc.setDrawColor(220);
+    doc.roundedRect(M, y, W - 2 * M, 56, 6, 6, "S");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(20);
+    doc.text("Teleconsulta médica", M + 12, y + 20);
+    doc.text(formatBRL(data.price_at_booking), W - M - 12, y + 20, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(110);
+    doc.text(
+      `Agendada para ${format(date, "dd 'de' MMMM 'de' yyyy, 'às' HH:mm", { locale: ptBR })} — vídeo criptografado.`,
+      M + 12, y + 40
+    );
+    y += 72;
+
+    // Total
+    hr();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(90);
+    doc.text("VALOR TOTAL", M, y + 4);
+    doc.setFontSize(18);
+    doc.setTextColor(15);
+    doc.text(formatBRL(data.price_at_booking), W - M, y + 6, { align: "right" });
+    y += 36;
+
+    // Rodapé
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(130);
+    const footer = doc.splitTextToSize(
+      "Este recibo é gerado automaticamente pela plataforma AloClínica e tem validade como comprovante de pagamento da teleconsulta indicada acima. Para reembolso junto ao seu plano de saúde, anexe este documento à nota fiscal emitida pelo profissional.",
+      W - 2 * M
+    );
+    doc.text(footer, M, y + 18);
+
+    doc.save(`recibo-aloclinica-${data.id.slice(0, 8)}.pdf`);
+  };
+
   return (
     <DashboardLayout title="Recibo" nav={nav}>
       <div className="w-full max-w-2xl mx-auto pb-24 md:pb-6">
@@ -124,9 +265,14 @@ const AppointmentReceipt = () => {
           <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4" /> Voltar
           </button>
-          <Button onClick={() => window.print()} className="rounded-xl bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-            <Printer className="w-4 h-4 mr-2" /> Imprimir / Salvar PDF
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.print()} className="rounded-xl">
+              <Printer className="w-4 h-4 mr-2" /> Imprimir
+            </Button>
+            <Button onClick={downloadPdf} className="rounded-xl bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+              <Download className="w-4 h-4 mr-2" /> Baixar PDF
+            </Button>
+          </div>
         </div>
 
         <Card className="overflow-hidden print:border-0 print:shadow-none">
