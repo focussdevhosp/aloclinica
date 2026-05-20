@@ -20,6 +20,7 @@ import JitsiRoom from "./JitsiRoom";
 import { gerarRoomId } from "@/lib/jitsi";
 import VideoErrorBoundary from "./VideoErrorBoundary";
 import PreCallCheck from "./PreCallCheck";
+import WaitingRoom from "./WaitingRoom";
 import ConnectionStatus from "./ConnectionStatus";
 import MedicalAutocomplete from "./MedicalAutocomplete";
 import SpeechToText from "./SpeechToText";
@@ -58,6 +59,10 @@ const VideoRoom = () => {
   const [checkingConsent, setCheckingConsent] = useState(true);
   const [crmBlocked, setCrmBlocked] = useState(false);
   const [deviceChecked, setDeviceChecked] = useState(true);
+  const [paymentBlocked, setPaymentBlocked] = useState(false);
+  const [participationBlocked, setParticipationBlocked] = useState<{ reason: string; hint?: string } | null>(null);
+  const [waitingRoomPassed, setWaitingRoomPassed] = useState(false);
+  const [showConsentSheet, setShowConsentSheet] = useState(false);
   const [queuePosition, setQueuePosition] = useState<number | null>(null);
   const [doctorBusy, setDoctorBusy] = useState(false);
   const [useJitsi, setUseJitsi] = useState(false);
@@ -441,28 +446,38 @@ const VideoRoom = () => {
       return;
     }
 
-    // Verify correct participant
+    // Verify correct participant — show in waiting room instead of redirect
+    let blockedParticipation = false;
     if (isDoctor) {
       const { data: dp } = await db.from("doctor_profiles").select("id").eq("user_id", user!.id).maybeSingle();
       if (dp && dp.id !== data.doctor_id) {
-        toast.error("Acesso negado", { description: "Esta consulta não está atribuída a você." });
-        navigate("/dashboard");
-        return;
+        setParticipationBlocked({
+          reason: "Esta consulta não está atribuída a você.",
+          hint: "Confira se você abriu o link correto da sua agenda.",
+        });
+        blockedParticipation = true;
       }
     } else if (user && data.patient_id && data.patient_id !== user.id) {
-      toast.error("Acesso negado", { description: "Esta consulta pertence a outro paciente." });
-      navigate("/dashboard");
-      return;
+      setParticipationBlocked({
+        reason: "Esta consulta pertence a outro paciente.",
+        hint: "Verifique se você está logado na conta correta.",
+      });
+      blockedParticipation = true;
     }
 
-    // Check payment status before allowing entry
+    // Payment check — show in waiting room instead of redirect
     if (!isDoctor && data.payment_status === "pending" && data.status === "scheduled") {
-      toast.error("⏳ Aguardando pagamento", { description: "Sua consulta será liberada assim que o pagamento for confirmado." });
-      navigate("/dashboard/appointments");
-      return;
+      setPaymentBlocked(true);
     }
 
     setAppointment(data);
+
+    // If blocked, do not start the consultation or notify peers
+    const blockedPayment = !isDoctor && data.payment_status === "pending" && data.status === "scheduled";
+    if (blockedParticipation || blockedPayment) {
+      setLoading(false);
+      return;
+    }
 
     if (isDoctor) {
       // Check if doctor previously opted into Jitsi for this appointment
@@ -846,35 +861,54 @@ const VideoRoom = () => {
     );
   }
 
-  if (crmBlocked) {
-    return (
-      <div className="min-h-screen bg-[hsl(220,30%,4%)] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md text-center space-y-4 p-8 rounded-2xl bg-[hsl(220,20%,8%)] border border-[hsl(220,15%,15%)] shadow-2xl"
-        >
-          <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
-            <X className="w-8 h-8 text-destructive" />
-          </div>
-          <h2 className="text-xl font-bold text-white">CRM não verificado</h2>
-          <p className="text-[hsl(220,15%,55%)] text-sm leading-relaxed">
-            Seu CRM ainda não foi verificado pelo administrador. Você não pode acessar a sala de vídeo até que a verificação seja concluída.
-          </p>
-          <Button onClick={() => navigate("/dashboard")} variant="outline" className="rounded-xl">
-            Voltar ao Dashboard
-          </Button>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (!hasConsent) {
+  // Patient signing TCLE — opened from waiting room
+  if (!isDoctor && showConsentSheet && !hasConsent) {
     return (
       <ConsentTCLE
         appointmentId={appointmentId!}
         doctorName={otherPartyName || undefined}
-        onConsented={() => setHasConsent(true)}
+        onConsented={() => { setHasConsent(true); setShowConsentSheet(false); }}
+      />
+    );
+  }
+
+  // ─── Unified Waiting Room (mandatory checks) ───
+  if (!waitingRoomPassed) {
+    const paymentCheck = paymentBlocked
+      ? {
+          state: "blocked" as const,
+          reason: "O pagamento ainda não foi confirmado.",
+          hint: "Conclua o pagamento na página da consulta. A entrada é liberada automaticamente.",
+        }
+      : { state: "ok" as const };
+
+    const consentCheck = isDoctor || hasConsent
+      ? { state: "ok" as const }
+      : {
+          state: "blocked" as const,
+          reason: "Você ainda não assinou o TCLE.",
+          hint: "É uma exigência legal para a teleconsulta. Leva menos de 1 minuto.",
+        };
+
+    const participationCheck = participationBlocked
+      ? { state: "blocked" as const, reason: participationBlocked.reason, hint: participationBlocked.hint }
+      : crmBlocked
+      ? {
+          state: "blocked" as const,
+          reason: "Seu CRM ainda não foi verificado pelo administrador.",
+          hint: "A liberação ocorre após a aprovação do cadastro profissional.",
+        }
+      : { state: "ok" as const };
+
+    return (
+      <WaitingRoom
+        appointmentId={appointmentId}
+        isDoctor={isDoctor}
+        payment={paymentCheck}
+        consent={consentCheck}
+        participation={participationCheck}
+        onSignConsent={() => setShowConsentSheet(true)}
+        onContinue={() => setWaitingRoomPassed(true)}
       />
     );
   }
