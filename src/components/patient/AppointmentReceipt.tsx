@@ -111,6 +111,23 @@ const AppointmentReceipt = () => {
     );
   }
 
+  if (unauthorized) {
+    return (
+      <DashboardLayout title="Acesso negado" nav={nav}>
+        <div className="text-center py-20 max-w-md mx-auto">
+          <ShieldAlert className="w-12 h-12 mx-auto text-destructive/70 mb-3" />
+          <h2 className="text-lg font-semibold text-foreground mb-1">Acesso restrito</h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            Você não tem permissão para visualizar este recibo. Ele pertence a outro paciente.
+          </p>
+          <Button variant="outline" onClick={() => navigate("/dashboard/patient/appointments")} className="rounded-xl">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Voltar às minhas consultas
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   if (!data) {
     return (
       <DashboardLayout title="Recibo" nav={nav}>
