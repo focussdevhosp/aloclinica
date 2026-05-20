@@ -65,13 +65,23 @@ const PingoCard = () => {
   const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PingoPlan | null>(null);
 
-  const handleSubscribe = (plan: PingoPlan) => {
+  const handleSubscribe = (plan: PingoPlan, cycle: "monthly" | "yearly" = billing) => {
     if (!user) {
       navigate(`/paciente?next=/pingo-card%23planos`);
       return;
     }
+    setBilling(cycle);
     setSelectedPlan(plan);
     setSubscribeOpen(true);
+  };
+
+  const handleSubscribed = () => {
+    // Plano Família/Premium → leva o titular para cadastrar dependentes
+    if (selectedPlan && selectedPlan.max_dependents > 0) {
+      navigate("/dashboard/cartao/dependentes?role=cartao_beneficios&onboarding=1");
+      return;
+    }
+    navigate("/dashboard/cartao/carteirinha?role=cartao_beneficios");
   };
 
   useEffect(() => {
@@ -385,6 +395,36 @@ const PingoCard = () => {
               );
             })}
           </div>
+
+          {/* Consulta avulsa — alternativa sem assinatura */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="max-w-3xl mx-auto mt-10"
+          >
+            <Card className="border-2 border-dashed bg-card/60">
+              <CardContent className="p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                  <Clock size={24} weight="fill" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg mb-1">Só preciso de uma consulta agora</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Sem assinatura, sem mensalidade. Pague apenas pela consulta avulsa e seja atendido em minutos.
+                  </p>
+                </div>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full md:w-auto shrink-0"
+                  onClick={() => navigate("/agendar")}
+                >
+                  Agendar consulta avulsa <ArrowRight size={16} className="ml-2" weight="bold" />
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </section>
 
@@ -632,7 +672,7 @@ const PingoCard = () => {
         onOpenChange={setSubscribeOpen}
         plan={selectedPlan}
         billingCycle={billing}
-        onSubscribed={() => navigate("/dashboard/cartao/carteirinha?role=cartao_beneficios")}
+        onSubscribed={handleSubscribed}
       />
     </div>
   );
