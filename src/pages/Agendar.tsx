@@ -275,8 +275,9 @@ const Agendar = () => {
   }, [doctors, debouncedSearch, sort, selectedSpecialty, onlyAvailable, priceMin, priceMax, doctorNextSlots]);
 
   const handleSelectDoctor = (doctorId: string) => {
-    const returnUrl = `/dashboard/schedule/${doctorId}?specialty=${encodeURIComponent(selectedSpecialty || "Clínico Geral")}`;
-    navigate(`/paciente?redirect=${encodeURIComponent(returnUrl)}`);
+    // Permite navegação pública: visitante explora o perfil do médico
+    // e o login só é exigido no fluxo de agendamento/pagamento.
+    navigate(`/medicos/${doctorId}`);
   };
 
   const handleSelectSpecialty = (name: string) => {
