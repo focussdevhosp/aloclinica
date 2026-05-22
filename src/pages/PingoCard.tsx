@@ -155,70 +155,78 @@ const PingoCard = () => {
 
   return (
     <div className="pingo-card-page min-h-screen">
-      {/* Esmeralda Saúde — escopo local */}
+      {/* Azul Confiança · DM Serif Display + Fira Sans · editorial caloroso */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
         .pingo-card-page {
-          --pc-emerald-900: #04382a;
-          --pc-emerald-800: #064e3b;
-          --pc-emerald-600: #0d7a5f;
-          --pc-emerald-500: #11926f;
-          --pc-gold: #c9a84c;
-          --pc-gold-soft: #e7cf85;
-          --pc-cream: #f5f0e0;
-          --pc-ink: #0b1f17;
-          background: linear-gradient(180deg, #fbf8ee 0%, #ffffff 40%, #f3eee0 100%);
+          --pc-navy-900: #0a132e;
+          --pc-navy-800: #0f1b3d;
+          --pc-navy-700: #1e3a5f;
+          --pc-blue-500: #3b6fa0;
+          --pc-blue-100: #e8edf3;
+          --pc-gold: #c89b46;
+          --pc-gold-soft: #e8c882;
+          --pc-cream: #f7f1e6;
+          --pc-paper: #fbf7ef;
+          --pc-ink: #0a132e;
+          background: var(--pc-paper);
           color: var(--pc-ink);
           font-family: 'Fira Sans', system-ui, sans-serif;
         }
-        .pingo-card-page h1, .pingo-card-page h2, .pingo-card-page h3, .pingo-card-page .pc-display {
+        .pingo-card-page h1,.pingo-card-page h2,.pingo-card-page h3,.pingo-card-page .pc-display {
           font-family: 'DM Serif Display', serif;
           font-weight: 400;
-          letter-spacing: -0.01em;
+          letter-spacing: -0.015em;
+          color: var(--pc-navy-900);
         }
-        .pc-emerald-bg { background: var(--pc-emerald-800); }
-        .pc-emerald { color: var(--pc-emerald-800); }
-        .pc-emerald-600 { color: var(--pc-emerald-600); }
+        .pingo-card-page .pc-display em { font-style: italic; color: var(--pc-blue-500); }
+        .pc-navy-bg { background: var(--pc-navy-800); }
+        .pc-navy { color: var(--pc-navy-800); }
+        .pc-blue { color: var(--pc-blue-500); }
         .pc-gold { color: var(--pc-gold); }
         .pc-gold-bg { background: var(--pc-gold); }
         .pc-cream-bg { background: var(--pc-cream); }
-        .pc-tile {
-          border-radius: 28px;
-          background: #ffffff;
-          border: 1px solid rgba(11,31,23,0.06);
-          box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 12px 40px -24px rgba(6,78,59,.25);
-          transition: transform .4s ease, box-shadow .4s ease;
+        .pc-eyebrow {
+          display: inline-flex; align-items: center; gap: 8px;
+          font-family: 'Fira Sans', sans-serif; font-weight: 600;
+          font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+          color: var(--pc-gold);
         }
-        .pc-tile:hover { transform: translateY(-4px); box-shadow: 0 24px 60px -28px rgba(6,78,59,.35); }
-        .pc-tile-dark {
-          border-radius: 28px;
-          background: radial-gradient(120% 120% at 0% 0%, #0d7a5f 0%, #064e3b 55%, #04382a 100%);
+        .pc-eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+        .pc-card {
+          border-radius: 6px; background: #ffffff;
+          border: 1px solid rgba(10,19,46,.08);
+          box-shadow: 0 1px 2px rgba(10,19,46,.04), 0 20px 40px -28px rgba(10,19,46,.18);
+          transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+        }
+        .pc-card:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -30px rgba(10,19,46,.28); border-color: rgba(200,155,70,.35); }
+        .pc-card-dark {
+          border-radius: 6px;
+          background: linear-gradient(160deg, #1e3a5f 0%, #0f1b3d 60%, #0a132e 100%);
           color: var(--pc-cream);
-          border: 1px solid rgba(201,168,76,.25);
-          box-shadow: 0 30px 80px -30px rgba(4,56,42,.55);
+          border: 1px solid rgba(200,155,70,.25);
+          box-shadow: 0 40px 80px -36px rgba(10,19,46,.55);
         }
-        .pc-tile-gold {
-          border-radius: 28px;
-          background: linear-gradient(135deg, #f5e4a8 0%, #e7cf85 45%, #c9a84c 100%);
-          color: var(--pc-emerald-900);
-          border: 1px solid rgba(201,168,76,.5);
-          box-shadow: 0 30px 80px -30px rgba(201,168,76,.55);
-        }
-        .pc-chip {
-          display: inline-flex; align-items: center; gap: 6px;
-          font-family: 'Fira Sans', sans-serif;
-          font-weight: 600; font-size: 11px; letter-spacing: .14em;
-          text-transform: uppercase;
-          padding: 6px 12px; border-radius: 999px;
-          background: rgba(201,168,76,.18); color: #6b4f0d;
-          border: 1px solid rgba(201,168,76,.4);
-        }
-        .pc-chip-dark { background: rgba(201,168,76,.18); color: var(--pc-gold-soft); border-color: rgba(201,168,76,.35); }
-        .pc-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(11,31,23,.12), transparent); }
+        .pc-rule { height: 1px; background: linear-gradient(90deg, transparent, rgba(10,19,46,.18), transparent); }
+        .pc-grain { position: relative; }
         .pc-grain::after {
-          content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .08;
+          content:""; position:absolute; inset:0; pointer-events:none; opacity:.06; border-radius: inherit;
           background-image: radial-gradient(rgba(255,255,255,.6) 1px, transparent 1px);
-          background-size: 4px 4px; border-radius: inherit;
+          background-size: 4px 4px;
+        }
+        .pc-serif-num { font-family: 'DM Serif Display', serif; }
+        /* membership card */
+        .pc-member-card {
+          position: relative; border-radius: 14px; overflow: hidden;
+          background: linear-gradient(135deg, #0f1b3d 0%, #1e3a5f 55%, #0a132e 100%);
+          color: var(--pc-cream); padding: 28px;
+          box-shadow: 0 40px 80px -30px rgba(10,19,46,.55), inset 0 1px 0 rgba(255,255,255,.08);
+          aspect-ratio: 1.586 / 1;
+        }
+        .pc-member-card::before {
+          content:""; position:absolute; inset:0;
+          background: radial-gradient(120% 80% at 100% 0%, rgba(200,155,70,.35), transparent 55%),
+                      radial-gradient(60% 40% at 0% 100%, rgba(59,111,160,.35), transparent 70%);
         }
       `}</style>
       <SEOHead
