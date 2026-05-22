@@ -476,7 +476,16 @@ export default function SignupDoctor() {
                       <Label htmlFor="specialty">Especialidade <span className="text-destructive">*</span></Label>
                       <select
                         id="specialty" name="specialty"
-                        value={formData.specialty} onChange={handleInput}
+                        value={
+                          formData.specialty === "" ||
+                          VALID_SPECIALTIES.includes(formData.specialty.toLowerCase())
+                            ? formData.specialty
+                            : "outras"
+                        }
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setFormData((p) => ({ ...p, specialty: v === "outras" ? "" : v }));
+                        }}
                         className={`w-full h-10 px-3 rounded-md bg-background border text-sm focus:outline-none focus:ring-2 focus:ring-ring ${
                           errors.specialty ? "border-destructive" : "border-input"
                         }`}
@@ -487,7 +496,19 @@ export default function SignupDoctor() {
                             {s.charAt(0).toUpperCase() + s.slice(1).replace("-", " ")}
                           </option>
                         ))}
+                        <option value="outras">Outras (digitar)</option>
                       </select>
+                      {(formData.specialty !== "" &&
+                        !VALID_SPECIALTIES.includes(formData.specialty.toLowerCase())) ||
+                      (formData.specialty === "" && errors.specialty === undefined && false) ? (
+                        <Input
+                          name="specialty"
+                          placeholder="Digite sua especialidade"
+                          value={formData.specialty}
+                          onChange={handleInput}
+                          className="mt-2"
+                        />
+                      ) : null}
                       {errors.specialty && <p className="text-xs text-destructive">{errors.specialty}</p>}
                     </div>
                   </section>
