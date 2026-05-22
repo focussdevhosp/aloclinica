@@ -368,7 +368,7 @@ export default function SignupDoctor() {
                 Crie sua conta de médico
               </h2>
               <p className="text-sm text-muted-foreground mt-1.5">
-                Etapa {step} de 3 — análise da documentação em até 24h após o envio.
+                Etapa {step} de 2 — análise da documentação em até 24h após o envio.
               </p>
             </motion.div>
 
@@ -376,50 +376,6 @@ export default function SignupDoctor() {
 
             <AnimatePresence mode="wait">
               {step === 1 && (
-                <motion.section
-                  key="s1"
-                  initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}
-                  className="space-y-4 p-5 sm:p-6 rounded-2xl border border-border bg-card"
-                >
-                  <header className="flex items-center gap-2.5 pb-1">
-                    <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Ticket className="w-4 h-4 text-primary" weight="fill" />
-                    </span>
-                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Convite</h3>
-                  </header>
-
-                  <p className="text-xs text-muted-foreground">
-                    O cadastro de médicos é por convite. Insira o código que recebeu da equipe AloClínica.
-                  </p>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="invite_code">Código do convite <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="invite_code" name="invite_code"
-                      placeholder="Ex.: A1B2C3D4E5F6"
-                      value={formData.invite_code}
-                      onChange={(e) => updateField("invite_code", e.target.value.toUpperCase())}
-                      className={`uppercase tracking-widest font-mono ${errors.invite_code ? "border-destructive" : ""}`}
-                      maxLength={32}
-                    />
-                    {errors.invite_code && <p className="text-xs text-destructive">{errors.invite_code}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="email" name="email" type="email"
-                      placeholder="seu@email.com"
-                      value={formData.email} onChange={handleInput}
-                      className={errors.email ? "border-destructive" : ""}
-                      autoComplete="email"
-                    />
-                    {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-                  </div>
-                </motion.section>
-              )}
-
-              {step === 2 && (
                 <motion.div
                   key="s2"
                   initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}
@@ -432,6 +388,18 @@ export default function SignupDoctor() {
                       </span>
                       <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Dados pessoais</h3>
                     </header>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
+                      <Input
+                        id="email" name="email" type="email"
+                        placeholder="seu@email.com"
+                        value={formData.email} onChange={handleInput}
+                        className={errors.email ? "border-destructive" : ""}
+                        autoComplete="email"
+                      />
+                      {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                    </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="full_name">Nome completo <span className="text-destructive">*</span></Label>
@@ -526,7 +494,7 @@ export default function SignupDoctor() {
                 </motion.div>
               )}
 
-              {step === 3 && (
+              {step === 2 && (
                 <motion.div
                   key="s3"
                   initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}
@@ -641,18 +609,14 @@ export default function SignupDoctor() {
                   </Button>
                 )}
 
-                {step < 3 ? (
+                {step < 2 ? (
                   <Button
                     type="button" size="lg"
                     onClick={handleNext}
-                    disabled={validatingInvite || loading}
+                    disabled={loading}
                     className="flex-1 h-12 rounded-xl gap-2 text-sm font-bold shadow-lg shadow-primary/20"
                   >
-                    {validatingInvite ? (
-                      <><CircleNotch className="w-4 h-4 animate-spin" /> Validando…</>
-                    ) : (
-                      <>Continuar <ArrowRight className="w-4 h-4" /></>
-                    )}
+                    Continuar <ArrowRight className="w-4 h-4" />
                   </Button>
                 ) : (
                   <Button
@@ -664,12 +628,6 @@ export default function SignupDoctor() {
                   </Button>
                 )}
               </div>
-
-              {inviteOk && step === 1 && (
-                <p className="text-xs text-emerald-600 inline-flex items-center gap-1.5">
-                  <CheckCircle weight="fill" className="w-3.5 h-3.5" /> Convite válido
-                </p>
-              )}
 
               <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
                 Ao se cadastrar, você concorda com nossos{" "}
