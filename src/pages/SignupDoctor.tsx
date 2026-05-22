@@ -312,15 +312,15 @@ export default function SignupDoctor() {
 
           <div className="relative z-10">
             <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-primary-foreground/15 backdrop-blur px-3 py-1.5 rounded-full mb-6">
-              <Sparkle className="w-3.5 h-3.5" weight="fill" /> Cadastro por convite
+              <Sparkle className="w-3.5 h-3.5" weight="fill" /> Cadastro de médicos
             </span>
             <h1 className="text-4xl xl:text-5xl font-extrabold leading-[1.05] mb-5">
               Atenda mais,<br />
               <span className="text-primary-foreground/85">trabalhe de onde quiser.</span>
             </h1>
             <p className="text-primary-foreground/80 text-base leading-relaxed max-w-md mb-10">
-              Plataforma exclusiva para médicos convidados. Validação automática de CRM,
-              upload de documentos e análise em até 24h.
+              Cadastre-se gratuitamente. Validação automática de CRM, upload de documentos
+              e análise da equipe AloClínica em até 24h.
             </p>
 
             <ul className="space-y-3.5 max-w-md">
