@@ -109,6 +109,7 @@ export default function SignupDoctor() {
 
   const [docs, setDocs] = useState<DocsState>({ crm_doc: null, id_doc: null, selfie_doc: null });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [specialtyOther, setSpecialtyOther] = useState(false);
 
   type CrmStatus = "idle" | "checking" | "ok" | "warn" | "fail";
   const [crmStatus, setCrmStatus] = useState<CrmStatus>("idle");
