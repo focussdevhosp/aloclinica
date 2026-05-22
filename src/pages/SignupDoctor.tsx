@@ -1,5 +1,5 @@
 /**
- * SignupDoctor — Wizard de 3 etapas com convite, validação de CRM e upload de documentos.
+ * SignupDoctor — Wizard de 2 etapas: dados + validação de CRM e upload de documentos.
  */
 
 import { useState } from "react";
@@ -23,14 +23,13 @@ import {
 } from "@/lib/form-validators";
 import {
   ArrowLeft, ArrowRight, Eye, EyeSlash, Stethoscope, IdentificationCard,
-  Lock, ShieldCheck, CheckCircle, Clock, CurrencyDollar, Sparkle, Ticket,
+  Lock, ShieldCheck, CheckCircle, Clock, CurrencyDollar, Sparkle,
   UploadSimple, FileImage, XCircle, CircleNotch,
 } from "@phosphor-icons/react";
 import { toastError } from "@/lib/errorMessages";
 import doctorSignup from "@/assets/doctor-signup-1.png";
 
 interface FormData {
-  invite_code: string;
   email: string;
   full_name: string;
   phone: string;
@@ -59,9 +58,8 @@ const DOC_LABELS: Record<DocKey, { label: string; hint: string }> = {
 const MAX_FILE_MB = 5;
 
 const STEPS = [
-  { id: 1, label: "Convite",    icon: Ticket },
-  { id: 2, label: "Dados",      icon: IdentificationCard },
-  { id: 3, label: "Documentos", icon: ShieldCheck },
+  { id: 1, label: "Dados",      icon: IdentificationCard },
+  { id: 2, label: "Documentos", icon: ShieldCheck },
 ] as const;
 
 function Stepper({ step }: { step: number }) {
@@ -97,13 +95,13 @@ function Stepper({ step }: { step: number }) {
 
 export default function SignupDoctor() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
-    invite_code: "", email: "",
+    email: "",
     full_name: "", phone: "", cpf: "",
     crm: "", crm_state: "", specialty: "",
     password: "", password_confirm: "",
@@ -111,9 +109,6 @@ export default function SignupDoctor() {
 
   const [docs, setDocs] = useState<DocsState>({ crm_doc: null, id_doc: null, selfie_doc: null });
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const [inviteOk, setInviteOk] = useState(false);
-  const [validatingInvite, setValidatingInvite] = useState(false);
 
   type CrmStatus = "idle" | "checking" | "ok" | "warn" | "fail";
   const [crmStatus, setCrmStatus] = useState<CrmStatus>("idle");
@@ -142,44 +137,9 @@ export default function SignupDoctor() {
   const strengthLabels = ["Muito fraca", "Fraca", "Média", "Forte", "Excelente"];
   const strengthColors = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-primary", "bg-emerald-500"];
 
-  const validateStep1 = async (): Promise<boolean> => {
+  const validateStep1 = (): boolean => {
     const e: Record<string, string> = {};
-    if (!formData.invite_code.trim()) e.invite_code = "Informe o código de convite";
     if (!validarEmail(formData.email)) e.email = "Email inválido";
-    setErrors(e);
-    if (Object.keys(e).length > 0) return false;
-
-    setValidatingInvite(true);
-    try {
-      const { data, error } = await (db as any).rpc("validate_doctor_signup_invite", {
-        p_code: formData.invite_code.trim(),
-        p_email: formData.email.trim(),
-      });
-      if (error) throw error;
-      if (!data?.ok) {
-        const reason: Record<string, string> = {
-          invalid: "Código de convite inválido",
-          already_used: "Este convite já foi utilizado",
-          expired: "Convite expirado — solicite um novo",
-          email_mismatch: "O e-mail não corresponde ao convite",
-          missing_code: "Informe o código de convite",
-        };
-        setErrors({ invite_code: reason[data?.reason] ?? "Convite inválido" });
-        setInviteOk(false);
-        return false;
-      }
-      setInviteOk(true);
-      return true;
-    } catch (err: any) {
-      toast.error(err?.message ?? "Falha ao validar convite");
-      return false;
-    } finally {
-      setValidatingInvite(false);
-    }
-  };
-
-  const validateStep2 = (): boolean => {
-    const e: Record<string, string> = {};
     if (!validarNome(formData.full_name)) e.full_name = "Informe nome e sobrenome";
     if (!validarTelefone(formData.phone)) e.phone = "Telefone inválido (11) 9XXXX-XXXX";
     if (!validarCPF(formData.cpf)) e.cpf = "CPF inválido";
@@ -237,7 +197,7 @@ export default function SignupDoctor() {
     if (errors[key]) setErrors((p) => ({ ...p, [key]: "" }));
   };
 
-  const validateStep3 = (): boolean => {
+  const validateStep2 = (): boolean => {
     const e: Record<string, string> = {};
     (Object.keys(DOC_LABELS) as DocKey[]).forEach((k) => {
       if (!docs[k]) e[k] = "Documento obrigatório";
@@ -250,8 +210,8 @@ export default function SignupDoctor() {
   };
 
   const handleFinalSubmit = async () => {
-    if (!validateStep3()) {
-      toast.error("Revise os campos do passo 3");
+    if (!validateStep2()) {
+      toast.error("Revise os campos do passo 2");
       return;
     }
     setLoading(true);
@@ -314,11 +274,6 @@ export default function SignupDoctor() {
         .update({ documents: uploaded })
         .eq("user_id", uid);
 
-      const { data: cons } = await (db as any).rpc("consume_doctor_signup_invite", {
-        p_code: formData.invite_code.trim(),
-      });
-      if (cons && !cons.ok) console.warn("invite not consumed:", cons);
-
       toast.success("Cadastro enviado! Sua conta está em análise.");
       navigate("/aguardando-aprovacao?role=doctor");
     } catch (err) {
@@ -331,16 +286,13 @@ export default function SignupDoctor() {
 
   const handleNext = async () => {
     if (step === 1) {
-      const ok = await validateStep1();
-      if (ok) setStep(2);
-    } else if (step === 2) {
-      if (validateStep2()) setStep(3);
+      if (validateStep1()) setStep(2);
     }
   };
 
   const handleBack = () => {
     if (step === 1) { navigate(-1); return; }
-    setStep((s) => (s - 1) as 1 | 2 | 3);
+    setStep((s) => (s - 1) as 1 | 2);
   };
 
   return (
