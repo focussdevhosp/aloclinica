@@ -197,6 +197,7 @@ const AuthPaciente = () => {
   const [shake, setShake] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [signupHasSession, setSignupHasSession] = useState(false);
   const lockoutUntil = useRef<number>(0);
   const emailRef = useRef<HTMLInputElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
@@ -393,10 +394,24 @@ const AuthPaciente = () => {
         if (signUpData.session) {
           // Show celebration screen briefly, then redirect
           setSignupSuccess(true);
-          setTimeout(() => navigate("/dashboard?role=patient&onboarding=true"), 2400);
+          setSignupHasSession(true);
+          setTimeout(() => {
+            try {
+              navigate("/dashboard?role=patient&onboarding=true", { replace: true });
+            } catch {
+              window.location.href = "/dashboard?role=patient&onboarding=true";
+            }
+          }, 2400);
+          // Hard fallback: if navigation doesn't take effect (e.g. blocked by guard), force reload
+          setTimeout(() => {
+            if (window.location.pathname.includes("/auth")) {
+              window.location.href = "/dashboard?role=patient&onboarding=true";
+            }
+          }, 5000);
         } else {
           setSignupSuccess(true);
-          // Without immediate session, user must confirm email — keep success screen and offer login
+          setSignupHasSession(false);
+          // Sem sessão: confirmação de e-mail necessária. Não tente redirecionar para dashboard.
         }
       }
     } catch (err) {
@@ -652,17 +667,42 @@ const AuthPaciente = () => {
                 transition={{ delay: 0.32 }}
                 className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto leading-relaxed"
               >
-                Sua conta foi criada com sucesso. Vamos preparar tudo para sua primeira consulta.
+                {signupHasSession
+                  ? "Sua conta foi criada com sucesso. Vamos preparar tudo para sua primeira consulta."
+                  : "Sua conta foi criada! Enviamos um e-mail de confirmação. Verifique sua caixa de entrada para entrar."}
               </motion.p>
 
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.45 }}
-                className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground"
+                className="mt-6 flex flex-col items-center justify-center gap-3 text-xs text-muted-foreground"
               >
-                <SpinnerGap className="w-4 h-4 animate-spin text-primary" />
-                Direcionando para o seu painel...
+                {signupHasSession ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <SpinnerGap className="w-4 h-4 animate-spin text-primary" />
+                      Direcionando para o seu painel...
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.location.href = "/dashboard?role=patient&onboarding=true";
+                      }}
+                      className="text-[12px] font-semibold text-primary hover:underline"
+                    >
+                      Ir agora →
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setMode("login")}
+                    className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-[12.5px] font-bold hover:bg-primary/90 transition-colors"
+                  >
+                    Ir para o login
+                  </button>
+                )}
               </motion.div>
             </motion.div>
           ) : (
