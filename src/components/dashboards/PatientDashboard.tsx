@@ -34,6 +34,8 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import FirstConsultationTour from "@/components/patient/FirstConsultationTour";
 import ImminentConsultationBar from "./ImminentConsultationBar";
+import { HeroBanner } from "./HeroBanner";
+import mascotWave from "@/assets/mascot-wave.png";
 
 /* ── Constants ── */
 const HEALTH_TIPS = [
@@ -178,7 +180,32 @@ const PatientDashboard = () => {
         />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8 space-y-6">
-            <HeroSection firstName={firstName} nextAppt={nextAppt} upcoming={upcoming} stats={stats} getGreeting={getGreeting} getAvatarRingColor={getAvatarRingColor} getContextualSubtitle={getContextualSubtitle} profile={profile} />
+            <div className="-mx-4 -mt-5 md:-mx-6 md:-mt-5 lg:-mx-8 lg:-mt-6">
+              <HeroBanner
+                gradient="from-[hsl(215,75%,28%)] via-[hsl(195,70%,32%)] to-[hsl(168,55%,38%)]"
+                pingoSrc={mascotWave}
+                pingoAlt="Pingo"
+                liveDot={!!nextAppt}
+                liveColor={nextAppt && minutesUntilNext !== null && minutesUntilNext <= 60 ? "red" : "green"}
+                bubble={{
+                  greeting: `${getGreeting()} · ${firstName}`,
+                  name: "Sua saúde em um só lugar",
+                  sub: getContextualSubtitle(upcoming, stats),
+                }}
+                topRight={
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white shadow-sm">
+                    <ShieldCheck className="w-3 h-3" /> CFM verificado
+                  </div>
+                }
+                kpis={[
+                  { label: "Consultas", value: stats?.total ?? 0 },
+                  { label: "Receitas", value: stats?.prescriptions ?? 0 },
+                  { label: "Exames", value: stats?.documents ?? 0 },
+                  { label: "Avaliação", value: "4.9★" },
+                ]}
+                loading={loading}
+              />
+            </div>
             <DoctorSearchHero navigate={navigate} hasNextAppt={!!nextAppt} />
             <UrgentAlerts nextAppt={nextAppt} minutesUntilNext={minutesUntilNext} waitingAppt={waitingAppt} sections={sections} navigate={navigate} />
             <section>
