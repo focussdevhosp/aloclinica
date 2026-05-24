@@ -197,6 +197,7 @@ const AuthPaciente = () => {
   const [shake, setShake] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [signupHasSession, setSignupHasSession] = useState(false);
   const lockoutUntil = useRef<number>(0);
   const emailRef = useRef<HTMLInputElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
