@@ -34,6 +34,7 @@ interface FormData {
   full_name: string;
   phone: string;
   cpf: string;
+  council_type: string;
   crm: string;
   crm_state: string;
   specialty: string;
@@ -61,6 +62,31 @@ const STEPS = [
   { id: 1, label: "Dados",      icon: IdentificationCard },
   { id: 2, label: "Documentos", icon: ShieldCheck },
 ] as const;
+
+const COUNCILS: { value: string; label: string; description: string; specialties: string[] }[] = [
+  { value: "CRM",     label: "Médico (CRM)",                description: "Conselho Federal de Medicina",
+    specialties: [] },
+  { value: "CRP",     label: "Psicólogo (CRP)",             description: "Conselho Federal de Psicologia",
+    specialties: ["psicologia-clinica","psicanalise","neuropsicologia","psicologia-infantil","terapia-cognitivo-comportamental","psicologia-organizacional"] },
+  { value: "CRN",     label: "Nutricionista (CRN)",         description: "Conselho Federal de Nutricionistas",
+    specialties: ["nutricao-clinica","nutricao-esportiva","nutricao-materno-infantil","nutricao-comportamental"] },
+  { value: "CRFa",    label: "Fonoaudiólogo (CRFa)",        description: "Conselho Federal de Fonoaudiologia",
+    specialties: ["audiologia","linguagem","motricidade-orofacial","voz","disfagia"] },
+  { value: "CREFITO", label: "Fisioterapeuta / TO (CREFITO)", description: "Fisioterapia e Terapia Ocupacional",
+    specialties: ["fisioterapia-traumato-ortopedica","fisioterapia-respiratoria","fisioterapia-neurofuncional","fisioterapia-pelvica","terapia-ocupacional"] },
+  { value: "COREN",   label: "Enfermagem (COREN)",          description: "Conselho Federal de Enfermagem",
+    specialties: ["enfermagem-obstetrica","enfermagem-pediatrica","saude-mental","estomaterapia","enfermagem-do-trabalho"] },
+  { value: "CRO",     label: "Odontologia (CRO)",           description: "Conselho Federal de Odontologia",
+    specialties: ["clinico-geral","ortodontia","endodontia","periodontia","implantodontia","odontopediatria"] },
+  { value: "CRBM",    label: "Biomédico (CRBM)",            description: "Conselho Federal de Biomedicina",
+    specialties: ["analises-clinicas","imagenologia","genetica","reproducao-humana"] },
+  { value: "CRF",     label: "Farmacêutico (CRF)",          description: "Conselho Federal de Farmácia",
+    specialties: ["farmacia-clinica","farmacia-hospitalar","manipulacao","oncologia"] },
+  { value: "CREF",    label: "Educação Física (CREF)",      description: "Conselho Federal de Educação Física",
+    specialties: ["treinamento-fisico","reabilitacao","esportiva","saude-coletiva"] },
+  { value: "CRESS",   label: "Assistente Social (CRESS)",   description: "Conselho Federal de Serviço Social",
+    specialties: ["saude","familia","gerontologia"] },
+];
 
 function Stepper({ step }: { step: number }) {
   return (
