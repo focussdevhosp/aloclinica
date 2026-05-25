@@ -319,20 +319,59 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
           </motion.div>
         )}
 
-        {(step === "document" || step === "selfie") && (
+        {step === "doc_type" && (
+          <motion.div key="doc_type" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-foreground">📑 Escolha o tipo de documento</h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Selecione qual documento com foto você vai enviar.
+              </p>
+            </div>
+            <Progress value={15} className="h-1.5" />
+            <div className="grid gap-2.5">
+              {DOC_TYPES.map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => { setDocType(d.id); setStep("document"); }}
+                  className="flex items-center gap-3 rounded-2xl border border-border/60 p-4 bg-card hover:border-primary/40 hover:bg-primary/5 transition-all text-left group"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center shrink-0 transition-colors">
+                    <d.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-foreground">{d.label}</p>
+                    <p className="text-xs text-muted-foreground">{d.desc}</p>
+                  </div>
+                  <Camera className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </button>
+              ))}
+            </div>
+            <Button variant="ghost" onClick={() => setStep("intro")} className="w-full rounded-xl text-xs text-muted-foreground gap-1">
+              <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+            </Button>
+          </motion.div>
+        )}
+
+        {(step === "document" || step === "document_back" || step === "selfie") && (
           <motion.div key={step} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
             <div className="text-center">
               <h3 className="text-lg font-bold text-foreground">
-                {step === "document" ? "📄 Foto do Documento" : "🤳 Tire uma Selfie"}
+                {step === "document"
+                  ? `📄 Frente do ${docType ? DOC_TYPES.find((d) => d.id === docType)?.label : "documento"}`
+                  : step === "document_back"
+                    ? `🔄 Verso do ${docType ? DOC_TYPES.find((d) => d.id === docType)?.label : "documento"}`
+                    : "🤳 Tire uma Selfie"}
               </h3>
               <p className="text-xs text-muted-foreground mt-1">
                 {step === "document"
-                  ? "Posicione seu documento de identidade na câmera"
-                  : "Olhe para a câmera — posicione seu rosto centralizado"}
+                  ? "Posicione a frente do documento, com a foto bem visível"
+                  : step === "document_back"
+                    ? "Agora capture o verso do documento — todos os dados devem estar legíveis"
+                    : "Olhe para a câmera — posicione seu rosto centralizado"}
               </p>
             </div>
 
-            <Progress value={step === "document" ? 33 : 66} className="h-1.5" />
+            <Progress value={step === "document" ? 35 : step === "document_back" ? 60 : 80} className="h-1.5" />
 
             {cameraActive ? (
               <div className="space-y-3">
@@ -370,6 +409,24 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                     <img src={documentImage} alt="Documento" className="w-full" />
                   </div>
                 )}
+                {step === "document_back" && !documentBackImage && (
+                  <div className="flex flex-col gap-2">
+                    <Button onClick={() => startCamera("document_back")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
+                      <Camera className="w-5 h-5" /> Usar Câmera
+                    </Button>
+                    <Button variant="outline" onClick={() => { setCaptureTarget("document_back"); fileInputRef.current?.click(); }} className="w-full h-12 rounded-xl gap-2">
+                      <Upload className="w-5 h-5" /> Enviar Arquivo
+                    </Button>
+                    <Button variant="ghost" onClick={() => { setDocumentImage(null); setStep("document"); }} className="w-full rounded-xl text-xs text-muted-foreground gap-1">
+                      <ArrowLeft className="w-3.5 h-3.5" /> Refazer frente
+                    </Button>
+                  </div>
+                )}
+                {step === "document_back" && documentBackImage && (
+                  <div className="rounded-2xl overflow-hidden border border-border/50">
+                    <img src={documentBackImage} alt="Verso do documento" className="w-full" />
+                  </div>
+                )}
                 {step === "selfie" && !selfieImage && (
                   <div className="flex flex-col gap-2">
                     <Button onClick={() => startCamera("selfie")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
@@ -382,11 +439,21 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                 )}
                 {step === "selfie" && selfieImage && (
                   <>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <div className="rounded-xl overflow-hidden border border-border/50">
                         <img src={documentImage!} alt="Documento" className="w-full aspect-video object-cover" />
-                        <p className="text-[10px] text-center text-muted-foreground py-1">Documento</p>
+                        <p className="text-[10px] text-center text-muted-foreground py-1">Frente</p>
                       </div>
+                      {documentBackImage ? (
+                        <div className="rounded-xl overflow-hidden border border-border/50">
+                          <img src={documentBackImage} alt="Verso" className="w-full aspect-video object-cover" />
+                          <p className="text-[10px] text-center text-muted-foreground py-1">Verso</p>
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-border/50 flex items-center justify-center aspect-video text-[10px] text-muted-foreground">
+                          Sem verso
+                        </div>
+                      )}
                       <div className="rounded-xl overflow-hidden border border-border/50">
                         <img src={selfieImage} alt="Selfie" className="w-full aspect-video object-cover" />
                         <p className="text-[10px] text-center text-muted-foreground py-1">Selfie</p>
