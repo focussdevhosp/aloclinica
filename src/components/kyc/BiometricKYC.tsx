@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { logError, warn } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Camera, RotateCcw, CheckCircle2, XCircle, Loader2, FileImage, User, ShieldCheck, Upload, Sparkles, Lock, IdCard, CreditCard, BookOpen, ArrowLeft } from "lucide-react";
+import { Camera, RotateCcw, CheckCircle2, XCircle, Loader2, FileImage, User, ShieldCheck, Sparkles, Lock, IdCard, CreditCard, BookOpen, ArrowLeft } from "lucide-react";
 import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -86,7 +86,6 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const startCamera = useCallback(async (target: "document" | "document_back" | "selfie") => {
     setCaptureTarget(target);
@@ -140,17 +139,17 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      handleCapturedImage(dataUrl);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
+  // Auto-abre câmera ao entrar nas etapas de captura (sem opção de upload — somente câmera)
+  useEffect(() => {
+    if (step === "document" && !documentImage && !cameraActive) {
+      void startCamera("document");
+    } else if (step === "document_back" && !documentBackImage && !cameraActive) {
+      void startCamera("document_back");
+    } else if (step === "selfie" && !selfieImage && !cameraActive) {
+      void startCamera("selfie");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
   const analyzeImages = async () => {
     if (!documentImage || !selfieImage || !user || !docType) return;
@@ -244,13 +243,6 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
   return (
     <div className={`space-y-4 ${className}`}>
       <canvas ref={canvasRef} className="hidden" />
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileUpload}
-      />
 
       <AnimatePresence mode="wait">
         {step === "intro" && (
@@ -377,11 +369,31 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
               <div className="space-y-3">
                 <div className="relative rounded-2xl overflow-hidden bg-black aspect-video">
                   <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-                  {step === "selfie" && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-48 h-48 rounded-full border-2 border-white/40 border-dashed" />
+                  {/* Overlay de enquadramento */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {step === "selfie" ? (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-44 h-56 rounded-[50%] border-2 border-primary/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]" />
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center px-6">
+                        <div className="w-full max-w-md aspect-[1.586/1] rounded-xl border-2 border-primary/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] relative">
+                          {/* cantos */}
+                          <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-md" />
+                          <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-md" />
+                          <span className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-white rounded-bl-md" />
+                          <span className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-white rounded-br-md" />
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 left-0 right-0 text-center">
+                      <span className="inline-block px-3 py-1 rounded-full bg-black/60 text-white text-[11px] font-medium">
+                        {step === "selfie"
+                          ? "Centralize seu rosto no oval"
+                          : "Enquadre o documento dentro da moldura"}
+                      </span>
                     </div>
-                  )}
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => { stopCamera(); setStep("intro"); }} className="flex-1 rounded-xl">
@@ -395,14 +407,9 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
             ) : (
               <div className="space-y-3">
                 {step === "document" && !documentImage && (
-                  <div className="flex flex-col gap-2">
-                    <Button onClick={() => startCamera("document")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
-                      <Camera className="w-5 h-5" /> Usar Câmera
-                    </Button>
-                    <Button variant="outline" onClick={() => { setCaptureTarget("document"); fileInputRef.current?.click(); }} className="w-full h-12 rounded-xl gap-2">
-                      <Upload className="w-5 h-5" /> Enviar Arquivo
-                    </Button>
-                  </div>
+                  <Button onClick={() => startCamera("document")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
+                    <Camera className="w-5 h-5" /> Abrir câmera
+                  </Button>
                 )}
                 {step === "document" && documentImage && (
                   <div className="rounded-2xl overflow-hidden border border-border/50">
@@ -412,10 +419,7 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                 {step === "document_back" && !documentBackImage && (
                   <div className="flex flex-col gap-2">
                     <Button onClick={() => startCamera("document_back")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
-                      <Camera className="w-5 h-5" /> Usar Câmera
-                    </Button>
-                    <Button variant="outline" onClick={() => { setCaptureTarget("document_back"); fileInputRef.current?.click(); }} className="w-full h-12 rounded-xl gap-2">
-                      <Upload className="w-5 h-5" /> Enviar Arquivo
+                      <Camera className="w-5 h-5" /> Abrir câmera
                     </Button>
                     <Button variant="ghost" onClick={() => { setDocumentImage(null); setStep("document"); }} className="w-full rounded-xl text-xs text-muted-foreground gap-1">
                       <ArrowLeft className="w-3.5 h-3.5" /> Refazer frente
@@ -428,14 +432,9 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                   </div>
                 )}
                 {step === "selfie" && !selfieImage && (
-                  <div className="flex flex-col gap-2">
-                    <Button onClick={() => startCamera("selfie")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
-                      <Camera className="w-5 h-5" /> Abrir Câmera para Selfie
-                    </Button>
-                    <Button variant="outline" onClick={() => { setCaptureTarget("selfie"); fileInputRef.current?.click(); }} className="w-full h-12 rounded-xl gap-2">
-                      <Upload className="w-5 h-5" /> Enviar Arquivo
-                    </Button>
-                  </div>
+                  <Button onClick={() => startCamera("selfie")} className="w-full h-12 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
+                    <Camera className="w-5 h-5" /> Abrir câmera frontal
+                  </Button>
                 )}
                 {step === "selfie" && selfieImage && (
                   <>
