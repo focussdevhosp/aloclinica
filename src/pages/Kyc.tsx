@@ -13,9 +13,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import BiometricKYC from "@/components/kyc/BiometricKYC";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle2, ShieldCheck, Lock, Sparkles, Zap, Eye, FileCheck2 } from "lucide-react";
+import { Loader2, CheckCircle2, ShieldCheck, Lock, Sparkles, Zap, Eye, FileCheck2, ArrowRight, Home } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import pingoSeguranca from "@/assets/pingo-seguranca.png";
+import { db } from "@/integrations/supabase/untyped";
 
 export default function Kyc() {
   const { user, roles, loading } = useAuth();
@@ -28,12 +29,51 @@ export default function Kyc() {
   const isDoctor = roles.includes("doctor") || roles.includes("ophthalmologist");
   const tipo = isDoctor ? "medico" : "paciente";
 
+  // Label contextual do botão "Voltar" baseado no fluxo de origem
+  const returnContext = (() => {
+    if (returnTo.includes("/agendar") || returnTo.includes("/book")) {
+      return { label: "Voltar ao agendamento", icon: ArrowRight };
+    }
+    if (returnTo.includes("/teleconsulta") || returnTo.includes("/video")) {
+      return { label: "Entrar na consulta", icon: ArrowRight };
+    }
+    if (returnTo === "/dashboard" || returnTo.includes("/dashboard")) {
+      return { label: "Ir para o painel", icon: Home };
+    }
+    return { label: "Continuar", icon: ArrowRight };
+  })();
+
   useEffect(() => {
     if (!loading && !user) {
       // Sem login → vai pra autenticação correspondente
       navigate(isDoctor ? "/medico" : "/paciente", { replace: true });
     }
   }, [user, loading, navigate, isDoctor]);
+
+  // Dispara e-mail de confirmação quando KYC for aprovado
+  const sendApprovalEmail = async (result: { match: boolean; score: number; nome?: string | null }) => {
+    if (!user?.email) return;
+    try {
+      const name = result.nome || user.user_metadata?.full_name || user.email.split("@")[0];
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      await db.functions.invoke("send-email", {
+        body: {
+          type: "kyc_approved",
+          to: user.email,
+          data: {
+            name,
+            score: String(Math.round(result.score)),
+            verified_at: new Date().toLocaleString("pt-BR", { dateStyle: "long", timeStyle: "short" }),
+            return_url: `${origin}${returnTo}`,
+            return_label: returnContext.label,
+          },
+        },
+      });
+    } catch (e) {
+      // Falha de e-mail não bloqueia o fluxo
+      console.warn("[KYC] Falha ao enviar e-mail de aprovação:", e);
+    }
+  };
 
   if (loading || !user) {
     return (
@@ -44,6 +84,7 @@ export default function Kyc() {
   }
 
   if (done) {
+    const Icon = returnContext.icon;
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-emerald-50 via-background to-emerald-50/50 dark:from-emerald-950/20 dark:to-background relative overflow-hidden">
         <SEOHead title="Verificação concluída — AloClínica" />
@@ -57,16 +98,29 @@ export default function Kyc() {
             <CardTitle className="text-2xl font-extrabold tracking-tight">Tudo certo, {' '}
               <span className="bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">verificado!</span>
             </CardTitle>
-            <CardDescription className="text-sm mt-1">Sua identidade foi confirmada com segurança. Pode continuar.</CardDescription>
+            <CardDescription className="text-sm mt-1">
+              Sua identidade foi confirmada com segurança. Enviamos um e-mail de confirmação para <strong>{user.email}</strong>.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="pb-8">
+          <CardContent className="pb-8 space-y-3">
             <Button
               onClick={() => navigate(returnTo, { replace: true })}
-              className="w-full h-12 rounded-2xl font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
+              className="w-full h-12 rounded-2xl font-bold shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 transition-all bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
               size="lg"
             >
-              Continuar
+              <Icon className="w-4 h-4 mr-2" />
+              {returnContext.label}
             </Button>
+            {returnTo !== "/dashboard" && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/dashboard", { replace: true })}
+                className="w-full h-11 rounded-2xl text-sm text-muted-foreground hover:text-foreground"
+              >
+                <Home className="w-4 h-4 mr-2" />
+                Ir para o painel
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -148,7 +202,10 @@ export default function Kyc() {
               <BiometricKYC
                 tipo={tipo}
                 onComplete={(result) => {
-                  if (result?.match && result.score >= 80) setDone(true);
+                  if (result?.match && result.score >= 80) {
+                    setDone(true);
+                    void sendApprovalEmail(result);
+                  }
                 }}
               />
             </div>
