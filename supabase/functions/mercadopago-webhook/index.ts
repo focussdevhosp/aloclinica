@@ -31,17 +31,23 @@ Deno.serve(async (req) => {
     const rawBody = await req.text();
     const body = rawBody ? JSON.parse(rawBody) : {};
 
-    // Valida assinatura se secret configurado
+    // Validação de assinatura OBRIGATÓRIA — fail closed se o secret não estiver
+    // configurado, caso contrário um atacante forja "pagamento aprovado".
     const secret = Deno.env.get("MERCADOPAGO_WEBHOOK_SECRET");
-    if (secret) {
-      const valid = await validateSignature(req, rawBody, body, secret);
-      if (!valid) {
-        console.warn("[mp-webhook] assinatura inválida");
-        return new Response(JSON.stringify({ error: "invalid signature" }), {
-          status: 401,
-          headers: { ...mpCorsHeaders, "Content-Type": "application/json" },
-        });
-      }
+    if (!secret) {
+      console.error("[mp-webhook] MERCADOPAGO_WEBHOOK_SECRET não configurado — rejeitando");
+      return new Response(JSON.stringify({ error: "webhook not configured" }), {
+        status: 503,
+        headers: { ...mpCorsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const valid = await validateSignature(req, rawBody, body, secret);
+    if (!valid) {
+      console.warn("[mp-webhook] assinatura inválida");
+      return new Response(JSON.stringify({ error: "invalid signature" }), {
+        status: 401,
+        headers: { ...mpCorsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const type = body.type || body.action?.split(".")?.[0];
@@ -286,7 +292,7 @@ async function validateSignature(req: Request, _rawBody: string, body: any, secr
   if (!ts || !v1) return false;
 
   const dataId = body?.data?.id;
-  if (!dataId) return true; // sem data.id não dá pra validar
+  if (!dataId) return false; // sem data.id não dá pra validar → rejeita (fail closed)
 
   const manifest = `id:${dataId};request-id:${reqId};ts:${ts};`;
   const key = await crypto.subtle.importKey(

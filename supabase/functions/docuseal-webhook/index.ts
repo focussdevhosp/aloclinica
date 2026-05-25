@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { safeEqual } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-docuseal-secret",
 };
 
 serve(async (req) => {
@@ -13,6 +14,18 @@ serve(async (req) => {
   }
 
   try {
+    // ── Webhook authentication ──
+    // DocuSeal is configured to send a shared secret header. Reject anything
+    // that does not match. Fail closed if the secret is not configured.
+    const WEBHOOK_SECRET = Deno.env.get("DOCUSEAL_WEBHOOK_SECRET");
+    const provided = req.headers.get("x-docuseal-secret");
+    if (!WEBHOOK_SECRET || !safeEqual(provided, WEBHOOK_SECRET)) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const payload = await req.json();
     // Não loga payload inteiro (contém URLs assinadas + emails de submitters).
     console.log(`DocuSeal webhook: event=${payload.event_type || payload.event}`);
@@ -115,19 +128,20 @@ serve(async (req) => {
         }
       }
 
-      // Update exam_reports if signed_at is null (for exam report signing flow)
-      if (pdfUrl) {
+      // Update the specific exam_report identified by external_id (NEVER blanket-update).
+      // Without an external_id we cannot safely target a single report, so we skip.
+      if (pdfUrl && externalId) {
         const { error: reportError } = await supabase
           .from("exam_reports")
           .update({
             signed_at: new Date().toISOString(),
             pdf_url: pdfUrl,
           })
-          .is("signed_at", null)
-          .not("id", "is", null);
+          .eq("id", externalId)
+          .is("signed_at", null);
 
         if (reportError) {
-          console.log("No exam_reports to update or error:", reportError.message);
+          console.log("No matching exam_report to update or error:", reportError.message);
         }
       }
 

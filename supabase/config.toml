@@ -1,43 +1,91 @@
 project_id = "pwxvvimdtmvziynbspgx"
 
-[functions.create-admin-account]
+# =============================================================
+# Edge function JWT policy (honored by `supabase functions deploy`
+# now that the global --no-verify-jwt flag was removed).
+#
+# Rule of thumb:
+#   verify_jwt = true   → caller MUST present a valid Supabase user JWT.
+#   verify_jwt = false  → publicly invokable; the function MUST authorize
+#                         itself (webhook signature, internal secret, token,
+#                         or it serves only public data).
+#
+# Anything NOT listed here defaults to verify_jwt = true.
+# =============================================================
+
+# ── Public / external (no Supabase user JWT possible) ─────────
+# Webhooks — validate signature/secret internally.
+[functions.mercadopago-webhook]
+verify_jwt = false
+[functions.docuseal-webhook]
+verify_jwt = false
+# OAuth / KYC provider callbacks.
+[functions.vidaas-callback]
+verify_jwt = false
+# Public content endpoints.
+[functions.robots-txt]
+verify_jwt = false
+[functions.sitemap-xml]
+verify_jwt = false
+# Guest flows — token / rate-limited, no account.
+[functions.guest-checkout]
+verify_jwt = false
+[functions.guest-consultation]
+verify_jwt = false
+# Public document/credential validators (return minimal data).
+[functions.validate-invite-code]
+verify_jwt = false
+[functions.validate-laudo]
+verify_jwt = false
+[functions.validate-council]
+verify_jwt = false
+# Lead capture from the public marketing site.
+[functions.b2b-lead-notification]
 verify_jwt = false
 
-[functions.seed-test-doctors]
+# ── Internal-secret / bootstrap gated ─────────────────────────
+[functions.create-admin-account]   # gated by ADMIN_BOOTSTRAP_SECRET
+verify_jwt = false
+[functions.process-refund]          # gated by x-internal-secret OR admin JWT
+verify_jwt = false
+[functions.seed-test-doctors]       # gated by ALLOW_TEST_SEED + SEED_SECRET
+verify_jwt = false
+[functions.seed-test-users]         # gated by ALLOW_TEST_SEED + SEED_SECRET
 verify_jwt = false
 
-[functions.process-refund]
+# ── Cron / scheduled (invoked by scheduler with service role) ─
+[functions.daily-backup]
 verify_jwt = false
-
-[functions.verify-crm]
+[functions.scheduled-tasks]
 verify_jwt = false
-
-[functions.ai-ticket-triage]
+[functions.appointment-reminders]
 verify_jwt = false
-
-[functions.auto-clinical-summary]
+[functions.appointment-confirmed]
 verify_jwt = false
-
+[functions.lembrete-consultas]
+verify_jwt = false
+[functions.cart-abandonment]
+verify_jwt = false
+[functions.notify-expired-prescriptions]
+verify_jwt = false
 [functions.weekly-admin-report]
 verify_jwt = false
 
+# ── Trigger/cron-driven internal helpers ──────────────────────
+# NOTE: these are invoked by DB triggers/cron without a user JWT. They cause
+# cost/data-pollution abuse if hit anonymously (see security review, MEDIUM).
+# Track adding an internal-secret guard like process-refund.
+[functions.ai-ticket-triage]
+verify_jwt = false
+[functions.auto-clinical-summary]
+verify_jwt = false
 [functions.suggest-reschedule]
 verify_jwt = false
-
-[functions.daily-backup]
+[functions.verify-crm]
+verify_jwt = false
+[functions.rate-limiter]
 verify_jwt = false
 
-[functions.faq-chat-bot]
-verify_jwt = true
-
-[functions.generate-prescription-pdf]
-verify_jwt = true
-
-[functions.ai-symptom-triage]
-verify_jwt = true
-
-[functions.generate-certificate-pdf]
-verify_jwt = true
-
-[functions.lgpd-export]
-verify_jwt = true
+# Everything else (payments, LGPD, admin-reset-password, assign-role,
+# withdraw, prescription/PDF generation, AI assistants, messaging, etc.)
+# is NOT listed and therefore requires a valid JWT (verify_jwt = true).

@@ -1,10 +1,30 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { safeEqual } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+/**
+ * Seeding creates privileged accounts with known passwords. It is disabled
+ * unless explicitly enabled via env AND a matching secret is presented.
+ * NEVER set ALLOW_TEST_SEED=true in production.
+ */
+function seedDenied(secret: unknown): Response | null {
+  if (Deno.env.get("ALLOW_TEST_SEED") !== "true") {
+    return new Response(JSON.stringify({ error: "Seeding disabled" }), {
+      status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  if (!safeEqual(typeof secret === "string" ? secret : null, Deno.env.get("SEED_SECRET"))) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  return null;
+}
 
 const FIRST_NAMES = [
   "Ana", "Carlos", "Mariana", "Rafael", "Juliana", "Bruno", "Camila", "Diego",
@@ -29,11 +49,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const body = await req.json().catch(() => ({} as Record<string, unknown>));
+    const denied = seedDenied(body.secret);
+    if (denied) return denied;
+
     const url = Deno.env.get("SUPABASE_URL")!;
     const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const sb = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 
-    const body = await req.json().catch(() => ({}));
     const perSpecialty: number = Math.max(1, Math.min(5, Number(body.per_specialty ?? 2)));
     const password: string = body.password ?? "Teste123!";
 

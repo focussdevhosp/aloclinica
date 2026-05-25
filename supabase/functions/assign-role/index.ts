@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCaller } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,6 +12,19 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // ── Authorization ──
+    // The caller must be authenticated. Privilege escalation is prevented by:
+    //  - admin role can NEVER be granted via this endpoint
+    //  - non-admins may only assign a role to THEMSELVES
+    //  - self-assigning a doctor-type role requires a valid, unused invite code
+    const caller = await getCaller(req);
+    if (!caller.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { user_id, role, profile_data } = await req.json();
 
     if (!user_id || !role) {
@@ -20,18 +34,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const validRoles = ["patient", "doctor", "clinic", "admin", "receptionist", "support", "partner", "affiliate", "laudista", "ophthalmologist", "optician"];
+    const validRoles = ["patient", "doctor", "clinic", "receptionist", "support", "partner", "affiliate", "laudista", "ophthalmologist", "optician"];
     if (!validRoles.includes(role)) {
+      // "admin" is intentionally excluded — it can never be granted here.
       return new Response(JSON.stringify({ error: "Invalid role" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Admin role cannot be self-assigned
-    if (role === "admin") {
-      return new Response(JSON.stringify({ error: "Cannot self-assign admin role" }), {
-        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -40,6 +47,36 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Non-admins may only assign a role to themselves.
+    if (!caller.isAdmin && user_id !== caller.user.id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Doctor-type roles grant access to patient medical data — a non-admin must
+    // present a valid, unused invite code (validated here, not trusted from client).
+    const doctorTypeRoles = ["doctor", "laudista", "ophthalmologist"];
+    if (!caller.isAdmin && doctorTypeRoles.includes(role)) {
+      const inviteId = profile_data?.invite_code_id;
+      let validInvite = false;
+      if (inviteId) {
+        const { data: code } = await supabase
+          .from("doctor_invite_codes")
+          .select("id, is_used")
+          .eq("id", inviteId)
+          .maybeSingle();
+        validInvite = !!code && code.is_used !== true;
+      }
+      if (!validInvite) {
+        return new Response(JSON.stringify({ error: "Valid invite code required" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Insert role (ignore conflict if already exists)
     const { error: roleError } = await supabase
