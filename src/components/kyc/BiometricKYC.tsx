@@ -713,9 +713,34 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
             )}
 
             {result.status !== "aprovado" && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">Similaridade: {result.score}% (mínimo 60%)</p>
-                <Button onClick={reset} variant="outline" className="rounded-xl gap-2">
+              <div className="space-y-3 max-w-sm mx-auto">
+                {rejection?.reasons && rejection.reasons.length > 0 ? (
+                  <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-left space-y-2">
+                    <p className="text-xs font-bold text-destructive uppercase tracking-wide">Motivos da rejeição</p>
+                    <ul className="space-y-1.5">
+                      {rejection.reasons.map((r, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-foreground">
+                          <XCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
+                          <span>{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {rejection?.error || `Similaridade: ${result.score}% (mínimo 80%)`}
+                  </p>
+                )}
+                <div className="rounded-xl bg-muted/40 p-3 text-left">
+                  <p className="text-[11px] font-semibold text-foreground mb-1">Dicas para a próxima tentativa:</p>
+                  <ul className="text-[11px] text-muted-foreground space-y-0.5 list-disc list-inside">
+                    <li>Use um ambiente bem iluminado e sem contraluz</li>
+                    <li>Confirme que o nome e CPF do documento batem com os do cadastro</li>
+                    <li>Olhe diretamente para a câmera na selfie</li>
+                    <li>Aproxime o documento para que todos os dados fiquem legíveis</li>
+                  </ul>
+                </div>
+                <Button onClick={reset} className="rounded-xl gap-2 bg-primary text-primary-foreground font-bold w-full">
                   <RotateCcw className="w-4 h-4" /> Tentar novamente
                 </Button>
               </div>
