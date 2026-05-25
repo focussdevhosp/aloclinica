@@ -85,6 +85,7 @@ interface PublicDoctor {
   care_areas?: string[];
   specialty_names?: string[] | null;
   has_availability?: boolean | null;
+  council_type?: string | null;
 }
 
 type SortMode = "rating" | "price" | "available" | "nextSlot";
@@ -173,6 +174,7 @@ const Agendar = () => {
   const [onlyAvailable, setOnlyAvailable] = useState(true);
   const [priceMin, setPriceMin] = useState<number | "">("");
   const [priceMax, setPriceMax] = useState<number | "">("");
+  const [councilFilter, setCouncilFilter] = useState<string>("all");
   const [doctorSlots, setDoctorSlots] = useState<Record<string, {day_of_week: number; start_time: string}[]>>({});
 
   // Load doctors when a specialty is selected
@@ -187,7 +189,7 @@ const Agendar = () => {
       setLoading(true);
       const { data } = await db
         .from("doctor_profiles_public" as any)
-        .select("id, full_name, display_name, avatar_url, crm, crm_state, crm_verified, bio, short_description, consultation_price, consultation_duration_min, rating, total_reviews, experience_years, available_now, available_for_telemedicine, sub_specialties, education, specialty_names, has_availability")
+        .select("id, full_name, display_name, avatar_url, crm, crm_state, crm_verified, bio, short_description, consultation_price, consultation_duration_min, rating, total_reviews, experience_years, available_now, available_for_telemedicine, sub_specialties, education, specialty_names, has_availability, council_type")
         .eq("available_for_telemedicine", true);
 
       let doctorList = (data as unknown as PublicDoctor[]) ?? [];
