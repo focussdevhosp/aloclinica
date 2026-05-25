@@ -535,6 +535,42 @@ const Agendar = () => {
                   <div className="mb-6 space-y-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
+                        <Filter className="w-3 h-3" /> Tipo de profissional
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { value: "all",     label: "Todos" },
+                          { value: "CRM",     label: "Médicos" },
+                          { value: "CRP",     label: "Psicólogos" },
+                          { value: "CRN",     label: "Nutricionistas" },
+                          { value: "CRFa",    label: "Fonoaudiólogos" },
+                          { value: "CREFITO", label: "Fisio / TO" },
+                          { value: "COREN",   label: "Enfermagem" },
+                          { value: "CRO",     label: "Odontologia" },
+                          { value: "CRF",     label: "Farmacêuticos" },
+                          { value: "CREF",    label: "Educação Física" },
+                        ].map((c) => {
+                          const active = councilFilter === c.value;
+                          return (
+                            <button
+                              key={c.value}
+                              onClick={() => setCouncilFilter(c.value)}
+                              className={cn(
+                                "text-[11px] font-medium px-2.5 py-1 rounded-full border transition-all",
+                                active
+                                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                  : "bg-card border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary",
+                              )}
+                            >
+                              {c.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
                         <Filter className="w-3 h-3" /> Especialidade
                       </span>
                       <div className="flex flex-wrap gap-1.5">
