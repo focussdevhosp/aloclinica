@@ -81,3 +81,19 @@ export async function logConsent(input: LogConsentInput): Promise<void> {
 export async function logConsents(items: LogConsentInput[]): Promise<void> {
   await Promise.all(items.map(logConsent));
 }
+
+/**
+ * Backward-compatible helper used by legacy auth pages.
+ * Registra um aceite de termos+privacidade para um usuário específico.
+ */
+export async function registerConsent(
+  userId: string,
+  type: ConsentType | string = "terms_of_use",
+): Promise<void> {
+  await logConsent({
+    type: type as ConsentType,
+    userId,
+    accepted: true,
+    metadata: { source: "legacy_registerConsent" },
+  });
+}
