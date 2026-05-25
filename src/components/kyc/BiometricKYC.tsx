@@ -521,11 +521,23 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                   <div className="absolute inset-0 pointer-events-none">
                     {step === "selfie" ? (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-44 h-56 rounded-[50%] border-2 border-primary/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]" />
+                        <div
+                          className={`w-44 h-56 rounded-[50%] border-2 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] transition-colors ${
+                            quality.status === "good"
+                              ? "border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5),0_0_0_9999px_rgba(0,0,0,0.55)]"
+                              : "border-primary/80"
+                          }`}
+                        />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center px-6">
-                        <div className="w-full max-w-md aspect-[1.586/1] rounded-xl border-2 border-primary/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] relative">
+                        <div
+                          className={`w-full max-w-md aspect-[1.586/1] rounded-xl border-2 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] relative transition-colors ${
+                            quality.status === "good"
+                              ? "border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5),0_0_0_9999px_rgba(0,0,0,0.55)]"
+                              : "border-primary/80"
+                          }`}
+                        >
                           {/* cantos */}
                           <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-md" />
                           <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-md" />
@@ -534,24 +546,59 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                         </div>
                       </div>
                     )}
-                    <div className="absolute bottom-2 left-0 right-0 text-center">
-                      <span className="inline-block px-3 py-1 rounded-full bg-black/60 text-white text-[11px] font-medium">
-                        {step === "selfie"
-                          ? "Centralize seu rosto no oval"
-                          : "Enquadre o documento dentro da moldura"}
-                      </span>
+                    {/* Status pill (quality) */}
+                    <div className="absolute top-2 left-0 right-0 flex justify-center">
+                      <div
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md border ${
+                          quality.status === "good"
+                            ? "bg-emerald-500/80 text-white border-emerald-300/40"
+                            : quality.status === "dark" || quality.status === "bright"
+                              ? "bg-amber-500/80 text-white border-amber-300/40"
+                              : quality.status === "blurry"
+                                ? "bg-orange-500/80 text-white border-orange-300/40"
+                                : quality.status === "still"
+                                  ? "bg-blue-500/80 text-white border-blue-300/40"
+                                  : "bg-black/60 text-white border-white/10"
+                        }`}
+                      >
+                        {quality.status === "good" && <CheckCircle2 className="w-3 h-3" />}
+                        {(quality.status === "dark" || quality.status === "bright") && <Sun className="w-3 h-3" />}
+                        {quality.status === "blurry" && <Focus className="w-3 h-3" />}
+                        {quality.status === "still" && <Move className="w-3 h-3" />}
+                        {quality.status === "init" && <Loader2 className="w-3 h-3 animate-spin" />}
+                        {quality.message}
+                      </div>
                     </div>
+                    {/* Auto-capture countdown */}
+                    {autoCountdown !== null && autoCountdown > 0 && quality.status === "good" && (
+                      <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+                        <div className="px-3 py-1.5 rounded-full bg-emerald-500/90 text-white text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-md">
+                          <Camera className="w-3 h-3" />
+                          Capturando em {autoCountdown.toFixed(1)}s
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => { stopCamera(); setStep("intro"); }} className="flex-1 rounded-xl">
                     Cancelar
                   </Button>
-                  <Button onClick={capturePhoto} className="flex-1 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
-                    <Camera className="w-4 h-4" /> Capturar
+                  <Button
+                    onClick={capturePhoto}
+                    disabled={quality.status !== "good" && quality.status !== "init"}
+                    className="flex-1 rounded-xl gap-2 bg-primary text-primary-foreground font-bold disabled:opacity-60"
+                  >
+                    <Camera className="w-4 h-4" />
+                    {quality.status === "good" ? "Capturar agora" : "Aguarde..."}
                   </Button>
                 </div>
-              </div>
+                <p className="text-[11px] text-muted-foreground text-center">
+                  {step === "selfie"
+                    ? "Centralize seu rosto no oval e mova levemente a cabeça (prova de vida). Captura automática quando estiver tudo certo."
+                    : "Enquadre o documento dentro da moldura. Captura automática ao detectar boa nitidez e iluminação."}
+                </p>
+                </div>
             ) : (
               <div className="space-y-3">
                 {step === "document" && !documentImage && (
