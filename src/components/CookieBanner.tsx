@@ -1,26 +1,60 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Cookie } from "lucide-react";
+import { Cookie, Settings2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { logConsent } from "@/lib/consent";
 
-const STORAGE_KEY = "cookie_consent";
+const STORAGE_KEY = "cookie_consent_v2";
+
+type Prefs = { essential: true; analytics: boolean; marketing: boolean };
+
+const loadPrefs = (): Prefs | null => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return { essential: true, analytics: !!parsed.analytics, marketing: !!parsed.marketing };
+  } catch { return null; }
+};
+
+const savePrefs = async (prefs: Prefs) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...prefs, accepted_at: new Date().toISOString() }));
+  } catch { /* storage blocked */ }
+  // Append-only audit log (works for anonymous visitors too).
+  await logConsent({
+    type: prefs.analytics && prefs.marketing
+      ? "cookies_all"
+      : prefs.analytics || prefs.marketing
+        ? "cookies_analytics"
+        : "cookies_essential",
+    accepted: true,
+    metadata: prefs,
+  });
+};
 
 const CookieBanner = () => {
   const [visible, setVisible] = useState(false);
+  const [showPrefs, setShowPrefs] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
-    try {
-      const consent = localStorage.getItem(STORAGE_KEY);
-      if (!consent) setVisible(true);
-    } catch {
-      setVisible(true);
-    }
+    if (!loadPrefs()) setVisible(true);
   }, []);
 
-  const accept = (level: "all" | "essential") => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ level, accepted_at: new Date().toISOString() }));
-    } catch { /* storage blocked */ }
+  const acceptAll = async () => {
+    await savePrefs({ essential: true, analytics: true, marketing: true });
+    setVisible(false);
+  };
+  const rejectAll = async () => {
+    await savePrefs({ essential: true, analytics: false, marketing: false });
+    await logConsent({ type: "cookies_rejected", accepted: false });
+    setVisible(false);
+  };
+  const saveCustom = async () => {
+    await savePrefs({ essential: true, analytics, marketing });
     setVisible(false);
   };
 
@@ -32,21 +66,51 @@ const CookieBanner = () => {
         <div className="flex items-start gap-3">
           <Cookie className="w-6 h-6 text-primary shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-foreground">Privacidade e Cookies</p>
+            <p className="text-sm font-semibold text-foreground">Privacidade e Cookies (LGPD)</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Usamos cookies para melhorar sua experiência. Ao continuar navegando, você concorda com nossa{" "}
-              <Link to="/lgpd" className="underline text-primary hover:text-primary/80">Política LGPD</Link> e{" "}
-              <Link to="/cookies" className="underline text-primary hover:text-primary/80">Política de Cookies</Link>.
+              Usamos cookies essenciais para o funcionamento da plataforma e, com sua autorização, cookies de
+              análise e marketing. Você pode aceitar, recusar ou personalizar suas preferências. Veja a{" "}
+              <Link to="/cookies" className="underline text-primary hover:text-primary/80">Política de Cookies</Link>{" "}
+              e a <Link to="/lgpd" className="underline text-primary hover:text-primary/80">Política LGPD</Link>.
             </p>
           </div>
         </div>
-        <div className="flex gap-2 justify-end">
-          <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={() => accept("essential")}>
-            Apenas essenciais
+
+        {showPrefs && (
+          <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-3">
+            <label className="flex items-start gap-2 text-xs text-muted-foreground opacity-70 cursor-not-allowed">
+              <Checkbox checked disabled className="mt-0.5" />
+              <span><strong className="text-foreground">Essenciais</strong> — necessários para login, agendamento e segurança. Sempre ativos.</span>
+            </label>
+            <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">
+              <Checkbox checked={analytics} onCheckedChange={(v) => setAnalytics(v === true)} className="mt-0.5" />
+              <span><strong className="text-foreground">Análise</strong> — métricas anônimas de uso para melhorar a plataforma.</span>
+            </label>
+            <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">
+              <Checkbox checked={marketing} onCheckedChange={(v) => setMarketing(v === true)} className="mt-0.5" />
+              <span><strong className="text-foreground">Marketing</strong> — personalização de comunicações e campanhas.</span>
+            </label>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2 justify-end">
+          {!showPrefs && (
+            <Button variant="ghost" size="sm" className="rounded-xl text-xs" onClick={() => setShowPrefs(true)}>
+              <Settings2 className="w-3.5 h-3.5 mr-1" /> Personalizar
+            </Button>
+          )}
+          <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={rejectAll}>
+            Recusar opcionais
           </Button>
-          <Button size="sm" className="rounded-xl text-xs" onClick={() => accept("all")}>
-            Aceitar todos
-          </Button>
+          {showPrefs ? (
+            <Button size="sm" className="rounded-xl text-xs" onClick={saveCustom}>
+              Salvar preferências
+            </Button>
+          ) : (
+            <Button size="sm" className="rounded-xl text-xs" onClick={acceptAll}>
+              Aceitar todos
+            </Button>
+          )}
         </div>
       </div>
     </div>

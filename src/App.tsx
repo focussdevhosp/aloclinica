@@ -39,6 +39,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const LGPD = lazy(() => import("./pages/LGPD"));
 const Cookies = lazy(() => import("./pages/Cookies"));
+const PrivacyPortal = lazy(() => import("./pages/PrivacyPortal"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const DoctorTerms = lazy(() => import("./pages/DoctorTerms"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
@@ -170,6 +171,8 @@ const AnimatedRoutes = () => {
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/lgpd" element={<LGPD />} />
       <Route path="/cookies" element={<Cookies />} />
+      <Route path="/privacidade/portal" element={<PrivacyPortal />} />
+      <Route path="/meus-dados" element={<PrivacyPortal />} />
       <Route path="/refund" element={<RefundPolicy />} />
       <Route path="/doctor-terms" element={<DoctorTerms />} />
       <Route path="/accessibility" element={<Accessibility />} />
