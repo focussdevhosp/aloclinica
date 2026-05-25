@@ -601,7 +601,7 @@ export default function SignupDoctor() {
                             <option value="">Selecione uma especialidade</option>
                             {list.map((s) => (
                               <option key={s} value={s}>
-                                {s.charAt(0).toUpperCase() + s.slice(1).replaceAll("-", " ")}
+                                {s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ")}
                               </option>
                             ))}
                             <option value="outras">Outras (digitar)</option>
