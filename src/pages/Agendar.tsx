@@ -254,6 +254,10 @@ const Agendar = () => {
     if (onlyAvailable) {
       list = list.filter((d) => d.has_availability === true);
     }
+    // Filtra por tipo de profissional (conselho)
+    if (councilFilter !== "all") {
+      list = list.filter((d) => (d.council_type ?? "CRM") === councilFilter);
+    }
     // Faixa de preço
     if (priceMin !== "") {
       list = list.filter((d) => (d.consultation_price ?? 89) >= Number(priceMin));
@@ -286,7 +290,7 @@ const Agendar = () => {
       list.sort((a, b) => (b.available_now ? 1 : 0) - (a.available_now ? 1 : 0));
     }
     return list;
-  }, [doctors, debouncedSearch, sort, selectedSpecialty, onlyAvailable, priceMin, priceMax, doctorNextSlots]);
+  }, [doctors, debouncedSearch, sort, selectedSpecialty, onlyAvailable, priceMin, priceMax, doctorNextSlots, councilFilter]);
 
   const handleSelectDoctor = (doctorId: string) => {
     // Permite navegação pública: visitante explora o perfil do médico
