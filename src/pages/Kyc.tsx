@@ -123,11 +123,11 @@ export default function Kyc() {
                 { icon: Lock, label: "Criptografia AES-256", sub: "Ponta a ponta" },
                 { icon: Zap, label: "Análise em < 30s", sub: "IA em tempo real" },
                 { icon: Eye, label: "LGPD compliant", sub: "Lei 13.709/2018" },
-                { icon: FileCheck2, title: "Conforme CFM", sub: "Telemedicina segura", label: "Conforme CFM" },
+                { icon: FileCheck2, label: "Conforme CFM", sub: "Telemedicina segura" },
               ].map((item, i) => (
                 <div key={i} className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur p-3.5 hover:border-primary/30 hover:-translate-y-0.5 transition-all">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
-                    <item.icon className="w-4.5 h-4.5 text-primary" />
+                    <item.icon className="w-4 h-4 text-primary" />
                   </div>
                   <p className="text-xs font-bold text-foreground leading-tight">{item.label}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{item.sub}</p>
