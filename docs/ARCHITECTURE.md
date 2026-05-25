@@ -23,7 +23,7 @@ sempre que adicionar uma nova integração externa, edge function ou tabela.
 │  - Edge Functions (Deno) — 30+          │         │  - compreface (KYC face)    │
 │  - Storage                               │         │  - coturn (TURN próprio)    │
 │  - Realtime                              │         │  - waha (WhatsApp)          │
-│  - pg_cron                               │         │  - orthanc (PACS DICOM)     │
+│  - pg_cron                               │         │                             │
 └──────────────────────────────────────────┘         └────────────────────────────┘
                     ▲                                              ▲
                     │                                              │
