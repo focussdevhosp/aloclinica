@@ -3,7 +3,7 @@ import { logError, warn } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Camera, RotateCcw, CheckCircle2, XCircle, Loader2, FileImage, User, ShieldCheck, Sparkles, Lock, IdCard, CreditCard, BookOpen, ArrowLeft } from "lucide-react";
+import { Camera, RotateCcw, CheckCircle2, XCircle, Loader2, FileImage, User, ShieldCheck, Sparkles, Lock, IdCard, CreditCard, BookOpen, ArrowLeft, Sun, Eye, Focus, Move } from "lucide-react";
 import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -38,12 +38,23 @@ interface BiometricKYCProps {
  * Calls the didit-kyc edge function which uses DeepSeek Vision API
  * for real biometric face matching and document data extraction.
  */
+interface VerifyResponse {
+  match: boolean;
+  score: number;
+  nome: string | null;
+  cpf: string | null;
+  status: string;
+  error?: string | null;
+  mismatch_reasons?: string[];
+  data_mismatch?: boolean;
+}
+
 async function verifyViaDeepSeek(
   documentDataUrl: string,
   selfieDataUrl: string,
   documentBackDataUrl: string | null,
   documentType: DocType,
-): Promise<{ match: boolean; score: number; nome: string | null; cpf: string | null; status: string }> {
+): Promise<VerifyResponse> {
   const { data: sessionData } = await db.auth.getSession();
   const token = sessionData?.session?.access_token;
 
@@ -69,7 +80,33 @@ async function verifyViaDeepSeek(
     nome: data.nome ?? null,
     cpf: data.cpf ?? null,
     status: data.status || (data.match ? "approved" : "rejected"),
+    error: data.error ?? null,
+    mismatch_reasons: Array.isArray(data.mismatch_reasons) ? data.mismatch_reasons : [],
+    data_mismatch: data.data_mismatch === true,
   };
+}
+
+// =========== Quality detection ===========
+type QualityStatus = "good" | "dark" | "bright" | "blurry" | "still" | "init";
+interface QualitySample {
+  brightness: number; // 0..255
+  sharpness: number;  // arbitrary
+  motion: number;     // 0..255 avg diff
+  status: QualityStatus;
+  message: string;
+}
+
+function gradeQuality(
+  brightness: number,
+  sharpness: number,
+  motion: number,
+  requireMotion: boolean,
+): { status: QualityStatus; message: string } {
+  if (brightness < 55) return { status: "dark", message: "Procure um local com mais luz" };
+  if (brightness > 220) return { status: "bright", message: "Reduza o brilho/contraluz" };
+  if (sharpness < 8) return { status: "blurry", message: "Mantenha a câmera firme para focar" };
+  if (requireMotion && motion < 4) return { status: "still", message: "Mova levemente a cabeça (prova de vida)" };
+  return { status: "good", message: "Boa! Mantenha assim..." };
 }
 
 const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "paciente" }: BiometricKYCProps) => {
@@ -80,12 +117,19 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
   const [documentBackImage, setDocumentBackImage] = useState<string | null>(null);
   const [selfieImage, setSelfieImage] = useState<string | null>(null);
   const [result, setResult] = useState<KYCResult | null>(null);
+  const [rejection, setRejection] = useState<{ reasons: string[]; error?: string | null } | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [captureTarget, setCaptureTarget] = useState<"document" | "document_back" | "selfie">("document");
   const [lgpdConsent, setLgpdConsent] = useState(false);
+  const [quality, setQuality] = useState<QualitySample>({ brightness: 0, sharpness: 0, motion: 0, status: "init", message: "Iniciando câmera..." });
+  const [autoCountdown, setAutoCountdown] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const qualityRafRef = useRef<number | null>(null);
+  const goodSinceRef = useRef<number | null>(null);
+  const prevFrameRef = useRef<Uint8ClampedArray | null>(null);
+  const capturedRef = useRef(false);
 
   const startCamera = useCallback(async (target: "document" | "document_back" | "selfie") => {
     setCaptureTarget(target);
@@ -110,10 +154,18 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setCameraActive(false);
+    if (qualityRafRef.current) cancelAnimationFrame(qualityRafRef.current);
+    qualityRafRef.current = null;
+    goodSinceRef.current = null;
+    prevFrameRef.current = null;
+    setAutoCountdown(null);
+    setQuality({ brightness: 0, sharpness: 0, motion: 0, status: "init", message: "Câmera parada" });
   }, []);
 
   const capturePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
+    if (capturedRef.current) return;
+    capturedRef.current = true;
     const video = videoRef.current;
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth;
@@ -123,6 +175,7 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
     const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
     handleCapturedImage(dataUrl);
     stopCamera();
+    setTimeout(() => { capturedRef.current = false; }, 400);
   }, [captureTarget, stopCamera]);
 
   const handleCapturedImage = (dataUrl: string) => {
@@ -151,9 +204,97 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
+  // ======= Real-time quality + auto-capture loop =======
+  useEffect(() => {
+    if (!cameraActive) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    const off = document.createElement("canvas");
+    const W = 96, H = 72;
+    off.width = W; off.height = H;
+    const ctx = off.getContext("2d", { willReadFrequently: true })!;
+    let lastSample = performance.now();
+
+    const requireMotion = captureTarget === "selfie";
+
+    const loop = (now: number) => {
+      qualityRafRef.current = requestAnimationFrame(loop);
+      if (now - lastSample < 220) return;
+      lastSample = now;
+      if (video.readyState < 2 || video.videoWidth === 0) return;
+
+      try {
+        ctx.drawImage(video, 0, 0, W, H);
+        const data = ctx.getImageData(0, 0, W, H).data;
+
+        // brightness
+        let sum = 0;
+        const grayBuf = new Float32Array(W * H);
+        for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+          const g = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          grayBuf[p] = g;
+          sum += g;
+        }
+        const brightness = sum / (W * H);
+
+        // sharpness (Laplacian variance approx)
+        let lapSum = 0, lapSqSum = 0, n = 0;
+        for (let y = 1; y < H - 1; y++) {
+          for (let x = 1; x < W - 1; x++) {
+            const i = y * W + x;
+            const lap =
+              -grayBuf[i - W] - grayBuf[i - 1] + 4 * grayBuf[i] - grayBuf[i + 1] - grayBuf[i + W];
+            lapSum += lap;
+            lapSqSum += lap * lap;
+            n++;
+          }
+        }
+        const mean = lapSum / n;
+        const sharpness = Math.sqrt(Math.max(0, lapSqSum / n - mean * mean));
+
+        // motion (frame diff)
+        let motion = 0;
+        if (prevFrameRef.current && prevFrameRef.current.length === data.length) {
+          let diff = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            diff += Math.abs(data[i] - prevFrameRef.current[i]);
+          }
+          motion = diff / (W * H);
+        }
+        prevFrameRef.current = new Uint8ClampedArray(data);
+
+        const graded = gradeQuality(brightness, sharpness, motion, requireMotion);
+        setQuality({ brightness, sharpness, motion, ...graded });
+
+        // auto-capture when sustained 'good'
+        if (graded.status === "good") {
+          if (goodSinceRef.current == null) goodSinceRef.current = now;
+          const held = (now - goodSinceRef.current) / 1000;
+          const remaining = Math.max(0, 1.4 - held);
+          setAutoCountdown(remaining);
+          if (remaining === 0 && !capturedRef.current) {
+            capturePhoto();
+          }
+        } else {
+          goodSinceRef.current = null;
+          setAutoCountdown(null);
+        }
+      } catch (e) {
+        // ignore single-frame errors
+      }
+    };
+    qualityRafRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (qualityRafRef.current) cancelAnimationFrame(qualityRafRef.current);
+      qualityRafRef.current = null;
+    };
+  }, [cameraActive, captureTarget, capturePhoto]);
+
   const analyzeImages = async () => {
     if (!documentImage || !selfieImage || !user || !docType) return;
     setStep("analyzing");
+    setRejection(null);
 
     try {
       const verification = await verifyViaDeepSeek(documentImage, selfieImage, documentBackImage, docType);
@@ -192,6 +333,12 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
         cpf: verification.cpf,
       };
       setResult(kycResult);
+      if (!isApproved) {
+        setRejection({
+          reasons: verification.mismatch_reasons || [],
+          error: verification.error || null,
+        });
+      }
       setStep("result");
       onComplete?.(kycResult);
 
@@ -227,6 +374,7 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
     setDocumentBackImage(null);
     setSelfieImage(null);
     setResult(null);
+    setRejection(null);
     setLgpdConsent(false);
     stopCamera();
   };
@@ -373,11 +521,23 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                   <div className="absolute inset-0 pointer-events-none">
                     {step === "selfie" ? (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-44 h-56 rounded-[50%] border-2 border-primary/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]" />
+                        <div
+                          className={`w-44 h-56 rounded-[50%] border-2 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] transition-colors ${
+                            quality.status === "good"
+                              ? "border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5),0_0_0_9999px_rgba(0,0,0,0.55)]"
+                              : "border-primary/80"
+                          }`}
+                        />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center px-6">
-                        <div className="w-full max-w-md aspect-[1.586/1] rounded-xl border-2 border-primary/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] relative">
+                        <div
+                          className={`w-full max-w-md aspect-[1.586/1] rounded-xl border-2 shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] relative transition-colors ${
+                            quality.status === "good"
+                              ? "border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5),0_0_0_9999px_rgba(0,0,0,0.55)]"
+                              : "border-primary/80"
+                          }`}
+                        >
                           {/* cantos */}
                           <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-md" />
                           <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-md" />
@@ -386,24 +546,59 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
                         </div>
                       </div>
                     )}
-                    <div className="absolute bottom-2 left-0 right-0 text-center">
-                      <span className="inline-block px-3 py-1 rounded-full bg-black/60 text-white text-[11px] font-medium">
-                        {step === "selfie"
-                          ? "Centralize seu rosto no oval"
-                          : "Enquadre o documento dentro da moldura"}
-                      </span>
+                    {/* Status pill (quality) */}
+                    <div className="absolute top-2 left-0 right-0 flex justify-center">
+                      <div
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md border ${
+                          quality.status === "good"
+                            ? "bg-emerald-500/80 text-white border-emerald-300/40"
+                            : quality.status === "dark" || quality.status === "bright"
+                              ? "bg-amber-500/80 text-white border-amber-300/40"
+                              : quality.status === "blurry"
+                                ? "bg-orange-500/80 text-white border-orange-300/40"
+                                : quality.status === "still"
+                                  ? "bg-blue-500/80 text-white border-blue-300/40"
+                                  : "bg-black/60 text-white border-white/10"
+                        }`}
+                      >
+                        {quality.status === "good" && <CheckCircle2 className="w-3 h-3" />}
+                        {(quality.status === "dark" || quality.status === "bright") && <Sun className="w-3 h-3" />}
+                        {quality.status === "blurry" && <Focus className="w-3 h-3" />}
+                        {quality.status === "still" && <Move className="w-3 h-3" />}
+                        {quality.status === "init" && <Loader2 className="w-3 h-3 animate-spin" />}
+                        {quality.message}
+                      </div>
                     </div>
+                    {/* Auto-capture countdown */}
+                    {autoCountdown !== null && autoCountdown > 0 && quality.status === "good" && (
+                      <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+                        <div className="px-3 py-1.5 rounded-full bg-emerald-500/90 text-white text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-md">
+                          <Camera className="w-3 h-3" />
+                          Capturando em {autoCountdown.toFixed(1)}s
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => { stopCamera(); setStep("intro"); }} className="flex-1 rounded-xl">
                     Cancelar
                   </Button>
-                  <Button onClick={capturePhoto} className="flex-1 rounded-xl gap-2 bg-primary text-primary-foreground font-bold">
-                    <Camera className="w-4 h-4" /> Capturar
+                  <Button
+                    onClick={capturePhoto}
+                    disabled={quality.status !== "good" && quality.status !== "init"}
+                    className="flex-1 rounded-xl gap-2 bg-primary text-primary-foreground font-bold disabled:opacity-60"
+                  >
+                    <Camera className="w-4 h-4" />
+                    {quality.status === "good" ? "Capturar agora" : "Aguarde..."}
                   </Button>
                 </div>
-              </div>
+                <p className="text-[11px] text-muted-foreground text-center">
+                  {step === "selfie"
+                    ? "Centralize seu rosto no oval e mova levemente a cabeça (prova de vida). Captura automática quando estiver tudo certo."
+                    : "Enquadre o documento dentro da moldura. Captura automática ao detectar boa nitidez e iluminação."}
+                </p>
+                </div>
             ) : (
               <div className="space-y-3">
                 {step === "document" && !documentImage && (
@@ -518,9 +713,34 @@ const BiometricKYC = ({ onComplete, variant = "full", className = "", tipo = "pa
             )}
 
             {result.status !== "aprovado" && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">Similaridade: {result.score}% (mínimo 60%)</p>
-                <Button onClick={reset} variant="outline" className="rounded-xl gap-2">
+              <div className="space-y-3 max-w-sm mx-auto">
+                {rejection?.reasons && rejection.reasons.length > 0 ? (
+                  <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-left space-y-2">
+                    <p className="text-xs font-bold text-destructive uppercase tracking-wide">Motivos da rejeição</p>
+                    <ul className="space-y-1.5">
+                      {rejection.reasons.map((r, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-foreground">
+                          <XCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
+                          <span>{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {rejection?.error || `Similaridade: ${result.score}% (mínimo 80%)`}
+                  </p>
+                )}
+                <div className="rounded-xl bg-muted/40 p-3 text-left">
+                  <p className="text-[11px] font-semibold text-foreground mb-1">Dicas para a próxima tentativa:</p>
+                  <ul className="text-[11px] text-muted-foreground space-y-0.5 list-disc list-inside">
+                    <li>Use um ambiente bem iluminado e sem contraluz</li>
+                    <li>Confirme que o nome e CPF do documento batem com os do cadastro</li>
+                    <li>Olhe diretamente para a câmera na selfie</li>
+                    <li>Aproxime o documento para que todos os dados fiquem legíveis</li>
+                  </ul>
+                </div>
+                <Button onClick={reset} className="rounded-xl gap-2 bg-primary text-primary-foreground font-bold w-full">
                   <RotateCcw className="w-4 h-4" /> Tentar novamente
                 </Button>
               </div>
