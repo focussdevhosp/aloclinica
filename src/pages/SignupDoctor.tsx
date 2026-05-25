@@ -170,12 +170,14 @@ export default function SignupDoctor() {
     if (!validarNome(formData.full_name)) e.full_name = "Informe nome e sobrenome";
     if (!validarTelefone(formData.phone)) e.phone = "Telefone inválido (11) 9XXXX-XXXX";
     if (!validarCPF(formData.cpf)) e.cpf = "CPF inválido";
-    if (!formData.crm_state) e.crm_state = "Selecione o estado do CRM";
-    if (!formData.crm) e.crm = "CRM é obrigatório";
-    else if (!validarCRM(formData.crm, formData.crm_state || undefined))
+    if (!formData.council_type) e.council_type = "Selecione o tipo de profissional";
+    if (!formData.crm_state) e.crm_state = "Selecione a UF";
+    if (!formData.crm) e.crm = "Número do conselho é obrigatório";
+    else if (formData.council_type === "CRM" && !validarCRM(formData.crm, formData.crm_state || undefined))
       e.crm = "CRM inválido (4 a 6 dígitos)";
-    if (!formData.specialty) e.specialty = "Selecione uma especialidade";
-    else if (!validarEspecialidade(formData.specialty)) e.specialty = "Especialidade inválida";
+    else if (formData.council_type !== "CRM" && !/^\d{3,8}$/.test(formData.crm.replace(/\D/g, "")))
+      e.crm = "Número inválido (3 a 8 dígitos)";
+    if (!formData.specialty.trim()) e.specialty = "Informe a especialidade";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
