@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { getCaller } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,15 +10,22 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { email, newPassword, secret } = await req.json();
-
-    // Simple guard: require a one-time setup secret
-    if (secret !== "alo-admin-reset-2026") {
+    // Only an authenticated admin may reset another user's password.
+    const caller = await getCaller(req);
+    if (!caller.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    if (!caller.isAdmin) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { email, newPassword } = await req.json();
 
     if (!email || !newPassword) {
       return new Response(JSON.stringify({ error: "email and newPassword required" }), {

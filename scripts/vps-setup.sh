@@ -22,13 +22,15 @@ SSHKEY
 chmod 600 /root/.ssh/authorized_keys
 echo "  ✓ Chave SSH adicionada"
 
-# ── 2. Enable password + key authentication ─────────────────
-echo "[2/6] Configurando SSH..."
-sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
-echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+# ── 2. Key-only SSH authentication (password login disabled) ─
+echo "[2/6] Configurando SSH (somente chave)..."
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+# Garante a diretiva mesmo que ausente
+grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+grep -q '^PubkeyAuthentication yes' /etc/ssh/sshd_config || echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 systemctl restart sshd
-echo "  ✓ SSH configurado"
+echo "  ✓ SSH configurado (password auth desabilitado)"
 
 # ── 3. System updates ────────────────────────────────────────
 echo "[3/6] Atualizando sistema..."

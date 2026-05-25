@@ -13,6 +13,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { mpRequest } from "../_shared/mercadopago.ts";
+import { getCaller, safeEqual } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,6 +32,21 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // ── Authorization ──
+    // This endpoint triggers REAL Mercado Pago refunds. It is called by SQL
+    // triggers/cron via invoke_edge_function (which sets x-internal-secret) OR
+    // by an authenticated admin. Anonymous callers are rejected.
+    const INTERNAL_SECRET = Deno.env.get("INTERNAL_FUNCTION_SECRET");
+    const providedSecret = req.headers.get("x-internal-secret");
+    const internalAuthorized = !!INTERNAL_SECRET && safeEqual(providedSecret, INTERNAL_SECRET);
+
+    if (!internalAuthorized) {
+      const caller = await getCaller(req);
+      if (!caller.user || !caller.isAdmin) {
+        return json({ error: "Unauthorized" }, 401);
+      }
+    }
+
     const body = await req.json().catch(() => ({}));
     const appointmentId: string | undefined = body.appointment_id ?? body.appointmentId;
     const reason: string = body.reason ?? "system_refund";

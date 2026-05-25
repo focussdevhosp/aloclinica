@@ -1,13 +1,12 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { safeEqual } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_EMAIL = "servicosplenasaude@gmail.com";
-const ADMIN_PASSWORD = "@Costagold2026";
 const ADMIN_FIRST_NAME = "Plena";
 const ADMIN_LAST_NAME = "Saúde";
 
@@ -17,6 +16,29 @@ serve(async (req) => {
   }
 
   try {
+    // ── Bootstrap guard ──
+    // Credentials are NEVER hardcoded. Email/password come from secrets and the
+    // call must present the one-time bootstrap secret (also a secret, not in code).
+    const BOOTSTRAP_SECRET = Deno.env.get("ADMIN_BOOTSTRAP_SECRET");
+    const ADMIN_EMAIL = Deno.env.get("ADMIN_BOOTSTRAP_EMAIL");
+    const ADMIN_PASSWORD = Deno.env.get("ADMIN_BOOTSTRAP_PASSWORD");
+
+    if (!BOOTSTRAP_SECRET || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      // Fail closed if the function is not explicitly configured for bootstrap.
+      return new Response(
+        JSON.stringify({ success: false, error: "Bootstrap not configured" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const { secret } = await req.json().catch(() => ({ secret: null }));
+    if (!safeEqual(secret, BOOTSTRAP_SECRET)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey, {

@@ -21,25 +21,29 @@ const corsHeaders = {
 const COTURN_HOST = Deno.env.get("COTURN_HOST") || "72.62.138.208";
 const COTURN_PORT = Deno.env.get("COTURN_PORT") || "3478";
 const COTURN_USER = Deno.env.get("COTURN_USER") || "mirotalk";
-const COTURN_PASS = Deno.env.get("COTURN_PASS") || "a3be93988cc6e759c2c32dbd";
+// No hardcoded fallback — credential must come from env (Supabase secrets).
+const COTURN_PASS = Deno.env.get("COTURN_PASS") || "";
 
 function ownIceServers() {
-  return [
+  const servers: Array<Record<string, unknown>> = [
     // STUN próprio (descoberta de IP)
     { urls: `stun:${COTURN_HOST}:${COTURN_PORT}` },
-    // TURN próprio (relay quando NAT bloqueia P2P direto)
-    {
+  ];
+  // TURN próprio só quando a credencial estiver configurada via env.
+  if (COTURN_PASS) {
+    servers.push({
       urls: [
         `turn:${COTURN_HOST}:${COTURN_PORT}?transport=udp`,
         `turn:${COTURN_HOST}:${COTURN_PORT}?transport=tcp`,
       ],
       username: COTURN_USER,
       credential: COTURN_PASS,
-    },
-    // Fallbacks STUN públicos
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
-  ];
+    });
+  }
+  // Fallbacks STUN públicos
+  servers.push({ urls: "stun:stun.l.google.com:19302" });
+  servers.push({ urls: "stun:stun1.l.google.com:19302" });
+  return servers;
 }
 
 Deno.serve(async (req) => {
