@@ -278,11 +278,14 @@ export default function SignupDoctor() {
         .from("doctor_profiles")
         .insert({
           user_id: uid,
+          council_type: formData.council_type,
+          council_number: formData.crm.replace(/\D/g, ""),
+          council_state: formData.crm_state,
           crm: formData.crm.replace(/\D/g, ""),
           crm_state: formData.crm_state,
           doctor_type: formData.specialty,
           is_approved: false,
-          crm_verified: crmStatus === "ok",
+          crm_verified: formData.council_type === "CRM" && crmStatus === "ok",
         });
       if (dpErr && !String(dpErr.message || "").includes("duplicate")) throw dpErr;
 
