@@ -17,7 +17,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, Trash2, Users, Ticket, Briefcase, Handshake } from "lucide-react";
+import { Plus, Trash2, Users, Ticket, Briefcase, Handshake, FileText, Download, Upload } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Contrato = {
   id: string;
@@ -36,6 +37,9 @@ type Contrato = {
   subdominio: string | null;
   status: "ativo" | "pausado" | "encerrado";
   observacoes: string | null;
+  numero_processo?: string | null;
+  numero_empenho?: string | null;
+  modalidade_licitacao?: string | null;
 };
 
 const emptyForm = {
@@ -52,6 +56,9 @@ const emptyForm = {
   vigencia_fim: "",
   subdominio: "",
   observacoes: "",
+  numero_processo: "",
+  numero_empenho: "",
+  modalidade_licitacao: "",
 };
 
 const AdminContratos = () => {
@@ -63,6 +70,8 @@ const AdminContratos = () => {
   const [selected, setSelected] = useState<Contrato | null>(null);
   const [benefOpen, setBenefOpen] = useState(false);
   const [vouchOpen, setVouchOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
+  const [faturaOpen, setFaturaOpen] = useState(false);
 
   const fetch = async () => {
     setLoading(true);
@@ -89,6 +98,9 @@ const AdminContratos = () => {
       vigencia_fim: form.vigencia_fim || null,
       subdominio: form.subdominio || null,
       observacoes: form.observacoes || null,
+      numero_processo: form.numero_processo || null,
+      numero_empenho: form.numero_empenho || null,
+      modalidade_licitacao: form.modalidade_licitacao || null,
     };
     const { error } = await db.from("contratos").insert(payload);
     if (error) { toast.error("Erro ao criar", { description: error.message }); return; }
@@ -166,6 +178,12 @@ const AdminContratos = () => {
                       <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setVouchOpen(true); }} title="Vouchers">
                         <Ticket className="h-4 w-4" />
                       </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setDocsOpen(true); }} title="Documentos">
+                        <FileText className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setFaturaOpen(true); }} title="Faturamento">
+                        <Download className="h-4 w-4" />
+                      </Button>
                       <Select value={c.status} onValueChange={(v) => updateStatus(c.id, v as Contrato["status"])}>
                         <SelectTrigger className="inline-flex w-28 h-8 text-xs">
                           <SelectValue />
@@ -227,6 +245,27 @@ const AdminContratos = () => {
             <div><Label>Início vigência</Label><Input type="date" value={form.vigencia_inicio} onChange={(e) => setForm({ ...form, vigencia_inicio: e.target.value })} /></div>
             <div><Label>Fim vigência</Label><Input type="date" value={form.vigencia_fim} onChange={(e) => setForm({ ...form, vigencia_fim: e.target.value })} /></div>
             <div className="col-span-2"><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} rows={2} /></div>
+            <div className="col-span-2 mt-2 border-t pt-3">
+              <Label className="text-xs uppercase text-muted-foreground">Dados de licitação (se for órgão público)</Label>
+            </div>
+            <div><Label>Nº do processo</Label><Input value={form.numero_processo} onChange={(e) => setForm({ ...form, numero_processo: e.target.value })} placeholder="ex: 023.456/2026" /></div>
+            <div><Label>Nº do empenho</Label><Input value={form.numero_empenho} onChange={(e) => setForm({ ...form, numero_empenho: e.target.value })} /></div>
+            <div className="col-span-2">
+              <Label>Modalidade</Label>
+              <Select value={form.modalidade_licitacao || "—"} onValueChange={(v) => setForm({ ...form, modalidade_licitacao: v === "—" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="—">— Não se aplica</SelectItem>
+                  <SelectItem value="pregao_eletronico">Pregão eletrônico</SelectItem>
+                  <SelectItem value="pregao_presencial">Pregão presencial</SelectItem>
+                  <SelectItem value="dispensa">Dispensa</SelectItem>
+                  <SelectItem value="inexigibilidade">Inexigibilidade</SelectItem>
+                  <SelectItem value="rdc">RDC</SelectItem>
+                  <SelectItem value="concorrencia">Concorrência</SelectItem>
+                  <SelectItem value="credenciamento">Credenciamento</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -237,6 +276,8 @@ const AdminContratos = () => {
 
       {selected && <BeneficiariosDialog open={benefOpen} onOpenChange={setBenefOpen} contrato={selected} />}
       {selected && <VouchersDialog open={vouchOpen} onOpenChange={setVouchOpen} contrato={selected} />}
+      {selected && <DocumentosDialog open={docsOpen} onOpenChange={setDocsOpen} contrato={selected} />}
+      {selected && <FaturamentoDialog open={faturaOpen} onOpenChange={setFaturaOpen} contrato={selected} />}
     </DashboardLayout>
   );
 };
