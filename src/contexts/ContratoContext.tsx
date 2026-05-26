@@ -96,6 +96,27 @@ export function ContratoProvider({ children }: { children: ReactNode }) {
     })();
   }, [modoInicial]);
 
+  // White-label: aplica branding do contrato de forma segura (título, favicon e
+  // cor só quando vier um HSL explícito — não sobrescreve a paleta padrão).
+  useEffect(() => {
+    if (!contratoAtivo) return;
+    const b = (contratoAtivo.branding ?? {}) as Record<string, unknown>;
+    if (typeof b.nome_exibicao === "string" && b.nome_exibicao) {
+      document.title = `${b.nome_exibicao} | AloClínica`;
+    } else if (contratoAtivo.nome) {
+      document.title = `${contratoAtivo.nome} | AloClínica`;
+    }
+    if (typeof b.favicon_url === "string" && b.favicon_url) {
+      let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+      if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+      link.href = b.favicon_url;
+    }
+    // primary_hsl deve ser um triplo HSL, ex.: "172 66% 40%" (compatível com a paleta)
+    if (typeof b.primary_hsl === "string" && /^\d/.test(b.primary_hsl)) {
+      document.documentElement.style.setProperty("--primary", b.primary_hsl);
+    }
+  }, [contratoAtivo]);
+
   return (
     <ContratoContext.Provider
       value={{
