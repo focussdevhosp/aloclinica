@@ -26,6 +26,10 @@ const SUBDOMAIN_CONFIG: Record<string, SubdomainConfig> = {
   parceiro:      { authRoute: "/parceiro",      dashboardRole: "partner" },
   recepcionista: { authRoute: "/recepcionista", dashboardRole: "receptionist" },
   suporte:       { authRoute: "/suporte",       dashboardRole: "support" },
+  // Contratos B2B/B2G — beneficiários entram via /parceiros e a cobrança é do contratante.
+  parceiros:     { authRoute: "/parceiros/entrar", dashboardRole: "patient" },
+  // Ações sociais — paciente entra com voucher e a consulta é gratuita.
+  acoes:         { authRoute: "/acoes/entrar",     dashboardRole: "patient" },
 };
 
 function getSubdomain(): string | null {
