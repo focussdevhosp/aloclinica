@@ -500,28 +500,38 @@ const BookAppointment = () => {
 
     if (errorOccurred || !firstApptId) {
       toastError(toast, errorOccurred || "agendamento_falhou", "agendamento");
-    } else if (isContratoMode && contratoAtivo) {
-      // Consulta custeada por contrato (órgão público / ação social / empresa):
-      // valida elegibilidade + consome a cota no servidor e pula o pagamento.
+    } else {
+      // Cobertura por contrato: subdomínio/path (contratoAtivo) OU voucher de
+      // ação social guardado na sessão (AcoesEntrar). Se cobrir, pula o pagamento.
+      let coverContratoId: string | null = (isContratoMode && contratoAtivo) ? contratoAtivo.id : null;
+      let coverVoucher: string | null = null;
       try {
-        const { data: cc } = await db.functions.invoke("contrato-checkout", {
-          body: { appointment_id: firstApptId, contrato_id: contratoAtivo.id },
-        });
-        if (cc?.ok) {
-          toast.success("Consulta confirmada pelo contrato! ✅");
-          navigate(`/dashboard/appointments/${firstApptId}/confirmed`);
-          return;
+        const vraw = sessionStorage.getItem("aloclinica_voucher");
+        if (vraw) {
+          const v = JSON.parse(vraw);
+          if (v?.contrato?.id) { coverContratoId = v.contrato.id; coverVoucher = v?.voucher?.codigo ?? null; }
         }
-        toast.message("Sem cobertura de contrato para este CPF — siga com o pagamento.");
-      } catch (e) {
-        logError("contrato-checkout falhou", e);
+      } catch { /* ignore */ }
+
+      if (coverContratoId) {
+        try {
+          const { data: cc } = await db.functions.invoke("contrato-checkout", {
+            body: { appointment_id: firstApptId, contrato_id: coverContratoId, voucher_codigo: coverVoucher },
+          });
+          if (cc?.ok) {
+            sessionStorage.removeItem("aloclinica_voucher");
+            toast.success("Consulta confirmada pelo contrato! ✅");
+            navigate(`/dashboard/appointments/${firstApptId}/confirmed`);
+            return;
+          }
+          toast.message("Sem cobertura de contrato para este perfil — siga com o pagamento.");
+        } catch (e) {
+          logError("contrato-checkout falhou", e);
+        }
       }
       setAppointmentId(firstApptId);
       setPaymentStep(true);
-    } else {
-      setAppointmentId(firstApptId);
-      setPaymentStep(true);
-      toast.success("Consulta reservada! Agora finalize o pagamento.");
+      if (!coverContratoId) toast.success("Consulta reservada! Agora finalize o pagamento.");
     }
   };
 

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 import { Heart } from "lucide-react";
+import { useContrato } from "@/contexts/ContratoContext";
 
 /**
  * Página de entrada para ações sociais.
@@ -17,6 +18,7 @@ import { Heart } from "lucide-react";
  */
 const AcoesEntrar = () => {
   const navigate = useNavigate();
+  const { setVoucherContrato } = useContrato();
   const [codigo, setCodigo] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -36,6 +38,19 @@ const AcoesEntrar = () => {
 
     // Guarda voucher na sessão para o fluxo de agendamento usar
     sessionStorage.setItem("aloclinica_voucher", JSON.stringify(data));
+    // Ativa o contrato no contexto (branding + modo voucher no agendamento)
+    if (data.contrato) {
+      setVoucherContrato({
+        id: data.contrato.id,
+        nome: data.contrato.nome,
+        tipo: data.contrato.tipo,
+        modelo_cobranca: "gratuito_patrocinado",
+        especialidades_permitidas: data.contrato.especialidades_permitidas ?? [],
+        branding: data.contrato.branding ?? {},
+        status: "ativo",
+        subdominio: null,
+      });
+    }
     toast.success(`Voucher validado! Programa: ${data.contrato.nome}`);
     navigate("/paciente?voucher=1");
   };
