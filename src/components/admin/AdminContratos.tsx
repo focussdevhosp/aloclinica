@@ -17,7 +17,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, Trash2, Users, Ticket, Briefcase, Handshake } from "lucide-react";
+import { Plus, Trash2, Users, Ticket, Briefcase, Handshake, FileText, Download, Upload } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Contrato = {
   id: string;
@@ -36,6 +37,9 @@ type Contrato = {
   subdominio: string | null;
   status: "ativo" | "pausado" | "encerrado";
   observacoes: string | null;
+  numero_processo?: string | null;
+  numero_empenho?: string | null;
+  modalidade_licitacao?: string | null;
 };
 
 const emptyForm = {
@@ -52,6 +56,9 @@ const emptyForm = {
   vigencia_fim: "",
   subdominio: "",
   observacoes: "",
+  numero_processo: "",
+  numero_empenho: "",
+  modalidade_licitacao: "",
 };
 
 const AdminContratos = () => {
@@ -63,6 +70,8 @@ const AdminContratos = () => {
   const [selected, setSelected] = useState<Contrato | null>(null);
   const [benefOpen, setBenefOpen] = useState(false);
   const [vouchOpen, setVouchOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
+  const [faturaOpen, setFaturaOpen] = useState(false);
 
   const fetch = async () => {
     setLoading(true);
@@ -89,6 +98,9 @@ const AdminContratos = () => {
       vigencia_fim: form.vigencia_fim || null,
       subdominio: form.subdominio || null,
       observacoes: form.observacoes || null,
+      numero_processo: form.numero_processo || null,
+      numero_empenho: form.numero_empenho || null,
+      modalidade_licitacao: form.modalidade_licitacao || null,
     };
     const { error } = await db.from("contratos").insert(payload);
     if (error) { toast.error("Erro ao criar", { description: error.message }); return; }
@@ -166,6 +178,12 @@ const AdminContratos = () => {
                       <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setVouchOpen(true); }} title="Vouchers">
                         <Ticket className="h-4 w-4" />
                       </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setDocsOpen(true); }} title="Documentos">
+                        <FileText className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setFaturaOpen(true); }} title="Faturamento">
+                        <Download className="h-4 w-4" />
+                      </Button>
                       <Select value={c.status} onValueChange={(v) => updateStatus(c.id, v as Contrato["status"])}>
                         <SelectTrigger className="inline-flex w-28 h-8 text-xs">
                           <SelectValue />
@@ -227,6 +245,27 @@ const AdminContratos = () => {
             <div><Label>Início vigência</Label><Input type="date" value={form.vigencia_inicio} onChange={(e) => setForm({ ...form, vigencia_inicio: e.target.value })} /></div>
             <div><Label>Fim vigência</Label><Input type="date" value={form.vigencia_fim} onChange={(e) => setForm({ ...form, vigencia_fim: e.target.value })} /></div>
             <div className="col-span-2"><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} rows={2} /></div>
+            <div className="col-span-2 mt-2 border-t pt-3">
+              <Label className="text-xs uppercase text-muted-foreground">Dados de licitação (se for órgão público)</Label>
+            </div>
+            <div><Label>Nº do processo</Label><Input value={form.numero_processo} onChange={(e) => setForm({ ...form, numero_processo: e.target.value })} placeholder="ex: 023.456/2026" /></div>
+            <div><Label>Nº do empenho</Label><Input value={form.numero_empenho} onChange={(e) => setForm({ ...form, numero_empenho: e.target.value })} /></div>
+            <div className="col-span-2">
+              <Label>Modalidade</Label>
+              <Select value={form.modalidade_licitacao || "—"} onValueChange={(v) => setForm({ ...form, modalidade_licitacao: v === "—" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="—">— Não se aplica</SelectItem>
+                  <SelectItem value="pregao_eletronico">Pregão eletrônico</SelectItem>
+                  <SelectItem value="pregao_presencial">Pregão presencial</SelectItem>
+                  <SelectItem value="dispensa">Dispensa</SelectItem>
+                  <SelectItem value="inexigibilidade">Inexigibilidade</SelectItem>
+                  <SelectItem value="rdc">RDC</SelectItem>
+                  <SelectItem value="concorrencia">Concorrência</SelectItem>
+                  <SelectItem value="credenciamento">Credenciamento</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -237,6 +276,8 @@ const AdminContratos = () => {
 
       {selected && <BeneficiariosDialog open={benefOpen} onOpenChange={setBenefOpen} contrato={selected} />}
       {selected && <VouchersDialog open={vouchOpen} onOpenChange={setVouchOpen} contrato={selected} />}
+      {selected && <DocumentosDialog open={docsOpen} onOpenChange={setDocsOpen} contrato={selected} />}
+      {selected && <FaturamentoDialog open={faturaOpen} onOpenChange={setFaturaOpen} contrato={selected} />}
     </DashboardLayout>
   );
 };
@@ -368,3 +409,175 @@ function VouchersDialog({ open, onOpenChange, contrato }: { open: boolean; onOpe
 }
 
 export default AdminContratos;
+
+/* ─── Documentos do contrato (anexos) ─────────────────────────────────────── */
+
+function DocumentosDialog({ open, onOpenChange, contrato }: { open: boolean; onOpenChange: (v: boolean) => void; contrato: Contrato }) {
+  const [docs, setDocs] = useState<any[]>([]);
+  const [tipo, setTipo] = useState("edital");
+  const [uploading, setUploading] = useState(false);
+
+  const load = async () => {
+    const { data } = await db.from("contrato_documentos").select("*").eq("contrato_id", contrato.id).order("created_at", { ascending: false });
+    setDocs(data ?? []);
+  };
+  useEffect(() => { if (open) load(); }, [open, contrato.id]);
+
+  const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const path = `${contrato.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { error: upErr } = await supabase.storage.from("contrato-docs").upload(path, file);
+    if (upErr) { toast.error(upErr.message); setUploading(false); return; }
+    await db.from("contrato_documentos").insert({
+      contrato_id: contrato.id,
+      tipo,
+      nome: file.name,
+      storage_path: path,
+      tamanho_bytes: file.size,
+    });
+    toast.success("Documento anexado");
+    setUploading(false);
+    e.target.value = "";
+    load();
+  };
+
+  const baixar = async (d: any) => {
+    const { data } = await supabase.storage.from("contrato-docs").createSignedUrl(d.storage_path, 60);
+    if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+  };
+
+  const remover = async (d: any) => {
+    await supabase.storage.from("contrato-docs").remove([d.storage_path]);
+    await db.from("contrato_documentos").delete().eq("id", d.id);
+    load();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader><DialogTitle>Documentos — {contrato.nome}</DialogTitle></DialogHeader>
+        <div className="flex items-end gap-2">
+          <div className="flex-1">
+            <Label>Tipo</Label>
+            <Select value={tipo} onValueChange={setTipo}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="edital">Edital</SelectItem>
+                <SelectItem value="contrato">Contrato</SelectItem>
+                <SelectItem value="aditivo">Termo aditivo</SelectItem>
+                <SelectItem value="empenho">Nota de empenho</SelectItem>
+                <SelectItem value="nota_fiscal">Nota fiscal</SelectItem>
+                <SelectItem value="ata">Ata / portaria</SelectItem>
+                <SelectItem value="outro">Outro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <label className="inline-flex items-center gap-2 cursor-pointer">
+            <input type="file" className="hidden" onChange={onUpload} disabled={uploading} />
+            <Button asChild size="sm"><span><Upload className="h-4 w-4 mr-1" />{uploading ? "Enviando..." : "Anexar"}</span></Button>
+          </label>
+        </div>
+        <div className="max-h-72 overflow-auto border rounded mt-3">
+          <Table>
+            <TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Nome</TableHead><TableHead>Tamanho</TableHead><TableHead></TableHead></TableRow></TableHeader>
+            <TableBody>
+              {docs.map((d) => (
+                <TableRow key={d.id}>
+                  <TableCell><Badge variant="secondary">{d.tipo}</Badge></TableCell>
+                  <TableCell className="text-xs">{d.nome}</TableCell>
+                  <TableCell className="text-xs">{d.tamanho_bytes ? `${Math.round(d.tamanho_bytes / 1024)} KB` : "—"}</TableCell>
+                  <TableCell className="space-x-1">
+                    <Button size="sm" variant="ghost" onClick={() => baixar(d)}><Download className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => remover(d)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {!docs.length && <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-4">Nenhum documento</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ─── Faturamento por contrato (relatório CSV) ───────────────────────────── */
+
+function FaturamentoDialog({ open, onOpenChange, contrato }: { open: boolean; onOpenChange: (v: boolean) => void; contrato: Contrato }) {
+  const hoje = new Date();
+  const primDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().slice(0, 10);
+  const ultDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).toISOString().slice(0, 10);
+  const [inicio, setInicio] = useState(primDia);
+  const [fim, setFim] = useState(ultDia);
+  const [linhas, setLinhas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const gerar = async () => {
+    setLoading(true);
+    const { data } = await db
+      .from("consulta_contrato")
+      .select("id, appointment_id, valor_repassado, patient_user_id, created_at")
+      .eq("contrato_id", contrato.id)
+      .gte("created_at", `${inicio}T00:00:00`)
+      .lte("created_at", `${fim}T23:59:59`)
+      .order("created_at", { ascending: false });
+    setLinhas(data ?? []);
+    setLoading(false);
+  };
+
+  const total = linhas.reduce((sum, l) => sum + (Number(l.valor_repassado) || 0), 0);
+
+  const exportCsv = () => {
+    const header = ["Data", "Appointment", "Paciente", "Valor"].join(",");
+    const rows = linhas.map((l) => [
+      new Date(l.created_at).toLocaleString("pt-BR"),
+      l.appointment_id,
+      l.patient_user_id,
+      (l.valor_repassado ?? 0).toString().replace(".", ","),
+    ].join(","));
+    const csv = [header, ...rows, `Total,,,${total.toString().replace(".", ",")}`].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `faturamento-${contrato.nome.replace(/\s+/g, "-")}-${inicio}-a-${fim}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader><DialogTitle>Faturamento — {contrato.nome}</DialogTitle></DialogHeader>
+        <div className="grid grid-cols-3 gap-2 items-end">
+          <div><Label>Início</Label><Input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} /></div>
+          <div><Label>Fim</Label><Input type="date" value={fim} onChange={(e) => setFim(e.target.value)} /></div>
+          <div className="flex gap-2">
+            <Button onClick={gerar} disabled={loading}>{loading ? "Gerando..." : "Gerar"}</Button>
+            <Button variant="outline" onClick={exportCsv} disabled={!linhas.length}><Download className="h-4 w-4 mr-1" />CSV</Button>
+          </div>
+        </div>
+        <div className="mt-3 text-sm">
+          <strong>{linhas.length}</strong> consulta(s) — Total: <strong>R$ {total.toFixed(2).replace(".", ",")}</strong>
+        </div>
+        <div className="max-h-72 overflow-auto border rounded mt-2">
+          <Table>
+            <TableHeader><TableRow><TableHead>Data</TableHead><TableHead>Paciente</TableHead><TableHead>Valor</TableHead></TableRow></TableHeader>
+            <TableBody>
+              {linhas.map((l) => (
+                <TableRow key={l.id}>
+                  <TableCell className="text-xs">{new Date(l.created_at).toLocaleString("pt-BR")}</TableCell>
+                  <TableCell className="text-xs font-mono">{l.patient_user_id.slice(0, 8)}</TableCell>
+                  <TableCell>R$ {(l.valor_repassado ?? 0).toFixed(2).replace(".", ",")}</TableCell>
+                </TableRow>
+              ))}
+              {!linhas.length && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground py-4">Selecione o período e clique em "Gerar"</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
