@@ -17,7 +17,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, Trash2, Users, Ticket, Briefcase } from "lucide-react";
+import { Plus, Trash2, Users, Ticket, Briefcase, Handshake } from "lucide-react";
 
 type Contrato = {
   id: string;
@@ -117,7 +117,12 @@ const AdminContratos = () => {
 
   return (
     <DashboardLayout title="Contratos & Ações" nav={nav}>
-      <AdminPageHeader title="Contratos e Ações Sociais" description="Empresas, prefeituras, ONGs e campanhas sociais que usam a plataforma." />
+      <AdminPageHeader
+        icon={Handshake}
+        title="Contratos e Ações Sociais"
+        description="Empresas, prefeituras, ONGs e campanhas sociais que usam a plataforma."
+        accent="from-emerald-500 to-teal-600"
+      />
 
       <div className="flex justify-end mb-4">
         <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />Novo contrato</Button>
