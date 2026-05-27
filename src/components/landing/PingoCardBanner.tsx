@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShieldCheck, Clock, Users, Pill, ArrowRight, Sparkles, Wifi } from "lucide-react";
+import { ShieldCheck, Clock, Users, Pill, ArrowRight, Sparkles } from "lucide-react";
 import pingoCartao from "@/assets/pingo-cartao.png";
 import logoPingo from "@/assets/logo-pingo.png";
 
