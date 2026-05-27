@@ -125,7 +125,6 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
       {isOn("how_it_works") !== false && <HowItWorksSection />}
       <PingoCardBanner />
       {isOn("benefits") !== false && <BenefitsGrid />}
-      <SpecialtiesSection config={sectionData.specialties} />
       <TrustBanner />
 
       {/* ═══════════════ DEPOIMENTOS ═══════════════ */}
