@@ -282,7 +282,6 @@ const HeroSection = memo(
                 </div>
               </motion.button>
             )}
-            )}
 
             {/* Benefícios principais */}
             <motion.div
