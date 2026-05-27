@@ -4,7 +4,7 @@ import { memo, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { usePrefetchRoute } from "@/hooks/use-prefetch-route";
 import OptimizedImage from "@/components/ui/optimized-image";
-import { ArrowRight, Star, CheckCircle, CreditCard, VideoCamera, ShieldCheck, Clock, Sparkle } from "@phosphor-icons/react";
+import { ArrowRight, Star, CreditCard, VideoCamera, ShieldCheck, Clock, Sparkle } from "@phosphor-icons/react";
 import heroPingoFamily from "@/assets/hero-pingo-family.png";
 import { isFeatureEnabled } from "@/lib/featureFlags";
 
