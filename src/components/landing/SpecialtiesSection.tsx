@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { CaretDown, Heart, Baby, Bone, Eye, Brain, Syringe, UserCircle, Drop, FirstAidKit, Sparkle, Wind, User, HandHeart, Virus, Stethoscope } from "@phosphor-icons/react";
+import { CaretDown, Heart, Baby, Bone, Eye, Brain, Syringe, UserCircle, Drop, FirstAidKit, Sparkle, Wind, User, HandHeart, Virus, Stethoscope, ArrowRight } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { PINGO_SPECIALTIES } from "@/constants/specialties-assets";
@@ -123,18 +123,23 @@ const SpecialtyCard = ({ name, desc, index }: { name: string; desc?: string; ind
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ delay: index * 0.03, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(`/agendar?especialidade=${encodeURIComponent(name)}`)}
       title={desc}
-      className="group relative flex flex-col items-center p-5 md:p-6 rounded-[2rem] bg-card border border-border/50 shadow-[0_8px_30px_hsl(var(--primary)/0.04)] hover:shadow-[0_20px_50px_hsl(var(--primary)/0.12)] hover:-translate-y-2 hover:border-primary/20 transition-all duration-500 cursor-pointer h-full w-full"
+      className="group relative flex flex-col items-center pt-6 pb-5 px-4 md:pt-7 md:pb-6 md:px-5 rounded-3xl bg-card/90 backdrop-blur-sm border border-border/60 shadow-[0_4px_20px_-8px_hsl(var(--primary)/0.08)] hover:shadow-[0_24px_50px_-18px_hsl(var(--primary)/0.35)] hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-500 cursor-pointer h-full w-full overflow-hidden"
     >
+      {/* Top gradient accent bar */}
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Soft background gradient on hover */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/0 via-primary/0 to-primary/[0.04] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      {/* Decorative blurred blob */}
+      <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-secondary/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
       {/* Mascot inside orb */}
-      <div className="relative mb-4 md:mb-5 w-20 h-20 md:w-24 md:h-24">
-        {/* Outer glow */}
-        <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/40 via-secondary/30 to-primary/20 opacity-60 blur-md group-hover:opacity-100 group-hover:blur-lg transition-all duration-500" />
-        {/* Gradient border ring */}
-        <div className="absolute inset-0 rounded-full p-[1.5px] bg-gradient-to-br from-primary/70 via-secondary/50 to-primary/30">
-          <div className="w-full h-full rounded-full bg-gradient-to-br from-primary/15 via-primary/5 to-secondary/10 shadow-[inset_0_2px_10px_hsl(var(--primary)/0.12)] group-hover:from-primary/25 group-hover:via-primary/10 transition-all duration-500" />
+      <div className="relative mb-4 md:mb-5 w-24 h-24 md:w-28 md:h-28">
+        <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-primary/30 via-secondary/25 to-primary/10 opacity-50 blur-xl group-hover:opacity-90 transition-all duration-500" />
+        <div className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-br from-primary/80 via-secondary/60 to-primary/30 shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.4)]">
+          <div className="w-full h-full rounded-full bg-gradient-to-br from-background via-primary/5 to-secondary/10 shadow-[inset_0_2px_10px_hsl(var(--primary)/0.12)]" />
         </div>
         <div className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
           {imageSrc ? (
@@ -145,9 +150,9 @@ const SpecialtyCard = ({ name, desc, index }: { name: string; desc?: string; ind
               <img
                 src={imageSrc}
                 alt={`Pingo ${name}`}
-                width={96}
-                height={96}
-                className={`w-full h-full object-contain object-bottom md:w-[125%] md:h-[125%] md:object-cover md:object-center pingo-float transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+                width={112}
+                height={112}
+                className={`w-full h-full object-contain object-bottom md:w-[128%] md:h-[128%] md:object-cover md:object-center pingo-float transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
                 loading="lazy"
                 decoding="async"
                 onLoad={() => setLoaded(true)}
@@ -155,21 +160,28 @@ const SpecialtyCard = ({ name, desc, index }: { name: string; desc?: string; ind
             </>
           ) : (
             <div className="relative z-10 w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-secondary/10 to-primary/10 rounded-full">
-              <Icon className="w-10 h-10 md:w-12 md:h-12 text-primary drop-shadow-[0_2px_8px_hsl(var(--primary)/0.3)]" weight="duotone" />
+              <Icon className="w-12 h-12 md:w-14 md:h-14 text-primary drop-shadow-[0_2px_8px_hsl(var(--primary)/0.3)]" weight="duotone" />
             </div>
           )}
         </div>
+        {/* Online status dot */}
+        <div className="absolute bottom-1 right-1 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-card border-2 border-card shadow-md">
+          <span className="relative flex w-2.5 h-2.5">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+          </span>
+        </div>
       </div>
 
-      <span className="text-xs md:text-sm font-bold text-foreground text-center leading-tight group-hover:text-primary transition-colors">
+      <span className="relative text-xs md:text-sm font-bold text-foreground text-center leading-tight group-hover:text-primary transition-colors min-h-[2.5rem] flex items-center">
         {name}
       </span>
 
-      <div className="mt-3 flex items-center gap-1 text-[10px] font-extrabold text-secondary uppercase tracking-wider opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-        Ver médicos
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-        </svg>
+      <div className="relative mt-3 flex items-center gap-1.5 text-[10px] font-extrabold text-primary uppercase tracking-wider">
+        <span className="px-2.5 py-1 rounded-full bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 flex items-center gap-1">
+          Agendar
+          <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" weight="bold" />
+        </span>
       </div>
     </motion.button>
   );
