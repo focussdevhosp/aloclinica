@@ -180,15 +180,15 @@ const HeroSection = memo(
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="lg:col-span-4 lg:row-span-2 text-left rounded-3xl p-6 flex flex-col justify-between group cursor-pointer overflow-hidden relative border border-orange-300/60 shadow-[0_18px_50px_-20px_rgba(234,88,12,0.45)] hover:shadow-[0_24px_60px_-18px_rgba(234,88,12,0.55)] transition-all duration-500"
+                className="lg:col-span-4 lg:row-span-2 text-left rounded-3xl p-6 flex flex-col justify-between group cursor-pointer overflow-hidden relative border border-sky-300/60 shadow-[0_18px_50px_-20px_rgba(2,132,199,0.45)] hover:shadow-[0_24px_60px_-18px_rgba(2,132,199,0.55)] transition-all duration-500"
                 style={{
                   background:
-                    "linear-gradient(135deg,#fff7ed 0%,#ffedd5 45%,#fed7aa 100%)",
+                    "linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 45%,#bae6fd 100%)",
                 }}
               >
                 {/* decorative orbs */}
-                <div aria-hidden className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-gradient-to-br from-orange-300/50 to-amber-400/30 blur-2xl group-hover:scale-110 transition-transform duration-700" />
-                <div aria-hidden className="absolute -left-8 top-8 w-24 h-24 rounded-full bg-amber-200/40 blur-2xl" />
+                <div aria-hidden className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-gradient-to-br from-sky-300/50 to-cyan-400/30 blur-2xl group-hover:scale-110 transition-transform duration-700" />
+                <div aria-hidden className="absolute -left-8 top-8 w-24 h-24 rounded-full bg-cyan-200/40 blur-2xl" />
                 {/* sheen on hover */}
                 <div
                   aria-hidden
@@ -206,7 +206,7 @@ const HeroSection = memo(
                   className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay"
                   style={{
                     backgroundImage:
-                      "radial-gradient(circle,#7c2d12 0.5px,transparent 0.5px)",
+                      "radial-gradient(circle,#0c4a6e 0.5px,transparent 0.5px)",
                     backgroundSize: "14px 14px",
                   }}
                 />
@@ -214,12 +214,12 @@ const HeroSection = memo(
                 {/* Header */}
                 <div className="flex justify-between items-start z-10 relative">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-orange-400/40 blur-lg rounded-2xl" />
-                    <div className="relative bg-gradient-to-br from-orange-400 to-orange-600 text-white p-2.5 rounded-2xl shadow-lg ring-1 ring-white/40">
+                    <div className="absolute inset-0 bg-sky-400/40 blur-lg rounded-2xl" />
+                    <div className="relative bg-gradient-to-br from-sky-500 to-blue-700 text-white p-2.5 rounded-2xl shadow-lg ring-1 ring-white/40">
                       <CreditCard className="w-6 h-6" weight="fill" />
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/70 backdrop-blur text-[9.5px] font-extrabold text-orange-700 uppercase tracking-[0.18em] ring-1 ring-orange-200/80 shadow-sm">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/70 backdrop-blur text-[9.5px] font-extrabold text-sky-700 uppercase tracking-[0.18em] ring-1 ring-sky-200/80 shadow-sm">
                     <Sparkle className="w-3 h-3" weight="fill" />
                     Vantagens exclusivas
                   </span>
@@ -228,16 +228,19 @@ const HeroSection = memo(
                 {/* Mini credit card mockup */}
                 <div className="z-10 relative mt-5 mb-4 self-start w-[78%]">
                   <div
-                    className="relative aspect-[1.58/1] rounded-xl p-3 overflow-hidden shadow-[0_14px_30px_-12px_rgba(124,45,18,0.55)] ring-1 ring-white/20 transition-transform duration-500 group-hover:-rotate-2 group-hover:-translate-y-1"
+                    className="relative aspect-[1.58/1] rounded-xl p-3 overflow-hidden shadow-[0_14px_30px_-12px_rgba(12,74,110,0.6)] ring-1 ring-white/20 transition-transform duration-500 group-hover:-rotate-2 group-hover:-translate-y-1"
                     style={{
                       background:
-                        "linear-gradient(135deg,#9a3412 0%,#c2410c 45%,#ea580c 100%)",
+                        "linear-gradient(135deg,#0c4a6e 0%,#0369a1 45%,#0ea5e9 100%)",
                     }}
                   >
                     <div aria-hidden className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(at 80% 20%,rgba(255,255,255,0.5),transparent 55%)" }} />
                     <div className="relative flex items-start justify-between">
                       <div className="w-7 h-5 rounded bg-gradient-to-br from-amber-200 to-amber-500 ring-1 ring-white/30" />
-                      <WifiHigh className="w-3.5 h-3.5 text-white/80 rotate-90" weight="bold" />
+                      <div className="flex items-center gap-1.5">
+                        <img src={logoPingo} alt="Pingo" className="w-4 h-4 object-contain drop-shadow" />
+                        <WifiHigh className="w-3.5 h-3.5 text-white/80 rotate-90" weight="bold" />
+                      </div>
                     </div>
                     <div className="relative mt-2 text-white/90 font-mono text-[10px] tracking-[0.18em]">
                       •••• 4000
@@ -252,30 +255,30 @@ const HeroSection = memo(
                 {/* Title + features */}
                 <div className="z-10 relative space-y-3">
                   <div>
-                    <h3 className="text-2xl font-extrabold text-orange-950 tracking-tight leading-none">
+                    <h3 className="text-2xl font-extrabold text-sky-950 tracking-tight leading-none">
                       Pingo Card
                     </h3>
-                    <p className="text-[13px] text-orange-900/70 mt-1 leading-snug">
+                    <p className="text-[13px] text-sky-900/70 mt-1 leading-snug">
                       Cartão de benefícios da família por
                     </p>
                     <p className="mt-0.5 flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-orange-700 tracking-tight">R$ 29</span>
-                      <span className="text-xs font-bold text-orange-700/70">/mês</span>
+                      <span className="text-3xl font-black text-sky-700 tracking-tight">R$ 29</span>
+                      <span className="text-xs font-bold text-sky-700/70">/mês</span>
                     </p>
                   </div>
 
                   <ul className="space-y-1.5 pt-1">
                     {["Consultas 24h", "Desconto em farmácias", "Toda a família"].map((b) => (
-                      <li key={b} className="flex items-center gap-2 text-[12px] font-semibold text-orange-900/85">
-                        <span className="w-4 h-4 rounded-full bg-orange-500/15 ring-1 ring-orange-400/40 flex items-center justify-center">
-                          <Check className="w-2.5 h-2.5 text-orange-700" weight="bold" />
+                      <li key={b} className="flex items-center gap-2 text-[12px] font-semibold text-sky-900/85">
+                        <span className="w-4 h-4 rounded-full bg-sky-500/15 ring-1 ring-sky-400/40 flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-sky-700" weight="bold" />
                         </span>
                         {b}
                       </li>
                     ))}
                   </ul>
 
-                  <div className="pt-3 flex items-center gap-1.5 text-[12px] font-extrabold text-orange-700 group-hover:gap-2.5 transition-all">
+                  <div className="pt-3 flex items-center gap-1.5 text-[12px] font-extrabold text-sky-700 group-hover:gap-2.5 transition-all">
                     Assinar agora
                     <ArrowRight className="w-3.5 h-3.5" weight="bold" />
                   </div>
