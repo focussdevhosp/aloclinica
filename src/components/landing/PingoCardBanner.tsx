@@ -244,17 +244,36 @@ const PingoCardBanner = () => {
                 style={{ background: "radial-gradient(ellipse, rgba(0,0,0,0.7), transparent 70%)" }}
               />
 
-              {/* Mascot — multiply blend hides the white photo bg */}
-              <motion.img
-                src={pingoCartao}
-                alt="Pingo segurando o Pingo Card"
-                loading="lazy"
-                className="relative z-10 w-full h-auto select-none drop-shadow-[0_30px_50px_rgba(0,0,0,0.55)]"
-                style={{ mixBlendMode: "screen", filter: "drop-shadow(0 30px 50px rgba(0,0,0,0.55))" }}
+              {/* Mascot showcase — framed in glass to absorb any photo background */}
+              <motion.div
+                className="relative z-10 w-full rounded-[2rem] overflow-hidden"
+                style={{
+                  background:
+                    "linear-gradient(160deg, hsl(215, 60%, 92%) 0%, hsl(200, 70%, 96%) 100%)",
+                  boxShadow:
+                    "0 30px 60px -20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.5)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                }}
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, ease: "easeInOut", repeat: Infinity }}
-                draggable={false}
-              />
+              >
+                {/* inner radial glow */}
+                <div
+                  aria-hidden
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at 50% 40%, hsl(215, 90%, 70% / 0.35), transparent 65%)",
+                  }}
+                />
+                <img
+                  src={pingoCartao}
+                  alt="Pingo segurando o Pingo Card"
+                  loading="lazy"
+                  className="relative w-full h-auto select-none"
+                  draggable={false}
+                />
+              </motion.div>
 
               {/* Floating realistic credit card */}
               <motion.div
