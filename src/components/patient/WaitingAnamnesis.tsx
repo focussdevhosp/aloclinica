@@ -14,9 +14,15 @@ import { db } from "@/integrations/supabase/untyped";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { Sparkles, Send, Loader2, CheckCircle2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { logError } from "@/lib/logger";
+
+// WebSpeech: voz para a anamnese. Funciona em Chrome, Edge, Safari recentes.
+type SpeechRecognition = any;
+declare global { interface Window { webkitSpeechRecognition?: any; SpeechRecognition?: any; } }
+const SpeechRecognitionImpl: typeof window.SpeechRecognition | undefined =
+  typeof window !== "undefined" ? (window.SpeechRecognition || window.webkitSpeechRecognition) : undefined;
 
 interface Props {
   appointmentId: string;
@@ -40,9 +46,47 @@ export default function WaitingAnamnesis({ appointmentId, patientId, onComplete 
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [turns]);
+
+  // Fala a última pergunta da IA quando voiceOn estiver ativo (TTS).
+  useEffect(() => {
+    if (!voiceOn || typeof speechSynthesis === "undefined") return;
+    const last = turns[turns.length - 1];
+    if (!last || last.role !== "ai") return;
+    const u = new SpeechSynthesisUtterance(last.text);
+    u.lang = "pt-BR";
+    u.rate = 1.0;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+    return () => { speechSynthesis.cancel(); };
+  }, [voiceOn, turns]);
+
+  const startListening = () => {
+    if (!SpeechRecognitionImpl) { toast.info("Este navegador não suporta entrada por voz."); return; }
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch { /* */ } }
+    const rec = new SpeechRecognitionImpl();
+    rec.lang = "pt-BR";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = (ev: any) => {
+      const transcript = Array.from(ev.results).map((r: any) => r[0].transcript).join(" ");
+      setInput((p) => (p ? `${p} ${transcript}` : transcript));
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    rec.start();
+    recognitionRef.current = rec;
+    setListening(true);
+  };
+  const stopListening = () => {
+    try { recognitionRef.current?.stop(); } catch { /* */ }
+    setListening(false);
+  };
 
   const ask = (question: string) => setTurns((t) => [...t, { role: "ai", text: question }]);
 
@@ -102,10 +146,16 @@ export default function WaitingAnamnesis({ appointmentId, patientId, onComplete 
           <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-primary" />
           </div>
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-semibold text-foreground">Preparando sua consulta (IA)</p>
             <p className="text-[11px] text-muted-foreground">Responda enquanto espera — o médico recebe tudo pronto.</p>
           </div>
+          {typeof speechSynthesis !== "undefined" && (
+            <Button size="icon" variant="ghost" aria-label={voiceOn ? "Desativar leitura por voz" : "Ativar leitura por voz"}
+              className="h-8 w-8" onClick={() => setVoiceOn((v) => !v)}>
+              {voiceOn ? <Volume2 className="w-4 h-4 text-primary" /> : <VolumeX className="w-4 h-4 text-muted-foreground" />}
+            </Button>
+          )}
         </div>
 
         <div className="max-h-64 overflow-auto space-y-2 pr-1">
@@ -133,6 +183,13 @@ export default function WaitingAnamnesis({ appointmentId, patientId, onComplete 
               className="resize-none flex-1 text-sm"
               aria-label="Resposta da anamnese"
             />
+            {SpeechRecognitionImpl && (
+              <Button size="icon" variant={listening ? "destructive" : "outline"}
+                onClick={() => (listening ? stopListening() : startListening())}
+                aria-label={listening ? "Parar ditado" : "Ditar resposta"}>
+                {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </Button>
+            )}
             <Button size="icon" onClick={next} disabled={busy || !input.trim()} aria-label="Enviar resposta">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>

@@ -73,13 +73,16 @@ const HealthTimeline = () => {
   }, [user]);
 
   const fetchTimeline = async () => {
-    const [apptsRes, prescsRes, docsRes, recordsRes, metricsRes, diaryRes] = await Promise.all([
+    const [apptsRes, prescsRes, docsRes, recordsRes, metricsRes, diaryRes, examReqsRes, examOrdersRes, renewalsRes] = await Promise.all([
       db.from("appointments").select("id, scheduled_at, status, doctor_id").eq("patient_id", user!.id).eq("status", "completed").order("scheduled_at", { ascending: false }).limit(100),
       db.from("prescriptions").select("id, created_at, diagnosis, doctor_id").eq("patient_id", user!.id).order("created_at", { ascending: false }).limit(100),
       db.from("patient_documents").select("id, created_at, file_name, description").eq("patient_id", user!.id).order("created_at", { ascending: false }).limit(100),
       db.from("medical_records").select("id, created_at, title, record_type, cid_code").eq("patient_id", user!.id).order("created_at", { ascending: false }).limit(100),
       db.from("health_metrics").select("id, measured_at, type, value, unit, notes").eq("patient_id", user!.id).order("measured_at", { ascending: false }).limit(100),
       db.from("symptom_diary").select("id, entry_date, mood, symptoms, notes").eq("patient_id", user!.id).order("entry_date", { ascending: false }).limit(100),
+      db.from("exam_requests").select("id, created_at, exam_name, reason").eq("patient_id", user!.id).order("created_at", { ascending: false }).limit(50),
+      db.from("exam_orders").select("id, created_at, status, lab_id, preferred_date").eq("patient_id", user!.id).order("created_at", { ascending: false }).limit(50),
+      db.from("prescription_renewals").select("id, created_at, status, prescription_id").eq("patient_id", user!.id).order("created_at", { ascending: false }).limit(50),
     ]);
 
     // Fetch doctor names
@@ -132,6 +135,24 @@ const HealthTimeline = () => {
         id: `diary-${d.id}`, date: d.entry_date, type: "symptom" as const,
         title: `Humor: ${d.mood}`, subtitle: (d.symptoms as string[] | null)?.join(", ") || d.notes || "Registro do dia",
         icon: Smile, color: TYPE_COLORS.symptom,
+      })) ?? []),
+      ...(examReqsRes.data?.map((e: any) => ({
+        id: `exreq-${e.id}`, date: e.created_at, type: "document" as const,
+        title: `Exame solicitado: ${e.exam_name || "—"}`,
+        subtitle: e.reason || "Aguardando agendamento no laboratório",
+        icon: FileText, color: TYPE_COLORS.document,
+      })) ?? []),
+      ...(examOrdersRes.data?.map((o: any) => ({
+        id: `exord-${o.id}`, date: o.created_at, type: "document" as const,
+        title: `Agendamento de exame — ${o.status === "confirmed" ? "Confirmado" : o.status === "completed" ? "Concluído" : "Aguardando"}`,
+        subtitle: o.preferred_date ? `Preferência: ${new Date(o.preferred_date).toLocaleDateString("pt-BR")}` : "",
+        icon: FileText, color: TYPE_COLORS.document,
+      })) ?? []),
+      ...(renewalsRes.data?.map((r: any) => ({
+        id: `rxren-${r.id}`, date: r.created_at, type: "prescription" as const,
+        title: `Renovação de receita — ${r.status === "approved" ? "Aprovada" : r.status === "rejected" ? "Não aprovada" : "Em análise"}`,
+        subtitle: "",
+        icon: Pill, color: TYPE_COLORS.prescription,
       })) ?? []),
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
