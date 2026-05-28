@@ -27,6 +27,7 @@ import type { Medication } from "@/hooks/usePrescriptionData";
 import logoReceita from "@/assets/logo-receita.png";
 import PrescriptionTemplates from "@/components/doctor/PrescriptionTemplates";
 import { TemplateControls } from "./DoctorTemplates";
+import DrugInteractionAlert from "./DrugInteractionAlert";
 import { isFeatureEnabled } from "@/lib/featureFlags";
 
 const doctorNav = [
@@ -719,6 +720,11 @@ const PrescriptionForm = () => {
             />
           </CardContent>
         </Card>
+
+        {/* Alerta passivo de interações medicamentosas */}
+        <div className="mb-3">
+          <DrugInteractionAlert medications={data.medications as any} patientContext={data.diagnosis || undefined} />
+        </div>
 
         {/* Medications */}
         <Card variant="elevated" className="mb-6">

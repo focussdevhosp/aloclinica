@@ -37,6 +37,7 @@ const AuthAdmin = lazy(() => import("./pages/AuthAdmin"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Triagem = lazy(() => import("./pages/Triagem"));
+const Status = lazy(() => import("./pages/Status"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const LGPD = lazy(() => import("./pages/LGPD"));
@@ -174,6 +175,7 @@ const AnimatedRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/triagem" element={<Triagem />} />
+      <Route path="/status" element={<Status />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/lgpd" element={<LGPD />} />

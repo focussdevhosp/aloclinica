@@ -146,6 +146,31 @@ const VideoRoom = () => {
     setShowAI(false);
   };
 
+  // Atalhos de teclado durante a chamada (médico). Ignora quando foco está em input/textarea.
+  useEffect(() => {
+    if (!isDoctor) return;
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = e.key.toLowerCase();
+      switch (k) {
+        case "m": e.preventDefault(); videoRef.current?.toggleMute(); break;
+        case "v": e.preventDefault(); videoRef.current?.toggleVideo(); break;
+        case "c": e.preventDefault(); openPanel("chat"); break;
+        case "n": e.preventDefault(); if (isDoctor) openPanel("notes"); break;
+        case "i": e.preventDefault(); if (isDoctor) openPanel("ai"); break;
+        case "s": e.preventDefault(); setSplitMode((v) => !v); break;
+        case "p": e.preventDefault(); videoRef.current?.requestPiP?.(); break;
+        case "?": e.preventDefault(); setShowShortcuts((v) => !v); break;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isDoctor]);
+
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
   /** Recebe texto da IA e injeta no prontuário SOAP (append não destrutivo). */
   const handleAISendToNotes = (text: string, field?: "subjective" | "objective" | "assessment" | "plan") => {
     const f = field ?? "plan";
@@ -1695,6 +1720,33 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
           )}
         </AnimatePresence>
       </div>
+
+      {/* Overlay de atalhos de teclado (médico). Abre com `?` */}
+      {showShortcuts && isDoctor && (
+        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowShortcuts(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-[hsl(220,25%,8%)] border border-[hsl(220,15%,16%)] shadow-2xl p-5">
+            <p className="text-sm font-semibold text-white mb-3">Atalhos de teclado</p>
+            <div className="space-y-1.5 text-xs text-[hsl(220,15%,75%)]">
+              {[
+                ["M", "Mutar / ativar microfone"],
+                ["V", "Câmera ligada / desligada"],
+                ["C", "Abrir chat"],
+                ["N", "Abrir prontuário"],
+                ["I", "Abrir IA Clínica"],
+                ["S", "Split do prontuário"],
+                ["P", "Picture-in-Picture"],
+                ["?", "Mostrar / esconder esta lista"],
+              ].map(([k, label]) => (
+                <div key={k} className="flex items-center justify-between gap-3 px-1 py-1 rounded">
+                  <span>{label}</span>
+                  <kbd className="px-2 py-0.5 text-[10px] font-bold rounded bg-[hsl(220,20%,12%)] border border-[hsl(220,15%,18%)] text-white">{k}</kbd>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setShowShortcuts(false)} className="mt-4 w-full text-xs py-2 rounded-lg bg-[hsl(220,20%,12%)] hover:bg-[hsl(220,20%,16%)] text-white">Fechar</button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile bottom toolbar — fixed at bottom */}
       {isMobile && (
