@@ -13,16 +13,19 @@
 import { useEffect, useState } from "react";
 import { db } from "@/integrations/supabase/untyped";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Activity, Stethoscope, TrendingUp, AlertCircle, BarChart3 } from "lucide-react";
+import { Activity, Stethoscope, TrendingUp, TrendingDown, AlertCircle, BarChart3, Sparkles, Loader2, Users } from "lucide-react";
+import { logError } from "@/lib/logger";
 
 interface Props {
   contratoIds: string[];
 }
 
-type SymRow = { main_complaint: string | null; severity: number | null; symptoms: string[] | null; created_at: string; appointment_id: string };
+type SymRow = { main_complaint: string | null; severity: number | null; symptoms: string[] | null; created_at: string; appointment_id: string; patient_id?: string };
+type Demo = { age: number | null; gender: string | null };
 
 function topN(items: string[], n = 10) {
   const map = new Map<string, number>();
@@ -47,7 +50,10 @@ export default function OrgaoSaudeTab({ contratoIds }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [rows, setRows] = useState<SymRow[]>([]);
+  const [demos, setDemos] = useState<Demo[]>([]);
   const [totalConsultas, setTotalConsultas] = useState(0);
+  const [aiInsights, setAiInsights] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     if (!contratoIds.length) { setLoading(false); return; }
@@ -64,20 +70,94 @@ export default function OrgaoSaudeTab({ contratoIds }: Props) {
         if (ccErr) throw ccErr;
         const apptIds = [...new Set((cc ?? []).map((r: any) => r.appointment_id).filter(Boolean))] as string[];
         setTotalConsultas(apptIds.length);
-        if (!apptIds.length) { setRows([]); setLoading(false); return; }
-        // 2) Sintomas/queixas dessas consultas
+        if (!apptIds.length) { setRows([]); setDemos([]); setLoading(false); return; }
+        // 2) Sintomas/queixas + patient_id para juntar demografia
         const { data: sym, error: symErr } = await db.from("pre_consultation_symptoms")
-          .select("main_complaint, severity, symptoms, created_at, appointment_id")
+          .select("main_complaint, severity, symptoms, created_at, appointment_id, patient_id")
           .in("appointment_id", apptIds);
         if (symErr) throw symErr;
-        setRows((sym ?? []) as SymRow[]);
-      } catch {
+        const list = (sym ?? []) as SymRow[];
+        setRows(list);
+        // 3) Demografia agregada (idade/gênero) dos pacientes envolvidos
+        const patientIds = [...new Set(list.map((r) => r.patient_id).filter(Boolean))] as string[];
+        if (patientIds.length) {
+          const { data: profs } = await db.from("profiles")
+            .select("birth_date, gender")
+            .in("user_id", patientIds);
+          const today = new Date();
+          setDemos((profs ?? []).map((p: any) => {
+            let age: number | null = null;
+            if (p.birth_date) {
+              const d = new Date(p.birth_date);
+              age = Math.floor((today.getTime() - d.getTime()) / 3.156e10);
+            }
+            return { age, gender: p.gender ?? null };
+          }));
+        } else {
+          setDemos([]);
+        }
+      } catch (e) {
+        logError("OrgaoSaudeTab load", e);
         setError(true);
       } finally {
         setLoading(false);
       }
     })();
   }, [contratoIds.join(",")]);
+
+  const runInsights = async () => {
+    setAiLoading(true);
+    setAiInsights("");
+    try {
+      // Monta resumo agregado dos dados em texto (compacto) para a IA
+      const compl = topN(rows.map((r) => r.main_complaint || ""), 8).map(([n, c]) => `${n}: ${c}`).join("; ");
+      const sympsAll: string[] = [];
+      rows.forEach((r) => Array.isArray(r.symptoms) && sympsAll.push(...r.symptoms));
+      const sympsTop = topN(sympsAll, 8).map(([n, c]) => `${n}: ${c}`).join("; ");
+      const sevValid = rows.map((r) => r.severity).filter((s): s is number => typeof s === "number");
+      const sevAvg = sevValid.length ? (sevValid.reduce((a, b) => a + b, 0) / sevValid.length).toFixed(1) : "—";
+
+      // Distribuição mensal
+      const byMonth = new Map<string, number>();
+      rows.forEach((r) => {
+        const k = monthKey(new Date(r.created_at));
+        byMonth.set(k, (byMonth.get(k) ?? 0) + 1);
+      });
+      const meses = [...byMonth.entries()].sort(([a],[b]) => a < b ? -1 : 1).map(([k, v]) => `${k}: ${v}`).join("; ");
+
+      // Demografia
+      const ageBuckets = { "0-12": 0, "13-17": 0, "18-29": 0, "30-44": 0, "45-59": 0, "60+": 0 } as Record<string, number>;
+      const genderBuckets: Record<string, number> = {};
+      demos.forEach((d) => {
+        if (typeof d.age === "number") {
+          const k = d.age <= 12 ? "0-12" : d.age <= 17 ? "13-17" : d.age <= 29 ? "18-29" : d.age <= 44 ? "30-44" : d.age <= 59 ? "45-59" : "60+";
+          ageBuckets[k] += 1;
+        }
+        if (d.gender) genderBuckets[d.gender] = (genderBuckets[d.gender] ?? 0) + 1;
+      });
+
+      const ctx = [
+        `Total de consultas (6m): ${totalConsultas}`,
+        `Severidade média (0-10): ${sevAvg} | casos severos (≥7): ${sevValid.filter((s) => s >= 7).length}`,
+        `Top queixas: ${compl || "—"}`,
+        `Top sintomas: ${sympsTop || "—"}`,
+        `Volume mensal: ${meses}`,
+        `Faixa etária: ${Object.entries(ageBuckets).map(([k, v]) => `${k}: ${v}`).join("; ")}`,
+        `Gênero: ${Object.entries(genderBuckets).map(([k, v]) => `${k}: ${v}`).join("; ") || "—"}`,
+      ].join("\n");
+
+      const { data, error } = await db.functions.invoke("clinical-ai", {
+        body: { task: "epi_insights", payload: { context: ctx } },
+      });
+      if (error) throw error;
+      setAiInsights((data as any)?.result || "");
+    } catch (e: any) {
+      logError("OrgaoSaudeTab AI insights", e);
+      setAiInsights("");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -118,13 +198,48 @@ export default function OrgaoSaudeTab({ contratoIds }: Props) {
   const monthly = [...byMonth.entries()];
   const maxMonth = Math.max(1, ...monthly.map(([, v]) => v));
 
+  // Comparativo mês atual vs anterior
+  const lastIdx = monthly.length - 1;
+  const curr = monthly[lastIdx]?.[1] ?? 0;
+  const prev = monthly[lastIdx - 1]?.[1] ?? 0;
+  const deltaPct = prev > 0 ? Math.round(((curr - prev) / prev) * 100) : null;
+  const deltaUp = (deltaPct ?? 0) >= 0;
+
+  // Distribuição etária
+  const ageGroups = [
+    { k: "0-12",  label: "Crianças (0-12)",     test: (a: number) => a <= 12 },
+    { k: "13-17", label: "Adolescentes (13-17)",test: (a: number) => a >= 13 && a <= 17 },
+    { k: "18-29", label: "Jovens (18-29)",      test: (a: number) => a >= 18 && a <= 29 },
+    { k: "30-44", label: "Adultos (30-44)",     test: (a: number) => a >= 30 && a <= 44 },
+    { k: "45-59", label: "Adultos+ (45-59)",    test: (a: number) => a >= 45 && a <= 59 },
+    { k: "60+",   label: "Idosos (60+)",        test: (a: number) => a >= 60 },
+  ];
+  const ageCounts = ageGroups.map((g) => ({
+    ...g,
+    count: demos.filter((d) => typeof d.age === "number" && g.test(d.age)).length,
+  }));
+  const maxAge = Math.max(1, ...ageCounts.map((a) => a.count));
+  const demosWithAge = demos.filter((d) => typeof d.age === "number").length;
+
+  // Distribuição por gênero
+  const genderCount = new Map<string, number>();
+  demos.forEach((d) => { if (d.gender) genderCount.set(d.gender, (genderCount.get(d.gender) ?? 0) + 1); });
+  const totalGender = [...genderCount.values()].reduce((a, b) => a + b, 0);
+
   return (
     <div className="space-y-5">
       {/* KPIs principais */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KpiCard icon={Activity} label="Consultas (6m)" value={totalConsultas} />
-        <KpiCard icon={Stethoscope} label="Queixas únicas" value={complaints.length} help="Distintas principais" />
-        <KpiCard icon={TrendingUp} label="Severidade média" value={sevAvg ? sevAvg.toFixed(1) : "—"} help="0–10" />
+        <KpiCard
+          icon={deltaUp ? TrendingUp : TrendingDown}
+          label="Variação no mês"
+          value={deltaPct === null ? "—" : `${deltaPct >= 0 ? "+" : ""}${deltaPct}%`}
+          delta={deltaPct === null ? undefined : `${prev}→${curr}`}
+          deltaTone={deltaPct === null ? "neutral" : deltaUp ? "up" : "down"}
+          help="vs mês anterior"
+        />
+        <KpiCard icon={Stethoscope} label="Severidade média" value={sevAvg ? sevAvg.toFixed(1) : "—"} help="0–10" />
         <KpiCard icon={AlertCircle} label="Casos severos" value={sevHigh} help="severidade ≥ 7" />
       </div>
 
@@ -201,6 +316,83 @@ export default function OrgaoSaudeTab({ contratoIds }: Props) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Demografia: idade + gênero */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5" /> Faixa etária dos atendidos
+            </p>
+            {demosWithAge === 0 ? (
+              <p className="text-sm text-muted-foreground">Sem dados de idade dos pacientes.</p>
+            ) : (
+              <div className="space-y-2">
+                {ageCounts.map((g) => {
+                  const pct = Math.round((g.count / maxAge) * 100);
+                  return (
+                    <div key={g.k} className="flex items-center gap-3">
+                      <span className="text-xs text-muted-foreground w-32 shrink-0">{g.label}</span>
+                      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full bg-primary/70" style={{ width: g.count > 0 ? `${pct}%` : 0 }} />
+                      </div>
+                      <span className="text-xs tabular-nums text-foreground font-bold w-8 text-right">{g.count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-3">Distribuição por gênero</p>
+            {totalGender === 0 ? (
+              <p className="text-sm text-muted-foreground">Sem dados de gênero registrados.</p>
+            ) : (
+              <div className="space-y-2.5">
+                {[...genderCount.entries()].sort((a, b) => b[1] - a[1]).map(([g, c]) => {
+                  const pct = Math.round((c / totalGender) * 100);
+                  return (
+                    <div key={g}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-foreground capitalize">{g}</span>
+                        <span className="text-muted-foreground tabular-nums">{c} · {pct}%</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full bg-primary/70" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Insights da IA */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-primary" /> Insights da IA
+            </p>
+            <Button size="sm" variant={aiInsights ? "outline" : "default"} className="h-8 rounded-xl gap-1.5" onClick={runInsights} disabled={aiLoading}>
+              {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              {aiLoading ? "Analisando…" : aiInsights ? "Refazer" : "Gerar insights"}
+            </Button>
+          </div>
+          {aiInsights ? (
+            <pre className="whitespace-pre-wrap text-sm leading-relaxed text-foreground font-sans">{aiInsights}</pre>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Gere uma análise executiva dos indicadores: tendências, sinais de atenção e recomendações operacionais para o seu contrato.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <p className="text-[11px] text-muted-foreground text-center">
         Dados agregados, sem identificação individual — em conformidade com a LGPD.

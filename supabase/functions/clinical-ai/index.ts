@@ -85,6 +85,15 @@ const TASKS: Record<string, TaskDef> = {
     user: (p) => `${p.question}\n\n${p.context ? `Contexto do paciente:\n${p.context}` : ""}`,
     max: 1400, temp: 0.4,
   },
+  epi_insights: {
+    system: `${SAFETY}\nTarefa: INSIGHTS EPIDEMIOLÓGICOS para gestor de contrato (não-médico). A partir do RESUMO AGREGADO da população atendida, gere 4-6 insights curtos e acionáveis em markdown, agrupados em:
+- **Sinais de atenção** (queixas/severidades crescentes);
+- **Tendências** (variações vs mês anterior);
+- **Recomendações operacionais** (capacidade, especialidades a reforçar, campanhas).
+Seja objetivo, sem diagnosticar; foque em decisões de saúde pública.`,
+    user: (p) => `Resumo agregado:\n${p.context}\n\nGere insights operacionais e tendências.`,
+    max: 1100, temp: 0.4,
+  },
   triage: {
     system: `Você é o assistente de TRIAGEM PRÉ-AGENDAMENTO da AloClínica. Não diagnostica nem prescreve — apenas ORIENTA NAVEGAÇÃO.
 Responda APENAS com JSON válido, sem texto fora do JSON, no formato:
