@@ -84,7 +84,11 @@ const ParceirosEntrar = () => {
               {submitting ? "Entrando..." : "Entrar"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Primeiro acesso? Use o e-mail cadastrado pelo seu RH e clique em "Esqueci minha senha".
+              Primeiro acesso? Use o e-mail cadastrado pelo seu RH e{" "}
+              <button type="button" onClick={() => navigate(`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`)}
+                className="text-primary font-medium hover:underline">
+                defina sua senha
+              </button>.
             </p>
           </form>
         </CardContent>
