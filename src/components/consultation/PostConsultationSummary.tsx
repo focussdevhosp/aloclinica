@@ -10,7 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import {
   CheckCircle2, Clock, FileText, Pill, Star, ArrowRight,
-  MessageSquare, Shield, Send, CalendarPlus, Download, Stamp, Users
+  MessageSquare, Shield, Send, CalendarPlus, Download, Stamp, Users,
+  FlaskConical, Sparkles, Loader2, Copy, Check, ClipboardList, BellRing
 } from "lucide-react";
 
 interface PostConsultationSummaryProps {
@@ -35,7 +36,14 @@ const PostConsultationSummary = ({
   const [hasCertificate, setHasCertificate] = useState(false);
   const [otherPartyName, setOtherPartyName] = useState("");
   const [doctorIdRaw, setDoctorIdRaw] = useState<string | null>(null);
+  const [patientIdRaw, setPatientIdRaw] = useState<string | null>(null);
   const [nextWaiting, setNextWaiting] = useState<{ id: string; patient_name: string } | null>(null);
+
+  // Resumo clínico por IA (pós-consulta, médico)
+  const [aiSummary, setAiSummary] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiCopied, setAiCopied] = useState(false);
+  const [summarySent, setSummarySent] = useState(false);
 
   // Rating state
   const [existingRating, setExistingRating] = useState<number | null>(null);
@@ -61,6 +69,7 @@ const PostConsultationSummary = ({
       if (apptRes.data) {
         const otherId = isDoctor ? apptRes.data.patient_id : null;
         const otherDocId = !isDoctor ? apptRes.data.doctor_id : null;
+        if (isDoctor && apptRes.data.patient_id) setPatientIdRaw(apptRes.data.patient_id);
         if (!isDoctor && apptRes.data.doctor_id) setDoctorIdRaw(apptRes.data.doctor_id);
         if (otherId) {
           const { data: p } = await db.from("profiles").select("first_name, last_name").eq("user_id", otherId).single();
@@ -116,6 +125,66 @@ const PostConsultationSummary = ({
       setTimeout(() => onContinue(), 1500);
     }
     setRatingSubmitting(false);
+  };
+
+  // Gera resumo clínico da consulta via IA (clinical-ai) para o médico revisar/enviar
+  const handleGenerateSummary = async () => {
+    setAiLoading(true);
+    try {
+      const [{ data: sym }, { data: notes }] = await Promise.all([
+        db.from("pre_consultation_symptoms")
+          .select("main_complaint, symptoms, severity, duration, additional_notes")
+          .eq("appointment_id", appointmentId).maybeSingle(),
+        db.from("consultation_notes")
+          .select("subjective, objective, assessment, plan")
+          .eq("appointment_id", appointmentId).maybeSingle(),
+      ]);
+      const s: any = sym || {};
+      const n: any = notes || {};
+      const ctx = [
+        `Paciente: ${otherPartyName || "—"}`,
+        `Duração: ${formatDuration(elapsed)}`,
+        s.main_complaint ? `Queixa: ${s.main_complaint}` : "",
+        s.symptoms ? `Sintomas: ${Array.isArray(s.symptoms) ? s.symptoms.join(", ") : s.symptoms}` : "",
+        n.subjective ? `S: ${n.subjective}` : "",
+        n.objective ? `O: ${n.objective}` : "",
+        n.assessment ? `A: ${n.assessment}` : "",
+        n.plan ? `P: ${n.plan}` : "",
+      ].filter(Boolean).join("\n");
+
+      const { data, error } = await db.functions.invoke("clinical-ai", {
+        body: { task: "patient_summary", payload: { context: ctx } },
+      });
+      if (error) throw error;
+      const text = (data as any)?.result || "";
+      if (!text) throw new Error("Resposta vazia da IA");
+      setAiSummary(text);
+    } catch (e: any) {
+      logError("[PostConsultationSummary] AI summary", e);
+      toast.error("Não foi possível gerar o resumo", { description: e?.message || "Tente novamente." });
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Envia o resumo ao paciente como notificação in-app
+  const handleSendSummary = async () => {
+    if (!patientIdRaw || !aiSummary) return;
+    try {
+      const { error } = await (db as any).from("notifications").insert({
+        user_id: patientIdRaw,
+        title: "📋 Resumo da sua consulta",
+        message: aiSummary,
+        type: "info",
+        link: "/dashboard/history",
+      });
+      if (error) throw error;
+      setSummarySent(true);
+      toast.success("Resumo enviado ao paciente");
+    } catch (e: any) {
+      logError("[PostConsultationSummary] send summary", e);
+      toast.error("Erro ao enviar resumo", { description: e?.message });
+    }
   };
 
   const starLabel = (n: number) => ["", "Ruim", "Regular", "Bom", "Muito bom", "Excelente"][n] ?? "";
@@ -296,6 +365,66 @@ const PostConsultationSummary = ({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Ferramentas do médico — pós-consulta */}
+        {isDoctor && (
+          <Card className="bg-card border-border mb-4">
+            <CardContent className="p-4 space-y-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-primary" /> Ferramentas do médico
+              </p>
+
+              {/* Resumo clínico por IA */}
+              {!aiSummary ? (
+                <Button
+                  onClick={handleGenerateSummary}
+                  disabled={aiLoading}
+                  variant="secondary"
+                  className="w-full h-11 rounded-xl font-medium gap-2"
+                >
+                  {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  {aiLoading ? "Gerando resumo…" : "Gerar resumo clínico (IA)"}
+                </Button>
+              ) : (
+                <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
+                  <pre className="whitespace-pre-wrap text-xs leading-relaxed text-foreground font-sans max-h-44 overflow-auto">{aiSummary}</pre>
+                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border">
+                    <Button size="sm" variant="ghost" className="h-8 text-xs gap-1.5"
+                      onClick={async () => { try { await navigator.clipboard.writeText(aiSummary); setAiCopied(true); setTimeout(() => setAiCopied(false), 1500); } catch { /* */ } }}>
+                      {aiCopied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />} Copiar
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-8 text-xs gap-1.5"
+                      onClick={handleSendSummary} disabled={summarySent || !patientIdRaw}>
+                      {summarySent ? <Check className="w-3.5 h-3.5 text-success" /> : <BellRing className="w-3.5 h-3.5" />}
+                      {summarySent ? "Enviado ao paciente" : "Enviar ao paciente"}
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-8 text-xs gap-1.5 ml-auto"
+                      onClick={handleGenerateSummary} disabled={aiLoading}>
+                      <Sparkles className="w-3.5 h-3.5" /> Refazer
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Atalhos */}
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  onClick={() => navigate(`/dashboard/exam-request?appointment=${appointmentId}`)}
+                  variant="outline" className="h-11 rounded-xl text-sm gap-2"
+                >
+                  <FlaskConical className="w-4 h-4" /> Solicitar exames
+                </Button>
+                <Button
+                  onClick={() => patientIdRaw && navigate(`/dashboard/patients/${patientIdRaw}/emr`)}
+                  disabled={!patientIdRaw}
+                  variant="outline" className="h-11 rounded-xl text-sm gap-2"
+                >
+                  <ClipboardList className="w-4 h-4" /> {hasNotes ? "Ver prontuário" : "Preencher prontuário"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Actions */}
         <div className="space-y-3">
