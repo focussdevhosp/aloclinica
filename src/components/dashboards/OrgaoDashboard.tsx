@@ -4,7 +4,9 @@ import { db } from "@/integrations/supabase/untyped";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Users, Activity, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Building2, Users, Activity, FileText, Mail, AlertCircle } from "lucide-react";
 
 type Contrato = {
   id: string; nome: string; tipo: string; status: string;
@@ -17,30 +19,37 @@ const OrgaoDashboard = () => {
   const [contratos, setContratos] = useState<Contrato[]>([]);
   const [stats, setStats] = useState<Record<string, { benef: number; mesQtd: number; mesValor: number }>>({});
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      // RLS já restringe contratos ao gestor (managed_by_user_id = auth.uid())
-      const { data: cts } = await db.from("contratos")
-        .select("id,nome,tipo,status,cota_total,cota_utilizada,valor_consulta,vigencia_inicio,vigencia_fim")
-        .order("created_at", { ascending: false });
-      const lista = (cts ?? []) as Contrato[];
-      setContratos(lista);
+      try {
+        // RLS já restringe contratos ao gestor (managed_by_user_id = auth.uid())
+        const { data: cts, error } = await db.from("contratos")
+          .select("id,nome,tipo,status,cota_total,cota_utilizada,valor_consulta,vigencia_inicio,vigencia_fim")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        const lista = (cts ?? []) as Contrato[];
+        setContratos(lista);
 
-      const ini = new Date(); ini.setDate(1); ini.setHours(0, 0, 0, 0);
-      const s: Record<string, { benef: number; mesQtd: number; mesValor: number }> = {};
-      for (const c of lista) {
-        const { count: benef } = await db.from("contrato_beneficiarios")
-          .select("id", { count: "exact", head: true }).eq("contrato_id", c.id).eq("ativo", true);
-        const { data: cons } = await db.from("consulta_contrato")
-          .select("valor_repassado, created_at").eq("contrato_id", c.id).gte("created_at", ini.toISOString());
-        const mesQtd = cons?.length ?? 0;
-        const mesValor = (cons ?? []).reduce((sum: number, r: any) => sum + (Number(r.valor_repassado) || 0), 0);
-        s[c.id] = { benef: benef ?? 0, mesQtd, mesValor };
+        const ini = new Date(); ini.setDate(1); ini.setHours(0, 0, 0, 0);
+        const s: Record<string, { benef: number; mesQtd: number; mesValor: number }> = {};
+        for (const c of lista) {
+          const { count: benef } = await db.from("contrato_beneficiarios")
+            .select("id", { count: "exact", head: true }).eq("contrato_id", c.id).eq("ativo", true);
+          const { data: cons } = await db.from("consulta_contrato")
+            .select("valor_repassado, created_at").eq("contrato_id", c.id).gte("created_at", ini.toISOString());
+          const mesQtd = cons?.length ?? 0;
+          const mesValor = (cons ?? []).reduce((sum: number, r: any) => sum + (Number(r.valor_repassado) || 0), 0);
+          s[c.id] = { benef: benef ?? 0, mesQtd, mesValor };
+        }
+        setStats(s);
+      } catch {
+        setErro(true);
+      } finally {
+        setLoading(false);
       }
-      setStats(s);
-      setLoading(false);
     })();
   }, [user]);
 
@@ -57,9 +66,34 @@ const OrgaoDashboard = () => {
         </div>
 
         {loading ? (
-          <p className="text-sm text-muted-foreground">Carregando…</p>
+          <div className="space-y-4">
+            {[1, 2].map((i) => (
+              <Card key={i}><CardContent className="p-5 space-y-4">
+                <Skeleton className="h-5 w-40" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[1, 2, 3, 4].map((k) => <Skeleton key={k} className="h-16 rounded-xl" />)}
+                </div>
+              </CardContent></Card>
+            ))}
+          </div>
+        ) : erro ? (
+          <Card><CardContent className="p-8 text-center">
+            <AlertCircle className="w-10 h-10 mx-auto text-destructive/60 mb-3" />
+            <p className="font-semibold text-foreground mb-1">Não foi possível carregar seus contratos</p>
+            <p className="text-sm text-muted-foreground mb-4">Verifique sua conexão e tente novamente.</p>
+            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => window.location.reload()}>Recarregar</Button>
+          </CardContent></Card>
         ) : contratos.length === 0 ? (
-          <Card><CardContent className="p-8 text-center text-muted-foreground">Nenhum contrato vinculado ao seu acesso. Fale com a AloClínica.</CardContent></Card>
+          <Card><CardContent className="p-10 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+              <Building2 className="w-7 h-7 text-primary/70" />
+            </div>
+            <p className="font-semibold text-foreground mb-1">Nenhum contrato vinculado</p>
+            <p className="text-sm text-muted-foreground mb-4">Assim que seu contrato com a AloClínica for ativado, os dados de cota, beneficiários e medição aparecem aqui.</p>
+            <Button size="sm" className="rounded-xl gap-1.5" asChild>
+              <a href="mailto:contato@aloclinica.com.br?subject=Ativação%20de%20contrato%20(Órgão)"><Mail className="w-4 h-4" /> Falar com a AloClínica</a>
+            </Button>
+          </CardContent></Card>
         ) : contratos.map((c) => {
           const st = stats[c.id] ?? { benef: 0, mesQtd: 0, mesValor: 0 };
           const pct = c.cota_total ? Math.min(100, Math.round((c.cota_utilizada / c.cota_total) * 100)) : null;
