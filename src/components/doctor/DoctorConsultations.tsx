@@ -301,10 +301,26 @@ const DoctorConsultations = () => {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-10 rounded-2xl border-2 border-dashed border-border/30">
+          <div className="text-center py-10 px-4 rounded-2xl border-2 border-dashed border-border/30">
             <img src={mascotWave} alt="Pingo" className="w-20 h-20 object-contain mx-auto mb-3 select-none" style={{ filter: "drop-shadow(0 6px 14px rgba(0,0,0,.15))" }} loading="lazy" decoding="async" width={80} height={80} />
-            <p className="text-sm font-bold text-foreground mb-1">Nenhuma consulta encontrada</p>
-            <p className="text-xs text-muted-foreground">Tente ajustar os filtros</p>
+            {(filterStatus !== "all" || period !== "all") ? (
+              <>
+                <p className="text-sm font-bold text-foreground mb-1">Nenhuma consulta para esses filtros</p>
+                <p className="text-xs text-muted-foreground mb-4">Tente ampliar o status ou o período</p>
+                <Button variant="outline" size="sm" className="rounded-xl gap-1.5"
+                  onClick={() => { setFilterStatus("all"); setPeriod("all"); }}>
+                  Limpar filtros
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-bold text-foreground mb-1">Você ainda não tem consultas</p>
+                <p className="text-xs text-muted-foreground mb-4">Ative sua disponibilidade para começar a receber agendamentos</p>
+                <Button size="sm" className="rounded-xl gap-1.5" onClick={() => navigate("/dashboard/availability")}>
+                  Configurar disponibilidade
+                </Button>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-2.5">

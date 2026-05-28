@@ -93,9 +93,15 @@ const DoctorPrescriptions = () => {
           <div className="shimmer-v2 h-5 rounded w-32 inline-block" aria-label="Carregando" />
         ) : prescriptions.length === 0 ? (
           <Card className="border-border">
-            <CardContent className="py-8 text-center">
-              <FileText className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
-              <p className="text-muted-foreground">Nenhuma receita emitida.</p>
+            <CardContent className="py-10 text-center px-4">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <FileText className="w-7 h-7 text-primary/70" />
+              </div>
+              <p className="font-semibold text-foreground mb-1">Nenhuma receita emitida</p>
+              <p className="text-sm text-muted-foreground mb-4">Emita receitas digitais com assinatura válida diretamente pela plataforma.</p>
+              <Button size="sm" className="rounded-xl gap-1.5" onClick={() => navigate("/dashboard/prescribe")}>
+                <Plus className="w-4 h-4" /> Nova Receita
+              </Button>
             </CardContent>
           </Card>
         ) : (

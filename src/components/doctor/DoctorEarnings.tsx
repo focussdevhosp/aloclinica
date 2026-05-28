@@ -325,7 +325,13 @@ const DoctorEarnings = () => {
         <Card className="border-border mb-8">
           <CardHeader><CardTitle className="text-lg flex items-center gap-2"><TrendingUp className="w-5 h-5" /> Faturamento Mensal</CardTitle></CardHeader>
           <CardContent>
-            {loading ? <div className="space-y-3"><div className="shimmer-v2 h-24 rounded-2xl"/><div className="shimmer-v2 h-24 rounded-2xl"/><div className="shimmer-v2 h-24 rounded-2xl"/></div> : (
+            {loading ? <div className="space-y-3"><div className="shimmer-v2 h-24 rounded-2xl"/><div className="shimmer-v2 h-24 rounded-2xl"/><div className="shimmer-v2 h-24 rounded-2xl"/></div> : monthlyData.length === 0 ? (
+              <div className="py-12 text-center">
+                <TrendingUp className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-sm font-medium text-foreground">Sem faturamento ainda</p>
+                <p className="text-xs text-muted-foreground">Seus ganhos por mês aparecem aqui após as primeiras consultas concluídas.</p>
+              </div>
+            ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />

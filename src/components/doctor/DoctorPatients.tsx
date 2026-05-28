@@ -115,9 +115,23 @@ const DoctorPatients = () => {
           <div className="shimmer-v2 h-5 rounded w-32 inline-block" aria-label="Carregando" />
         ) : filteredPatients.length === 0 ? (
           <Card className="border-border">
-            <CardContent className="py-8 text-center">
-              <Users className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
-              <p className="text-muted-foreground">Nenhum paciente atendido ainda.</p>
+            <CardContent className="py-10 text-center px-4">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <Users className="w-7 h-7 text-primary/70" />
+              </div>
+              {search.trim() ? (
+                <>
+                  <p className="font-semibold text-foreground mb-1">Nenhum paciente para “{search.trim()}”</p>
+                  <p className="text-sm text-muted-foreground mb-4">Verifique a grafia ou limpe a busca.</p>
+                  <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setSearch("")}>Limpar busca</Button>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-foreground mb-1">Nenhum paciente ainda</p>
+                  <p className="text-sm text-muted-foreground mb-4">Seus pacientes aparecem aqui após a primeira consulta. Ative sua agenda para receber atendimentos.</p>
+                  <Button size="sm" className="rounded-xl" onClick={() => navigate("/dashboard/availability")}>Configurar disponibilidade</Button>
+                </>
+              )}
             </CardContent>
           </Card>
         ) : (
