@@ -100,11 +100,99 @@ interface GlobalCommandProps {
   role?: string;
 }
 
+type DynamicResult = { type: "appt" | "rx" | "patient"; id: string; title: string; subtitle?: string; href: string };
+
 const GlobalCommand = ({ role = "patient" }: GlobalCommandProps) => {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<DynamicResult[]>([]);
+  const [searching, setSearching] = useState(false);
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, user, roles } = useAuth();
   const { setTheme, theme } = useTheme();
+
+  // Busca dinâmica: appointments/receitas/pacientes (debounce 250ms)
+  useEffect(() => {
+    if (!open || query.trim().length < 2 || !user) { setResults([]); return; }
+    const handle = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const { db } = await import("@/integrations/supabase/untyped");
+        const q = query.trim();
+        const isDoctor = roles?.includes("doctor") || roles?.includes("admin");
+        const out: DynamicResult[] = [];
+
+        // 1) Consultas — médico vê suas; paciente vê as próprias
+        const apptFilter = isDoctor ? { col: "doctor_id", val: user.id } : { col: "patient_id", val: user.id };
+        const { data: appts } = await db.from("appointments")
+          .select("id, scheduled_at, status, patient_id, doctor_id")
+          .eq(apptFilter.col, apptFilter.val)
+          .order("scheduled_at", { ascending: false })
+          .limit(20);
+        const apptIds = (appts ?? []).slice(0, 8);
+        const partyIds = [...new Set(apptIds.map((a: any) => isDoctor ? a.patient_id : a.doctor_id).filter(Boolean))] as string[];
+        if (partyIds.length) {
+          const { data: profs } = await db.from("profiles")
+            .select("user_id, first_name, last_name")
+            .in("user_id", partyIds);
+          const nameMap = new Map<string, string>((profs ?? []).map((p: any) => [p.user_id, `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim()]));
+          for (const a of apptIds as any[]) {
+            const other = isDoctor ? a.patient_id : a.doctor_id;
+            const name = (other && nameMap.get(other)) || "—";
+            if (name.toLowerCase().includes(q.toLowerCase())) {
+              out.push({
+                type: "appt", id: a.id,
+                title: `${isDoctor ? "Consulta com" : "Consulta com Dr(a)."} ${name}`,
+                subtitle: new Date(a.scheduled_at).toLocaleString("pt-BR"),
+                href: `/dashboard/consultation/${a.id}`,
+              });
+            }
+          }
+        }
+
+        // 2) Receitas — pelo diagnóstico
+        const { data: rxs } = await db.from("prescriptions")
+          .select("id, diagnosis, created_at, patient_id, doctor_id")
+          .eq(isDoctor ? "doctor_id" : "patient_id", user.id)
+          .ilike("diagnosis", `%${q}%`)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        for (const r of (rxs ?? []) as any[]) {
+          out.push({
+            type: "rx", id: r.id,
+            title: `Receita: ${r.diagnosis?.slice(0, 60) || "(sem diagnóstico)"}`,
+            subtitle: new Date(r.created_at).toLocaleDateString("pt-BR"),
+            href: isDoctor ? `/dashboard/prescriptions/${r.id}` : `/dashboard/patient/prescriptions?appt=${r.id}`,
+          });
+        }
+
+        // 3) Pacientes (apenas para médico) — busca nominal
+        if (isDoctor) {
+          const { data: matches } = await db.from("profiles")
+            .select("user_id, first_name, last_name")
+            .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`)
+            .limit(8);
+          for (const p of (matches ?? []) as any[]) {
+            const name = `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim();
+            if (!name) continue;
+            out.push({
+              type: "patient", id: p.user_id,
+              title: name,
+              subtitle: "Paciente",
+              href: `/dashboard/patients/${p.user_id}/emr`,
+            });
+          }
+        }
+
+        setResults(out.slice(0, 12));
+      } catch {
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [open, query, user?.id, roles?.join(",")]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -132,10 +220,32 @@ const GlobalCommand = ({ role = "patient" }: GlobalCommandProps) => {
   };
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Buscar seção, funcionalidade..." />
+    <CommandDialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQuery(""); }}>
+      <CommandInput
+        placeholder={(user) ? "Buscar paciente, receita, consulta, seção…" : "Buscar seção, funcionalidade..."}
+        value={query}
+        onValueChange={setQuery}
+      />
       <CommandList>
-        <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+        <CommandEmpty>{searching ? "Buscando…" : "Nenhum resultado encontrado."}</CommandEmpty>
+        {results.length > 0 && (
+          <>
+            <CommandGroup heading="Resultados">
+              {results.map((r) => (
+                <CommandItem key={`${r.type}-${r.id}`} onSelect={() => handleSelect(r.href)} className="cursor-pointer">
+                  <span className="mr-2 text-muted-foreground text-[10px] uppercase tracking-wider w-12 shrink-0">
+                    {r.type === "appt" ? "Consulta" : r.type === "rx" ? "Receita" : "Paciente"}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate text-sm">{r.title}</p>
+                    {r.subtitle && <p className="truncate text-[11px] text-muted-foreground">{r.subtitle}</p>}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandSeparator />
+          </>
+        )}
         {groups.map(group => (
           <CommandGroup key={group} heading={group}>
             {items.filter(i => i.group === group).map(item => (

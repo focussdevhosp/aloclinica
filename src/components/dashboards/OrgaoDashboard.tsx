@@ -11,6 +11,7 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { Building2, Users, Activity, FileText, Mail, AlertCircle, BarChart3 } from "lucide-react";
 import OrgaoSaudeTab from "./OrgaoSaudeTab";
 import OrgaoDepartamentosTab from "./OrgaoDepartamentosTab";
+import VoucherBatchImport from "./VoucherBatchImport";
 
 type Contrato = {
   id: string; nome: string; tipo: string; status: string;
@@ -121,9 +122,12 @@ const OrgaoDashboard = () => {
           const pct = c.cota_total ? Math.min(100, Math.round((c.cota_utilizada / c.cota_total) * 100)) : null;
           return (
             <Card key={c.id}>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-row items-center justify-between gap-2 flex-wrap">
                 <CardTitle className="text-base">{c.nome}</CardTitle>
-                <Badge variant={c.status === "ativo" ? "default" : "secondary"}>{c.status}</Badge>
+                <div className="flex items-center gap-2">
+                  <VoucherBatchImport contratoId={c.id} contratoNome={c.nome} />
+                  <Badge variant={c.status === "ativo" ? "default" : "secondary"}>{c.status}</Badge>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

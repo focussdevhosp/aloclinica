@@ -4,6 +4,7 @@ import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { getDoctorNav } from "./doctorNav";
+import IcalSyncButton from "./IcalSyncButton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -427,9 +428,12 @@ const DoctorCalendar = () => {
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">Visualize e gerencie sua agenda completa</p>
             </div>
-            <Button size="sm" variant="outline" onClick={() => setCurrentDate(new Date())} className="h-8 text-xs">
-              Hoje
-            </Button>
+            <div className="flex items-center gap-2">
+              <IcalSyncButton />
+              <Button size="sm" variant="outline" onClick={() => setCurrentDate(new Date())} className="h-8 text-xs">
+                Hoje
+              </Button>
+            </div>
           </div>
           <Tabs value={view} onValueChange={(v) => setView(v as "day" | "week" | "month")}>
             <TabsList className="w-full grid grid-cols-3 h-9">
