@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { db } from "@/integrations/supabase/untyped";
 import DashboardLayout from "./DashboardLayout";
 import { getReceptionNav } from "@/components/reception/receptionNav";
@@ -227,15 +228,24 @@ const ReceptionDashboard = () => {
         </div>{/* end LEFT col */}
         <div className="space-y-5">
         {filteredAppts.length > 0 && (
-          <TimelineSchedule
-            items={filteredAppts.slice(0, 8).map(a => ({
-              id: a.id,
-              time: format(new Date(a.scheduled_at), "HH:mm"),
-              patientName: a.patient_name,
-              doctorName: a.doctor_name,
-              status: a.status as ScheduleItem["status"],
-            }))}
-          />
+          <>
+            <TimelineSchedule
+              items={filteredAppts.slice(0, 8).map(a => ({
+                id: a.id,
+                time: format(new Date(a.scheduled_at), "HH:mm"),
+                patientName: a.patient_name,
+                doctorName: a.doctor_name,
+                status: a.status as ScheduleItem["status"],
+              }))}
+            />
+            {filteredAppts.length > 8 && (
+              <div className="flex justify-end">
+                <Link to="/dashboard/reception/schedules" className="text-xs font-semibold text-primary hover:underline">
+                  Ver toda a agenda ({filteredAppts.length}) →
+                </Link>
+              </div>
+            )}
+          </>
         )}
 
         {/* Date navigator */}

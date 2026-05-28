@@ -502,7 +502,7 @@ const NextAppointmentCard = ({ appt, navigate }: any) => {
   const scheduledAt = new Date(appt.scheduled_at);
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-[32px] border border-border/40 bg-card p-6 shadow-sm flex flex-col md:flex-row items-center gap-6 relative group overflow-hidden">
-      <div className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-100 transition-opacity"><DotsThreeVertical size={24} className="text-muted-foreground cursor-pointer" /></div>
+      <div aria-hidden="true" className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-100 transition-opacity pointer-events-none"><DotsThreeVertical size={24} className="text-muted-foreground" /></div>
       <div className="flex items-center gap-5 w-full md:w-auto">
         <div className="relative"><LazyAvatar src={appt.doctor_avatar} name={appt.doctor_name} className="h-20 w-20 rounded-full border-4 border-white dark:border-muted shadow-lg" /><div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-emerald-500 border-2 border-white dark:border-muted flex items-center justify-center"><VideoCamera size={12} weight="fill" className="text-white" /></div></div>
         <div className="flex-1 min-w-0">
