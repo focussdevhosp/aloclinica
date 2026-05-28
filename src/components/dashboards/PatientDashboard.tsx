@@ -216,7 +216,7 @@ const PatientDashboard = () => {
                 </div>
                 <span className="text-[10px] font-semibold text-muted-foreground">Toque para abrir</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 gap-2.5 sm:gap-4">
                 {getQuickActions(serviceType as any).map((action, i) => (
                   <motion.button
                     key={action.label}
