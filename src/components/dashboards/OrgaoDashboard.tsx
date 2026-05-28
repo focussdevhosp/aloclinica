@@ -5,9 +5,11 @@ import DashboardLayout from "@/components/dashboards/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
-import { Building2, Users, Activity, FileText, Mail, AlertCircle } from "lucide-react";
+import { Building2, Users, Activity, FileText, Mail, AlertCircle, BarChart3 } from "lucide-react";
+import OrgaoSaudeTab from "./OrgaoSaudeTab";
 
 type Contrato = {
   id: string; nome: string; tipo: string; status: string;
@@ -58,13 +60,25 @@ const OrgaoDashboard = () => {
     { label: "Meu Contrato", href: "/dashboard/orgao?role=contract_manager", icon: <Building2 className="w-4 h-4" />, active: true, group: "Órgão" },
   ];
 
+  const contratoIds = contratos.map((c) => c.id);
+
   return (
     <DashboardLayout title="Painel do Órgão" nav={nav} role="clinic">
       <div className="max-w-5xl mx-auto space-y-4">
         <div>
-          <h1 className="text-xl font-bold flex items-center gap-2"><Building2 className="w-5 h-5 text-primary" /> Meus Contratos</h1>
-          <p className="text-sm text-muted-foreground">Acompanhe cota, beneficiários e medição das consultas custeadas.</p>
+          <h1 className="text-xl font-bold flex items-center gap-2"><Building2 className="w-5 h-5 text-primary" /> Painel do Órgão</h1>
+          <p className="text-sm text-muted-foreground">Contratos, beneficiários e indicadores de saúde da população atendida.</p>
         </div>
+
+        <Tabs defaultValue="contratos" className="w-full">
+          <TabsList className="grid grid-cols-2 w-full max-w-md">
+            <TabsTrigger value="contratos" className="gap-1.5"><FileText className="w-3.5 h-3.5" /> Contratos</TabsTrigger>
+            <TabsTrigger value="saude" className="gap-1.5"><BarChart3 className="w-3.5 h-3.5" /> Saúde da população</TabsTrigger>
+          </TabsList>
+          <TabsContent value="saude" className="mt-4">
+            <OrgaoSaudeTab contratoIds={contratoIds} />
+          </TabsContent>
+          <TabsContent value="contratos" className="mt-4 space-y-4">
 
         {loading ? (
           <div className="space-y-4">
@@ -126,6 +140,8 @@ const OrgaoDashboard = () => {
             </Card>
           );
         })}
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );

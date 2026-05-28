@@ -108,6 +108,46 @@ export default function AIClinicalPanel({ appointmentId, patientId, recentMessag
           s.additional_notes ? `Notas: ${s.additional_notes}` : "",
         );
       }
+
+      // Memória longitudinal: últimas 3 consultas anteriores + prescrições + exames
+      if (patientId) {
+        const { data: priorAppts } = await db
+          .from("appointments")
+          .select("id, scheduled_at, status")
+          .eq("patient_id", patientId)
+          .eq("status", "completed")
+          .neq("id", appointmentId)
+          .order("scheduled_at", { ascending: false })
+          .limit(3);
+        const ids = (priorAppts ?? []).map((a: any) => a.id);
+        if (ids.length) {
+          const [{ data: priorNotes }, { data: priorRx }, { data: priorExams }] = await Promise.all([
+            db.from("consultation_notes").select("appointment_id, assessment, plan").in("appointment_id", ids),
+            db.from("prescriptions").select("created_at, medications").in("appointment_id", ids).limit(8),
+            db.from("exam_requests").select("created_at, exam_name").in("appointment_id", ids).limit(8),
+          ]);
+          const notesMap = new Map<string, any>((priorNotes ?? []).map((n: any) => [n.appointment_id, n]));
+          const hist = (priorAppts as any[]).map((a) => {
+            const n = notesMap.get(a.id);
+            const when = new Date(a.scheduled_at).toLocaleDateString("pt-BR");
+            return `  • ${when} — A: ${n?.assessment || "—"}; P: ${n?.plan || "—"}`;
+          }).join("\n");
+          if (hist) parts.push(`Histórico clínico recente do paciente:\n${hist}`);
+          if (priorRx?.length) {
+            const meds = priorRx.map((r: any) => {
+              const list = Array.isArray(r.medications)
+                ? r.medications.map((m: any) => m?.name || m?.medication || "—").filter(Boolean).join(", ")
+                : "";
+              return list ? `  • ${new Date(r.created_at).toLocaleDateString("pt-BR")} — ${list}` : null;
+            }).filter(Boolean).join("\n");
+            if (meds) parts.push(`Prescrições anteriores:\n${meds}`);
+          }
+          if (priorExams?.length) {
+            const ex = priorExams.map((e: any) => `  • ${new Date(e.created_at).toLocaleDateString("pt-BR")} — ${e.exam_name || "—"}`).join("\n");
+            parts.push(`Exames solicitados anteriormente:\n${ex}`);
+          }
+        }
+      }
     } catch (e) {
       logError("AIClinicalPanel buildContext", e);
     }

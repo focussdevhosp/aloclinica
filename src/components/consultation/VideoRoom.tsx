@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ConsentTCLE from "./ConsentTCLE";
 import AIClinicalPanel from "./AIClinicalPanel";
+import { TemplateControls, type TemplateType } from "./DoctorTemplates";
 import VideoConsultation, { type VideoConsultationHandle } from "./VideoConsultation";
 import JitsiRoom from "./JitsiRoom";
 import { gerarRoomId } from "@/lib/jitsi";
@@ -1155,18 +1156,28 @@ SOAP atual: S=${soap.notes.subjective}, O=${soap.notes.objective}, A=${soap.note
       </div>
 
       {/* Active SOAP field */}
-      {soapTabs.filter(t => t.key === activeSOAP).map(tab => (
-        <div key={tab.key} className="flex-1 flex flex-col gap-1.5">
-          <p className="text-[11px] font-medium text-[hsl(220,15%,55%)]">{tab.label}</p>
-          <MedicalAutocomplete
-            value={soap.notes[tab.field]}
-            onChange={(val) => updateSOAPField(tab.field as keyof SOAPNotes, val)}
-            field="notes"
-            placeholder={tab.placeholder}
-            className="flex-1 bg-[hsl(220,20%,8%)] border-[hsl(220,15%,16%)] text-white placeholder:text-[hsl(220,15%,30%)] resize-none rounded-xl min-h-[120px] focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
-          />
-        </div>
-      ))}
+      {soapTabs.filter(t => t.key === activeSOAP).map(tab => {
+        const tmplType = `soap_${tab.field}` as TemplateType;
+        return (
+          <div key={tab.key} className="flex-1 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-medium text-[hsl(220,15%,55%)]">{tab.label}</p>
+              <TemplateControls
+                type={tmplType}
+                currentText={soap.notes[tab.field]}
+                onInsert={(t) => updateSOAPField(tab.field as keyof SOAPNotes, soap.notes[tab.field] ? `${soap.notes[tab.field]}\n${t}` : t)}
+              />
+            </div>
+            <MedicalAutocomplete
+              value={soap.notes[tab.field]}
+              onChange={(val) => updateSOAPField(tab.field as keyof SOAPNotes, val)}
+              field="notes"
+              placeholder={tab.placeholder}
+              className="flex-1 bg-[hsl(220,20%,8%)] border-[hsl(220,15%,16%)] text-white placeholder:text-[hsl(220,15%,30%)] resize-none rounded-xl min-h-[120px] focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+            />
+          </div>
+        );
+      })}
 
       <div className="flex gap-2">
         <Button onClick={() => soap.saveNotes()} disabled={soap.isSaving} size="sm" className={`flex-1 rounded-xl gap-1.5 transition-all duration-300 ${

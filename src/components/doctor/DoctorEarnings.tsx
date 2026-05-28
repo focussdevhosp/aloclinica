@@ -35,8 +35,39 @@ const DoctorEarnings = () => {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [clinicInfo, setClinicInfo] = useState<{ name: string; percent: number } | null>(null);
+  const [payoutFreq, setPayoutFreq] = useState<"daily" | "weekly" | "monthly">("monthly");
+  const [savingFreq, setSavingFreq] = useState(false);
 
   useEffect(() => { if (user) fetchEarnings(); }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const { data } = await db.from("doctor_profiles").select("payout_frequency").eq("user_id", user.id).maybeSingle();
+        const f = (data as any)?.payout_frequency;
+        if (f === "daily" || f === "weekly" || f === "monthly") setPayoutFreq(f);
+      } catch { /* sem deps */ }
+    })();
+  }, [user]);
+
+  const updatePayoutFreq = async (next: "daily" | "weekly" | "monthly") => {
+    if (!user || next === payoutFreq) return;
+    setSavingFreq(true);
+    const prev = payoutFreq;
+    setPayoutFreq(next);
+    try {
+      const { error } = await db.from("doctor_profiles")
+        .update({ payout_frequency: next } as any).eq("user_id", user.id);
+      if (error) throw error;
+      toast.success("Frequência de repasse atualizada", { description: next === "daily" ? "Você receberá D+1 a partir do próximo dia útil." : next === "weekly" ? "Repasse semanal toda segunda-feira." : "Repasse mensal no dia 5." });
+    } catch (e: any) {
+      setPayoutFreq(prev);
+      toast.error("Não foi possível atualizar", { description: e?.message });
+    } finally {
+      setSavingFreq(false);
+    }
+  };
 
   const fetchEarnings = async () => {
     const { data: docProfile } = await db.from("doctor_profiles").select("id, consultation_price").eq("user_id", user!.id).single();
@@ -323,6 +354,30 @@ const DoctorEarnings = () => {
                 </>
               );
             })()}
+          </CardContent>
+        </Card>
+
+        <Card className="border-border mb-4">
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Wallet className="w-4 h-4" /> Frequência de repasse</CardTitle></CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground mb-3">Quando você quer receber o saldo disponível para saque?</p>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { v: "daily" as const,  label: "Diário", help: "D+1 útil" },
+                { v: "weekly" as const, label: "Semanal", help: "toda segunda" },
+                { v: "monthly" as const,label: "Mensal", help: "dia 5" },
+              ]).map((o) => (
+                <button key={o.v} type="button" disabled={savingFreq} onClick={() => updatePayoutFreq(o.v)}
+                  aria-pressed={payoutFreq === o.v}
+                  className={`rounded-xl border p-3 text-left transition-all ${payoutFreq === o.v
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/40"} disabled:opacity-50`}>
+                  <p className={`text-sm font-semibold ${payoutFreq === o.v ? "text-primary" : "text-foreground"}`}>{o.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{o.help}</p>
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">A integração com o PSP (Asaas) executa a transferência segundo essa preferência.</p>
           </CardContent>
         </Card>
 

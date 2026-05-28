@@ -85,33 +85,48 @@ const TASKS: Record<string, TaskDef> = {
     user: (p) => `${p.question}\n\n${p.context ? `Contexto do paciente:\n${p.context}` : ""}`,
     max: 1400, temp: 0.4,
   },
+  triage: {
+    system: `Você é o assistente de TRIAGEM PRÉ-AGENDAMENTO da AloClínica. Não diagnostica nem prescreve — apenas ORIENTA NAVEGAÇÃO.
+Responda APENAS com JSON válido, sem texto fora do JSON, no formato:
+{"urgency":"emergencia|alta|media|baixa","specialty":"clinico_geral|cardiologia|pediatria|psiquiatria|ginecologia|dermatologia|ortopedia|otorrino|oftalmologia|endocrinologia|gastro|neurologia|psicologia|urologia","red_flags":["lista curta"],"explanation":"motivo da sugestão em 1-2 frases","recommended_action":"agendar_consulta|samu_192|pronto_socorro|farmacia_orientacao"}
+SINAIS DE EMERGÊNCIA (sempre urgency=emergencia, recommended_action=samu_192): dor torácica intensa, falta de ar grave, sinais de AVC (assimetria facial/perda de força), desmaio, convulsão, sangramento abundante, dor abdominal severa de início súbito, ideação suicida ativa.`,
+    user: (p) => `Triagem para paciente.\n\nQueixa: ${p.complaint || "—"}\nSintomas: ${p.symptoms || "—"}\nDuração: ${p.duration || "—"}\nSeveridade (0-10): ${p.severity ?? "—"}\nIdade/sexo: ${p.who || "—"}\nNotas: ${p.notes || "—"}`,
+    max: 700, temp: 0.2,
+  },
 };
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // Auth: médico autenticado
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr || !user) return json({ error: "Unauthorized" }, 401);
-
-    const allowed = await checkRateLimit(user.id, 40, 10);
-    if (!allowed) return json({ error: "Muitas requisições à IA. Aguarde um momento." }, 429);
-
     const { task, payload } = await req.json();
     const def = TASKS[task as string];
     if (!def) return json({ error: `task inválida: ${task}` }, 400);
 
+    // Triagem é PÚBLICA (pré-agendamento) — rate-limit por IP. Restante exige login.
+    const isPublic = task === "triage";
+    let rateKey: string;
+    if (isPublic) {
+      rateKey = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
+    } else {
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader?.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
+      const supabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        { global: { headers: { Authorization: authHeader } } },
+      );
+      const { data: { user }, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !user) return json({ error: "Unauthorized" }, 401);
+      rateKey = user.id;
+    }
+
+    const allowed = await checkRateLimit(rateKey, isPublic ? 12 : 40, 10);
+    if (!allowed) return json({ error: "Muitas requisições à IA. Aguarde um momento." }, 429);
+
     const p = payload && typeof payload === "object" ? payload : {};
     // Limita tamanho do contexto para conter custo/abuso
-    for (const k of ["context", "examText", "medications", "question", "patientInfo", "drug"]) {
+    for (const k of ["context", "examText", "medications", "question", "patientInfo", "drug", "complaint", "symptoms", "who", "notes"]) {
       if (typeof p[k] === "string" && p[k].length > 8000) p[k] = p[k].slice(0, 8000);
     }
 

@@ -83,6 +83,10 @@ const PrescriptionForm = lazy(() => import("@/components/consultation/Prescripti
 const ExamRequestForm = lazy(() => import("@/components/doctor/ExamRequestForm"));
 const RateConsultationPage = lazy(() => import("@/components/patient/RateConsultationPage"));
 const PreConsultationPage = lazy(() => import("@/components/patient/PreConsultationPage"));
+const QuickRxRenewal = lazy(() => import("@/components/patient/QuickRxRenewal"));
+const FamilyMembers = lazy(() => import("@/components/patient/FamilyMembers"));
+const AccessLog = lazy(() => import("@/components/patient/AccessLog"));
+const ExamMarketplace = lazy(() => import("@/components/patient/ExamMarketplace"));
 const ChatPage = lazy(() => import("@/components/chat/ChatPage"));
 const MedicalRecords = lazy(() => import("@/components/medical/MedicalRecords"));
 const AIAssistantPanel = lazy(() => import("@/components/ai/AIAssistantPanel"));
@@ -291,6 +295,10 @@ const Dashboard = () => {
       <Route path="patient/diary" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><SymptomDiary /></ContextGuard></RoleGuard>} />
       <Route path="urgent-care" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><UrgentCareQueue /></ContextGuard></RoleGuard>} />
       <Route path="prescription-renewal" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><PrescriptionRenewalForm /></ContextGuard></RoleGuard>} />
+      <Route path="prescriptions/renew/:prescriptionId" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><QuickRxRenewal /></ContextGuard></RoleGuard>} />
+      <Route path="patient/family" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><FamilyMembers /></ContextGuard></RoleGuard>} />
+      <Route path="patient/access-log" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><AccessLog /></ContextGuard></RoleGuard>} />
+      <Route path="patient/exams" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><ExamMarketplace /></ContextGuard></RoleGuard>} />
       <Route path="patient/health-card" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><HealthCardPage /></ContextGuard></RoleGuard>} />
       <Route path="patient/care-plans" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><CarePlansPage /></ContextGuard></RoleGuard>} />
       <Route path="patient/vaccinations" element={<RoleGuard allowed={["patient"]} roles={roles}><ContextGuard panel="patient" forceRole={forceRole} roles={roles}><VaccinationsPage /></ContextGuard></RoleGuard>} />
