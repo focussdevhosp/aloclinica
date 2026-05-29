@@ -21,6 +21,8 @@ export const getAdminNav = (active: string) => [
   { label: "NPS",         href: "/dashboard/admin/nps?role=admin",          icon: <NavIcon icon={<Star size={16} weight="fill" />}           color="amber"  />, active: active === "nps",      group: "Visão Geral" },
 
   // ── Operação ──
+  { label: "Leads B2G/B2B",       href: "/dashboard/admin/leads?role=admin",               icon: <NavIcon icon={<Handshake size={16} weight="fill" />}       color="cyan"    />, active: active === "leads",               group: "Operação" },
+  { label: "Sinais de fraude",    href: "/dashboard/admin/fraud-signals?role=admin",       icon: <NavIcon icon={<ShieldStar size={16} weight="fill" />}      color="rose"    />, active: active === "fraud-signals",       group: "Operação" },
   { label: "Aprovações",          href: "/dashboard/admin/approvals?role=admin",           icon: <NavIcon icon={<UserCircleCheck size={16} weight="fill" />} color="emerald" />, active: active === "approvals",           group: "Operação" },
   { label: "Revisão KYC",         href: "/dashboard/admin/kyc-review?role=admin",          icon: <NavIcon icon={<ShieldStar size={16} weight="fill" />}      color="blue"    />, active: active === "kyc-review",          group: "Operação" },
   { label: "SLA Médicos",         href: "/dashboard/admin/sla-medicos?role=admin",         icon: <NavIcon icon={<Stethoscope size={16} weight="fill" />}    color="orange"  />, active: active === "sla-medicos",         group: "Operação" },
