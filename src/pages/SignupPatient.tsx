@@ -21,6 +21,7 @@ import {
 } from "@/lib/form-validators";
 import { toastError } from "@/lib/errorMessages";
 import mascotWelcome from "@/assets/mascot-welcome.png";
+import { suggestEmailFix } from "@/lib/brValidators";
 import { Checkbox } from "@/components/ui/checkbox";
 import { logConsents } from "@/lib/consent";
 
@@ -159,7 +160,16 @@ export default function SignupPatient() {
       const redirect = params.get("redirect");
       navigate(redirect && redirect.startsWith("/") ? redirect : "/dashboard");
     } catch (err) {
-      toastError(toast, err, "signup");
+      const msg = String((err as any)?.message || err || "");
+      const isEmailExists = /already.*registered|user.*already|email_exists|already_exists/i.test(msg);
+      if (isEmailExists) {
+        toast.error("E-mail já cadastrado", {
+          description: "Vamos te levar para o login.",
+          action: { label: "Ir para login", onClick: () => navigate(`/paciente?email=${encodeURIComponent(data.email)}`) },
+        });
+      } else {
+        toastError(toast, err, "signup");
+      }
     } finally {
       setLoading(false);
     }
@@ -202,17 +212,29 @@ export default function SignupPatient() {
           hint={errors.full_name && <p className="text-[12px] text-destructive">{errors.full_name}</p>}
         />
 
-        <AuthField
-          label="Email"
-          icon={Mail}
-          type="email"
-          value={data.email}
-          onChange={(e) => set("email", e.target.value)}
-          placeholder="voce@email.com"
-          autoComplete="email"
-          required
-          hint={errors.email && <p className="text-[12px] text-destructive">{errors.email}</p>}
-        />
+        <div>
+          <AuthField
+            label="Email"
+            icon={Mail}
+            type="email"
+            value={data.email}
+            onChange={(e) => set("email", e.target.value)}
+            placeholder="voce@email.com"
+            autoComplete="email"
+            required
+            hint={errors.email && <p className="text-[12px] text-destructive">{errors.email}</p>}
+          />
+          {(() => {
+            const fix = suggestEmailFix(data.email);
+            if (!fix || errors.email) return null;
+            return (
+              <button type="button" onClick={() => set("email", fix)}
+                className="text-[11px] text-primary hover:underline mt-1 inline-flex items-center gap-1">
+                Quis dizer <strong>{fix}</strong>?
+              </button>
+            );
+          })()}
+        </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <PhoneInput value={data.phone} onChange={(v) => set("phone", v)} required error={errors.phone} />

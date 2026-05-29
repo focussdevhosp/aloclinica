@@ -27,6 +27,7 @@ import {
   UploadSimple, FileImage, XCircle, CircleNotch,
 } from "@phosphor-icons/react";
 import { toastError } from "@/lib/errorMessages";
+import { suggestEmailFix } from "@/lib/brValidators";
 import doctorSignup from "@/assets/doctor-signup-1.png";
 
 interface FormData {
@@ -329,7 +330,16 @@ export default function SignupDoctor() {
       toast.success("Cadastro enviado! Sua conta está em análise.");
       navigate("/aguardando-aprovacao?role=doctor");
     } catch (err) {
-      toastError(toast, err, "signup");
+      const msg = String((err as any)?.message || err || "");
+      const isEmailExists = /already.*registered|user.*already|email_exists|already_exists/i.test(msg);
+      if (isEmailExists) {
+        toast.error("E-mail já cadastrado", {
+          description: "Esse e-mail já tem conta. Vamos te levar para o login.",
+          action: { label: "Ir para login", onClick: () => navigate(`/medico?email=${encodeURIComponent(formData.email)}`) },
+        });
+      } else {
+        toastError(toast, err, "signup");
+      }
       console.error(err);
     } finally {
       setLoading(false);
@@ -451,6 +461,16 @@ export default function SignupDoctor() {
                         autoComplete="email"
                       />
                       {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                      {(() => {
+                        const fix = suggestEmailFix(formData.email);
+                        if (!fix || errors.email) return null;
+                        return (
+                          <button type="button" onClick={() => setFormData((p) => ({ ...p, email: fix }))}
+                            className="text-xs text-primary hover:underline mt-0.5">
+                            Quis dizer <strong>{fix}</strong>?
+                          </button>
+                        );
+                      })()}
                     </div>
 
                     <div className="space-y-2">

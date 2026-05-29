@@ -183,7 +183,13 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const AuthPaciente = () => {
   const [mode, setMode] = useState<"welcome" | "login" | "signup">("login");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search).get("email");
+      return p && p.includes("@") ? p : "";
+    }
+    return "";
+  });
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

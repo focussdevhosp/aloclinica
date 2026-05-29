@@ -133,7 +133,10 @@ const AuthMedico = () => {
   const [inviteCode, setInviteCode] = useState("");
   const [validatedCodeId, setValidatedCodeId] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    const p = searchParams.get("email");
+    return p && p.includes("@") ? p : "";
+  });
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

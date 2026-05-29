@@ -92,15 +92,21 @@ const PATTERNS: Array<{
     result: { title: "Usuário não encontrado",
               description: "Esse email não está cadastrado. Quer criar uma conta?" } },
 
-  { match: /email.*already.*registered|already_exists|already.*confirmed/i,
+  { match: /email.*already.*registered|user.*already.*registered|already_exists|already.*confirmed|email_exists/i,
     context: ["signup"],
-    result: { title: "Email já cadastrado",
-              description: "Use a opção de login ou recupere sua senha." } },
+    result: { title: "E-mail já cadastrado",
+              description: "Esse e-mail já tem conta. Faça login ou recupere a senha em \"Esqueci minha senha\".",
+              action: "Ir para login" } },
 
   { match: /weak_password|password.*short/i,
     context: ["signup"],
     result: { title: "Senha muito fraca",
-              description: "Use no mínimo 6 caracteres com letras e números." } },
+              description: "Use ao menos 8 caracteres com maiúscula, minúscula e número." } },
+
+  { match: /doctor_type.*check|check constraint.*doctor_type/i,
+    context: ["signup"],
+    result: { title: "Configuração incorreta",
+              description: "Detectamos uma inconsistência no tipo de atendimento. A equipe já foi notificada." } },
 
   { match: /rate.*limit|too.*many.*requests|over_email_send|for security purposes|you can only request this after|429/i,
     result: { title: "Aguarde alguns segundos",
