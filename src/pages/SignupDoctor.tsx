@@ -274,7 +274,12 @@ export default function SignupDoctor() {
         throw new Error("Sessão não confirmada. Confirme seu email e faça login para completar o cadastro.");
       }
 
-      const { error: dpErr } = await (db as any)
+      // doctor_type tem CHECK constraint (telemedicina|oftalmologia|laudista).
+      // A especialidade clínica vai para doctor_specialties (linkada à tabela specialties).
+      const isOphthalmology = /oftalmologia/i.test(formData.specialty);
+      const docType = isOphthalmology ? "oftalmologia" : "telemedicina";
+
+      const { data: dpRow, error: dpErr } = await (db as any)
         .from("doctor_profiles")
         .insert({
           user_id: uid,
@@ -283,11 +288,26 @@ export default function SignupDoctor() {
           council_state: formData.crm_state,
           crm: formData.crm.replace(/\D/g, ""),
           crm_state: formData.crm_state,
-          doctor_type: formData.specialty,
+          doctor_type: docType,
           is_approved: false,
           crm_verified: formData.council_type === "CRM" && crmStatus === "ok",
-        });
+        })
+        .select("id")
+        .single();
       if (dpErr && !String(dpErr.message || "").includes("duplicate")) throw dpErr;
+
+      // Vincula especialidade real (best-effort): match por nome em public.specialties
+      try {
+        const doctorProfileId = (dpRow as any)?.id;
+        if (doctorProfileId && formData.specialty) {
+          const { data: spec } = await (db as any)
+            .from("specialties").select("id").ilike("name", formData.specialty.trim()).maybeSingle();
+          if ((spec as any)?.id) {
+            await (db as any).from("doctor_specialties")
+              .insert({ doctor_id: doctorProfileId, specialty_id: (spec as any).id });
+          }
+        }
+      } catch (e) { /* não bloqueia o cadastro */ console.warn("specialty link", e); }
 
       const uploaded: Record<string, string> = {};
       for (const key of Object.keys(DOC_LABELS) as DocKey[]) {
