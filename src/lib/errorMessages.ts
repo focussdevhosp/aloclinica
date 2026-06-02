@@ -52,7 +52,7 @@ const PATTERNS: Array<{
     result: { title: "Dados do cartão inválidos",
               description: "Confira o número e os dados do titular." } },
 
-  // PagBank específico
+  // Gateway específico
   { match: /whitelist.*required|whitelist_unauthorized|access_denied/i,
     context: ["pagamento"],
     result: { title: "Pagamento temporariamente indisponível",
