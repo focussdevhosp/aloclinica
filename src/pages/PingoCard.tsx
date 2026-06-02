@@ -388,37 +388,37 @@ const PingoCard = () => {
                 title: "Telemedicina 24h",
                 desc: "Acolhimento médico por vídeo a qualquer hora, de onde estiver.",
                 img: PINGO_ASSETS.telemedicina,
-                icon: <Lightning size={24} weight="fill" className="text-blue-500" />
+                icon: <Lightning size={24} weight="fill" className="text-primary" />
               },
               {
                 title: "Seguro Acidente",
                 desc: "Tranquilidade garantida para você e sua família em imprevistos.",
                 img: PINGO_ASSETS.seguro,
-                icon: <ShieldStar size={24} weight="fill" className="text-emerald-500" />
+                icon: <ShieldStar size={24} weight="fill" className="text-primary" />
               },
               {
                 title: "Assistência Funeral",
                 desc: "Apoio humanizado e completo quando você mais precisar.",
                 img: PINGO_ASSETS.funeral,
-                icon: <Umbrella size={24} weight="fill" className="text-indigo-500" />
+                icon: <Umbrella size={24} weight="fill" className="text-primary" />
               },
               {
                 title: "Sorteios Mensais",
                 desc: "Concorra a R$ 40 mil reais todos os meses pelo Pingo Card.",
                 img: PINGO_ASSETS.sorteio,
-                icon: <Gift size={24} weight="fill" className="text-amber-500" />
+                icon: <Gift size={24} weight="fill" className="text-primary" />
               },
               {
                 title: "Economia Real",
                 desc: "Descontos expressivos em farmácias, laboratórios e óticas.",
                 img: PINGO_ASSETS.economia,
-                icon: <CurrencyCircleDollar size={24} weight="fill" className="text-green-600" />
+                icon: <CurrencyCircleDollar size={24} weight="fill" className="text-primary" />
               },
               {
                 title: "Cuidado Completo",
                 desc: "Proteção e vantagens exclusivas em um único cartão digital.",
                 img: PINGO_ASSETS.cuidado,
-                icon: <Heart size={24} weight="fill" className="text-red-500" />
+                icon: <Heart size={24} weight="fill" className="text-primary" />
               }
             ].map((v, i) => (
               <motion.div
