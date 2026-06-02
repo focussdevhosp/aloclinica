@@ -363,7 +363,7 @@ const PanelCenter = () => {
             </div>
           </Card>
 
-          <Card className="border-border/40 bg-card/50">
+          <Card className="lg:col-span-4 border-border/40 bg-card/50">
             <div className="p-5 border-b border-border/40 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-primary" />
               <h3 className="text-sm font-bold text-foreground">Integridade</h3>
@@ -377,7 +377,7 @@ const PanelCenter = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> Mercado Pago Gateway
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> Mercado Pago
                 </span>
                 <Badge variant="outline" className="text-[9px] font-bold">CONECTADO</Badge>
               </div>
