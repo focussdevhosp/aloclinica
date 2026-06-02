@@ -292,8 +292,13 @@ const PingoCard = () => {
               className="col-span-12 lg:col-span-5 relative"
             >
               <div className="relative max-w-md mx-auto">
-                <img src={pingoFamily} alt="Família Pingo" className="absolute -top-12 -right-6 w-36 md:w-44 z-20 select-none drop-shadow-2xl pointer-events-none" draggable={false}/>
-                <div className="pc-member-card relative z-10">
+                <div className="pc-member-card relative z-10 overflow-hidden">
+                  {/* Decorative background image */}
+                  <img 
+                    src={PINGO_ASSETS.tudoEmUm} 
+                    alt="" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay pointer-events-none"
+                  />
                   <div className="relative z-10 flex items-start justify-between">
                     <div>
                       <p className="text-[10px] font-semibold tracking-[0.24em] uppercase" style={{ color: "var(--pc-gold-soft)" }}>Membro · Família</p>
