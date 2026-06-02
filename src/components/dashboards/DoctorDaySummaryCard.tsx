@@ -85,16 +85,16 @@ export default function DoctorDaySummaryCard({ todayAppts, waitingCount, inProgr
   };
 
   return (
-    <Card>
+    <Card className="rounded-[32px] border-border/20 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.12)] overflow-hidden">
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
             </div>
             <p className="text-sm font-semibold text-foreground">Resumo do dia (IA)</p>
           </div>
-          <Button size="sm" variant={text ? "outline" : "default"} className="h-8 rounded-xl gap-1.5" onClick={run} disabled={loading}>
+          <Button size="sm" variant={text ? "outline" : "default"} className="h-9 rounded-2xl gap-1.5 px-4 font-bold" onClick={run} disabled={loading}>
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             {loading ? "Analisando…" : text ? "Refazer" : "Gerar"}
           </Button>
