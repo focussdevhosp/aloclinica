@@ -254,10 +254,10 @@ const PingoCard = () => {
               className="col-span-12 lg:col-span-7"
             >
               <span className="pc-eyebrow">Cartão de benefícios · AloClínica</span>
-              <h1 className="mt-6 text-5xl md:text-6xl lg:text-7xl leading-[1.02]">
+              <h1 className="mt-6 text-5xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tight">
                 Cuidar de quem você ama,
                 <br />
-                <em className="not-italic" style={{ color: "var(--pc-blue-500)" }}>com calma</em> e sem pesar no bolso.
+                <em className="not-italic text-gradient" style={{ animationDuration: '6s' }}>com calma</em> e sem pesar no bolso.
               </h1>
               <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "rgba(10,19,46,.7)" }}>
                 O <strong className="pc-navy">Pingo Card</strong> é o cartão de saúde da família brasileira: descontos reais em consultas, exames e parceiros, sem carência e sem fidelidade. A partir de <strong>R$ 19,90/mês</strong>.
