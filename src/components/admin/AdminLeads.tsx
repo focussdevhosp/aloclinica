@@ -126,9 +126,10 @@ const AdminLeads = () => {
                         {l.expected_beneficiaries && (
                           <div className="flex items-center gap-1.5 text-foreground">
                             <Users className="w-3 h-3 text-muted-foreground" />
-                            ~{l.expected_beneficiaries.toLocaleString("pt-BR")} beneficiários
+                            ~{l.expected_beneficiaries.toLocaleString("pt-BR")} vidas
                           </div>
                         )}
+
                       </div>
                       {l.message && (
                         <p className="mt-2 text-xs text-muted-foreground line-clamp-2 italic">"{l.message}"</p>

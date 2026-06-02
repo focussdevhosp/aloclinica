@@ -122,6 +122,10 @@ const AdminUsers = () => {
     const toAdd = userRoles.filter(r => !currentRoles.includes(r));
     const toRemove = currentRoles.filter(r => !userRoles.includes(r));
 
+    // Audit log simulated
+    console.log(`Updating roles for ${selected.user_id}: adding [${toAdd}], removing [${toRemove}]`);
+
+
     for (const role of toAdd) {
       await db.from("user_roles").upsert({ user_id: selected.user_id, role: role as "admin" | "clinic" | "doctor" | "partner" | "patient" | "receptionist" | "support" });
     }

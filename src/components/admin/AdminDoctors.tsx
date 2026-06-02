@@ -43,7 +43,7 @@ const AdminDoctors = () => {
   };
 
   const toggleApproval = async (id: string, current: boolean) => {
-    await db.from("doctor_profiles").update({ is_approved: !current }).eq("id", id);
+    await db.from("doctor_profiles").update({ is_approved: !current, updated_at: new Date().toISOString() }).eq("id", id);
     toast.success(current ? "Médico desativado" : "Médico aprovado! ✅");
     fetchDoctors();
   };

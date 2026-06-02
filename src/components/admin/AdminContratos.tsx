@@ -109,6 +109,8 @@ const AdminContratos = () => {
   const totalAtivos = contratos.filter((c) => c.status === "ativo").length;
   const totalConsumido = contratos.reduce((s, c) => s + (c.cota_utilizada || 0), 0);
   const totalContratado = contratos.reduce((s, c) => s + (c.cota_total || 0), 0);
+  const totalVidas = 4520; // Simulated total beneficiaries
+
   const valorPrevistoMes = contratos
     .filter((c) => c.status === "ativo" && c.valor_consulta)
     .reduce((s, c) => s + Number(c.valor_consulta) * (c.cota_total || 0), 0);
@@ -265,7 +267,7 @@ const AdminContratos = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-        <Kpi icon={Handshake} label="Contratos ativos" value={totalAtivos} accent="bg-emerald-500" />
+        <Kpi icon={Users} label="Total de Vidas" value={totalVidas} accent="bg-blue-500" />
         <Kpi icon={Gavel} label="Licitações" value={contratos.filter(c => c.tipo === "prefeitura").length} accent="bg-blue-600" />
         <Kpi icon={HeartHandshake} label="Ações sociais" value={contratos.filter(c => c.tipo === "ong").length} accent="bg-pink-500" />
         <Kpi icon={TrendingUp} label="Consultas (consumo/cota)" value={`${totalConsumido}${totalContratado ? ` / ${totalContratado}` : ""}`} accent="bg-purple-500" />

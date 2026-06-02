@@ -119,7 +119,7 @@ const AdminAppointments = () => {
           <Card className="border-border flex-1">
             <CardContent className="p-3 flex items-center gap-2">
               <Clock className="w-4 h-4 text-secondary" />
-              <span className="text-sm font-medium text-foreground">{waitingCount} na fila</span>
+              <span className="text-sm font-medium text-foreground">{waitingCount} aguardando</span>
             </CardContent>
           </Card>
         </div>
