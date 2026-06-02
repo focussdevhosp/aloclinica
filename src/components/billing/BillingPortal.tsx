@@ -94,25 +94,18 @@ export function BillingPortal() {
     if (!user) return;
     setLoading(true);
 
-    const [subsRes, txsRes] = await Promise.all([
+    const [subsRes] = await Promise.all([
       (db as any)
         .from("subscriptions")
         .select("*, plans(name)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
-      db
-        .from("payment_transactions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50),
     ]);
 
     if (subsRes.error) warn("[BillingPortal] subs error", subsRes.error);
-    if (txsRes.error) warn("[BillingPortal] txs error", txsRes.error);
 
     setSubs(((subsRes.data ?? []) as any[]).map(s => ({ ...s, plan_name: s.plans?.name })));
-    setTxs((txsRes.data ?? []) as Transaction[]);
+    setTxs([]); // payment_transactions table was removed
     setLoading(false);
   };
 
