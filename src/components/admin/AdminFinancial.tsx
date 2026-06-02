@@ -471,6 +471,9 @@ const AdminFinancial = () => {
                 Receita Estimada (30d)
               </div>
               <div className="text-2xl font-black">R$ {totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>
+              <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
+                <TrendingUp className="w-3 h-3" /> {confirmedPayments} pagos
+              </p>
             </CardContent>
           </Card>
           
@@ -478,9 +481,10 @@ const AdminFinancial = () => {
             <CardContent className="pt-4 pb-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                Pagamentos Confirmados
+                Pagos
               </div>
               <div className="text-2xl font-black">{confirmedPayments}</div>
+              <p className="text-xs text-muted-foreground mt-1">no período</p>
             </CardContent>
           </Card>
 
@@ -488,9 +492,12 @@ const AdminFinancial = () => {
             <CardContent className="pt-4 pb-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <AlertTriangle className={cn("w-4 h-4", overduePayments > 0 ? "text-red-500 animate-pulse" : "text-orange-500")} />
-                Inadimplência (Vencidos)
+                Inadimplentes
               </div>
               <div className="text-2xl font-black">{overduePayments}</div>
+              <p className={cn("text-xs flex items-center gap-1 mt-1", overduePayments > 0 ? "text-red-600" : "text-muted-foreground")}>
+                vencidos
+              </p>
             </CardContent>
           </Card>
 
@@ -501,49 +508,7 @@ const AdminFinancial = () => {
                 Saques Pendentes
               </div>
               <div className="text-2xl font-black">{pendingWithdrawals}</div>
-            </CardContent>
-          </Card>
-              <p className="text-2xl font-bold text-foreground tabular-nums">
-                R$ {totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-              </p>
-              <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3" /> {confirmedPayments} pagos
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card variant="kpi">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <Clock className="w-4 h-4 text-amber-500" />
-                Pendentes
-              </div>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{pendingPayments}</p>
-              <p className="text-xs text-muted-foreground mt-1">aguardando pagamento</p>
-            </CardContent>
-          </Card>
-
-          <Card variant="kpi">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <AlertTriangle className="w-4 h-4 text-red-500" />
-                Inadimplentes
-              </div>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{overduePayments}</p>
-              <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
-                <TrendingDown className="w-3 h-3" /> vencidos
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card variant="kpi">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <Receipt className="w-4 h-4 text-primary" />
-                Total Consultas
-              </div>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{totalAppointments}</p>
-              <p className="text-xs text-muted-foreground mt-1">no período</p>
+              <p className="text-xs text-muted-foreground mt-1">aguardando revisão</p>
             </CardContent>
           </Card>
         </div>
