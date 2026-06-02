@@ -14,9 +14,9 @@ import {
   UserPlus, Layers, TrendingUp, Zap, Settings2,
   FileText, PieChart, ShieldAlert, Database, 
   CreditCard, ClipboardList, CheckCircle, AlertCircle, History,
-  Eye, Heart, Phone, CalendarCheck, UserCheck
+  Eye, Heart, Phone, CalendarCheck, UserCheck, Wallet, Megaphone
 } from "lucide-react";
- import { SquaresFour, WhatsappLogo, ShieldStar, Tag } from "@phosphor-icons/react";
+import { SquaresFour, WhatsappLogo, ShieldStar, Tag, Graph } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
