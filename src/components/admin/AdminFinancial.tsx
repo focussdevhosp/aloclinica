@@ -592,35 +592,6 @@ const AdminFinancial = () => {
             </CardContent>
           </Card>
         </div>
-                {paymentStatusData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={paymentStatusData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}`}
-                      >
-                        {paymentStatusData.map((_, i) => (
-                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                    Nenhum dado disponível
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Monthly Trend + Commission Breakdown */}
         <div className="grid md:grid-cols-2 gap-4">
