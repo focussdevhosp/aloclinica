@@ -241,7 +241,7 @@ export function BillingPortal() {
             <CardHeader>
               <CardTitle className="text-base">Cartões salvos</CardTitle>
               <CardDescription>
-                Cartões usados para assinaturas e cobranças rápidas. Dados criptografados pelo PagBank.
+                Cartões usados para assinaturas e cobranças rápidas. Dados criptografados pelo Mercado Pago.
               </CardDescription>
             </CardHeader>
             <CardContent>
