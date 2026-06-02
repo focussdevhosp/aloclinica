@@ -15,7 +15,7 @@ import {
   ArrowUp, ArrowDown, Save, RefreshCw, Monitor, Tablet, Smartphone,
   History, Upload, Plus, Trash2, Layout, Image as ImageIcon,
   Type, Settings, Eye, Search, AlertCircle, Globe, FileEdit, Undo2,
-  Maximize2, Minimize2, Languages, Palette, Smartphone, Tablet, Monitor
+  Maximize2, Minimize2, Languages, Palette
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useConfirm } from "@/components/ui/confirm-dialog";
