@@ -53,7 +53,7 @@ const AdminDoctorApplications = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchApplications(); }, [filter]);
+  useEffect(() => { fetchApplications(); }, [filter, search]);
 
   const handleApprove = async () => {
     if (!selectedApp) return;
