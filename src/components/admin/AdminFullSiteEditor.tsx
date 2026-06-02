@@ -14,7 +14,8 @@ import { invalidateSiteSections } from "@/lib/site-sections";
 import {
   ArrowUp, ArrowDown, Save, RefreshCw, Monitor, Tablet, Smartphone,
   History, Upload, Plus, Trash2, Layout, Image as ImageIcon,
-  Type, Settings, Eye, Search, AlertCircle, Globe, FileEdit, Undo2
+  Type, Settings, Eye, Search, AlertCircle, Globe, FileEdit, Undo2,
+  Maximize2, Minimize2, Languages, Palette
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useConfirm } from "@/components/ui/confirm-dialog";
@@ -462,38 +463,59 @@ export default function AdminFullSiteEditor() {
         </Card>
 
         {/* Middle: Editor Form */}
-        <Card className="col-span-4 flex flex-col shadow-sm overflow-hidden">
+        <Card className="col-span-4 flex flex-col shadow-sm overflow-hidden border-primary/10">
           {!selected ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
-              <Settings className="w-12 h-12 mb-4 opacity-20" />
-              <p className="font-medium">Selecione uma seção no painel esquerdo para começar a editar.</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-muted/5">
+              <div className="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mb-4">
+                <Settings className="w-8 h-8 text-primary/30" />
+              </div>
+              <p className="font-bold text-foreground">Escolha uma seção</p>
+              <p className="text-xs mt-1">Selecione uma parte do site no painel lateral para editar seu conteúdo.</p>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="flex items-center justify-between pb-2 border-b">
-                <h2 className="text-lg font-bold flex items-center gap-2">
-                  <Type className="w-4 h-4" /> {selected.display_name}
-                </h2>
-                <Badge variant="outline">{selected.key}</Badge>
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="p-4 bg-muted/30 border-b flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    <Type className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold leading-tight">{selected.display_name}</h2>
+                    <p className="text-[10px] text-muted-foreground font-mono">{selected.key}</p>
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                   <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"><Settings className="w-3.5 h-3.5" /></Button>
+                </div>
               </div>
               
-              {selected.schema?.fields?.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm">Esta seção não possui campos editáveis.</p>
+              <div className="flex-1 overflow-y-auto p-5 space-y-8 scrollbar-hide">
+                {selected.schema?.fields?.length === 0 ? (
+                  <div className="py-12 text-center text-muted-foreground">
+                    <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                    <p className="text-xs">Esta seção não possui campos configuráveis no momento.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-8">
+                    {selected.schema?.fields?.map((f) => (
+                      <div key={f.key} className="group/field relative">
+                        <FieldEditor
+                          field={f}
+                          value={editing[f.key]}
+                          onChange={(v) => handleConfigChange({ ...editing, [f.key]: v })}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="pt-10 pb-6 opacity-30 flex flex-col items-center gap-2 border-t mt-12">
+                   <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                     <Save className="w-3 h-3" />
+                   </div>
+                   <p className="text-[10px] font-medium uppercase tracking-widest">Fim dos campos editáveis</p>
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  {selected.schema?.fields?.map((f) => (
-                    <FieldEditor
-                      key={f.key}
-                      field={f}
-                      value={editing[f.key]}
-                      onChange={(v) => handleConfigChange({ ...editing, [f.key]: v })}
-                    />
-                  ))}
-                </div>
-              )}
+              </div>
             </div>
           )}
         </Card>
@@ -533,12 +555,16 @@ function FieldEditor({ field, value, onChange }: { field: Field; value: any; onC
 
   if (field.type === "text" || field.type === "url") {
     return (
-      <div className="space-y-1">
-        {labelEl}
+      <div className="space-y-2 p-4 rounded-xl border bg-card hover:border-primary/20 transition-colors shadow-sm">
+        <div className="flex items-center justify-between">
+          {labelEl}
+          {field.type === "url" && <Globe className="w-3.5 h-3.5 text-muted-foreground" />}
+        </div>
         <Input 
           value={value ?? ""} 
           onChange={(e) => onChange(e.target.value)} 
-          className="bg-background focus:ring-1 focus:ring-primary/20"
+          className="bg-background border-muted-foreground/10 focus:border-primary/30 h-10 shadow-none transition-all"
+          placeholder={`Digite ${field.label.toLowerCase()}...`}
         />
       </div>
     );
@@ -546,13 +572,14 @@ function FieldEditor({ field, value, onChange }: { field: Field; value: any; onC
   
   if (field.type === "textarea") {
     return (
-      <div className="space-y-1">
+      <div className="space-y-2 p-4 rounded-xl border bg-card hover:border-primary/20 transition-colors shadow-sm">
         {labelEl}
         <Textarea 
-          rows={4} 
+          rows={5} 
           value={value ?? ""} 
           onChange={(e) => onChange(e.target.value)} 
-          className="bg-background resize-none focus:ring-1 focus:ring-primary/20"
+          className="bg-background border-muted-foreground/10 focus:border-primary/30 shadow-none resize-none transition-all"
+          placeholder={`Escreva ${field.label.toLowerCase()}...`}
         />
       </div>
     );
@@ -597,11 +624,19 @@ function FieldEditor({ field, value, onChange }: { field: Field; value: any; onC
   }
 
   if (field.type === "image") {
-    return <ImageField label={field.label} value={value ?? ""} onChange={onChange} />;
+    return (
+      <div className="p-4 rounded-xl border bg-card hover:border-primary/20 transition-colors">
+        <ImageField label={field.label} value={value ?? ""} onChange={onChange} />
+      </div>
+    );
   }
 
   if (field.type === "array") {
-    return <ArrayField field={field} value={value ?? []} onChange={onChange} />;
+    return (
+      <div className="p-4 rounded-xl border bg-card hover:border-primary/20 transition-colors">
+        <ArrayField field={field} value={value ?? []} onChange={onChange} />
+      </div>
+    );
   }
 
   return null;
