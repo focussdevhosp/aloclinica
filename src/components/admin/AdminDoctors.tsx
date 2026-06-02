@@ -15,6 +15,7 @@ import { AdminPageHeader } from "./AdminPageHeader";
 import { Search, Eye, Edit, Check, X, Stethoscope, Download } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { exportToCSV } from "@/lib/csv";
+import { cn } from "@/lib/utils";
 
 const AdminDoctors = () => {
   
@@ -150,7 +151,9 @@ const AdminDoctors = () => {
                 <TableRow>
                   <TableHead>Médico</TableHead>
                   <TableHead className="hidden sm:table-cell">CRM</TableHead>
-                  <TableHead className="hidden md:table-cell">Preço</TableHead>
+                  <TableHead className="hidden md:table-cell">Especialidade</TableHead>
+                  <TableHead className="hidden md:table-cell">Telefone</TableHead>
+                  <TableHead className="hidden lg:table-cell">Preço</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -181,9 +184,17 @@ const AdminDoctors = () => {
                       </div>
                     </TableCell>
                     <TableCell data-label="CRM" className="hidden sm:table-cell text-muted-foreground">{doc.crm}/{doc.crm_state}</TableCell>
-                    <TableCell data-label="Preço" className="hidden md:table-cell text-muted-foreground">R$ {doc.consultation_price || "—"}</TableCell>
+                    <TableCell data-label="Especialidade" className="hidden md:table-cell">
+                      <div className="flex flex-wrap gap-1">
+                        <Badge variant="outline" className="text-[10px] bg-primary/5">Geral</Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell data-label="Telefone" className="hidden md:table-cell text-muted-foreground text-xs">{doc.phone || "—"}</TableCell>
+                    <TableCell data-label="Preço" className="hidden lg:table-cell text-muted-foreground">R$ {doc.consultation_price || "—"}</TableCell>
                     <TableCell data-label="Status">
-                      <Badge variant={doc.is_approved ? "default" : "outline"}>{doc.is_approved ? "Aprovado" : "Pendente"}</Badge>
+                      <Badge variant={doc.is_approved ? "default" : "outline"} className={cn(doc.is_approved ? "bg-emerald-500 hover:bg-emerald-600" : "")}>
+                        {doc.is_approved ? "Ativo" : "Pendente"}
+                      </Badge>
                     </TableCell>
                     <TableCell data-label="">
                       <div className="flex items-center gap-1">

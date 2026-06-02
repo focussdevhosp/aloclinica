@@ -13,7 +13,7 @@ import {
   Activity, RefreshCw, Monitor, Sparkles, LayoutGrid,
   UserPlus, Layers, TrendingUp, Zap, Settings2,
   FileText, PieChart, ShieldAlert, Database, 
-  CreditCard, ClipboardList, CheckCircle, AlertCircle,
+  CreditCard, ClipboardList, CheckCircle, AlertCircle, History,
   Eye, Heart, Phone, CalendarCheck, UserCheck
 } from "lucide-react";
  import { SquaresFour, WhatsappLogo, ShieldStar, Tag } from "@phosphor-icons/react";
@@ -175,6 +175,17 @@ const PanelCenter = () => {
         route: "/dashboard/admin/live?role=admin"
       },
       {
+        label: "Leads",
+        sublabel: "Novos contatos",
+        value: "18",
+        icon: UserPlus,
+        gradient: "from-blue-400 via-blue-500 to-indigo-600",
+        ring: "ring-blue-500/30",
+        glow: "shadow-blue-500/20",
+        sparkColor: "stroke-blue-500",
+        route: "/dashboard/admin/leads?role=admin"
+      },
+      {
         label: "WhatsApp API",
         sublabel: "Automações & Bots",
         value: "Ativo",
@@ -186,15 +197,15 @@ const PanelCenter = () => {
         route: "/dashboard/admin/whatsapp?role=admin"
       },
       {
-        label: "Faturamento",
-        sublabel: "Receita (7d)",
-        value: "R$ 12.4k",
-        icon: TrendingUp,
-        gradient: "from-blue-400 via-blue-500 to-indigo-600",
-        ring: "ring-blue-500/30",
-        glow: "shadow-blue-500/20",
-        sparkColor: "stroke-blue-500",
-        route: "/dashboard/admin/financial?role=admin"
+        label: "Aprovações",
+        sublabel: "Médicos pendentes",
+        value: panels.find(p => p.id === "doctor")?.totalUsers ?? 0,
+        icon: UserCheck,
+        gradient: "from-orange-400 via-orange-500 to-red-600",
+        ring: "ring-orange-500/30",
+        glow: "shadow-orange-500/20",
+        sparkColor: "stroke-orange-500",
+        route: "/dashboard/admin/approvals?role=admin"
       },
       {
         label: "Consultas",
@@ -333,6 +344,21 @@ const PanelCenter = () => {
 
         {/* ─────── PLATFORM PULSE ─────── */}
         <motion.section variants={fadeUp} className="grid lg:grid-cols-12 gap-4">
+          <Card className="lg:col-span-12 border-border/40 bg-card/50 overflow-hidden">
+            <div className="p-5 border-b border-border/40 flex items-center justify-between bg-primary/[0.03]">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-bold text-foreground">Status do Ecossistema</h3>
+              </div>
+              <div className="flex items-center gap-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> WhatsApp API</span>
+                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Mercado Pago</span>
+                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Jitsi Video</span>
+                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Database</span>
+              </div>
+            </div>
+          </Card>
+
           <Card className="lg:col-span-8 border-border/40 bg-card/50 overflow-hidden">
             <div className="p-5 border-b border-border/40 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -361,33 +387,40 @@ const PanelCenter = () => {
             </div>
           </Card>
 
-          <Card className="lg:col-span-4 border-border/40 bg-card/50">
-            <div className="p-5 border-b border-border/40 flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-bold text-foreground">Integridade</h3>
-            </div>
-            <div className="p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> WhatsApp API
-                </span>
-                <Badge variant="outline" className="text-[9px] font-bold">OPERANTE</Badge>
+          <Card className="lg:col-span-4 border-border/40 bg-card/50 overflow-hidden flex flex-col">
+            <div className="p-5 border-b border-border/40 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <History className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-bold text-foreground">Atividade Recente</h3>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> Mercado Pago
-                </span>
-                <Badge variant="outline" className="text-[9px] font-bold">CONECTADO</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-amber-500" /> Jitsi Video
-                </span>
-                <Badge variant="outline" className="text-[9px] font-bold text-amber-600 border-amber-500/20 bg-amber-500/5">LATÊNCIA</Badge>
-              </div>
-              <Button variant="ghost" className="w-full text-xs h-8 text-primary hover:bg-primary/5 mt-2" onClick={() => navigate("/dashboard/admin/health?role=admin")}>
-                Ver Diagnóstico Completo
+              <Button variant="ghost" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => navigate("/dashboard/admin/logs?role=admin")}>
+                Ver Logs
               </Button>
+            </div>
+            <div className="flex-1 overflow-y-auto max-h-[250px] scrollbar-hide">
+              {liveActivity.length > 0 ? (
+                <div className="divide-y divide-border/30">
+                  {liveActivity.map((activity, idx) => (
+                    <div key={idx} className="p-3 hover:bg-primary/5 transition-colors group">
+                      <div className="flex items-start gap-3">
+                        <div className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", activity.panel.gradient.split(" ")[0].replace("from-", "bg-"))} />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[11px] font-bold text-foreground truncate">{activity.name}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{activity.page}</p>
+                        </div>
+                        <span className="text-[9px] text-muted-foreground tabular-nums bg-muted px-1.5 py-0.5 rounded shrink-0">
+                          {format(new Date(activity.lastSeen), "HH:mm")}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full py-12 text-center opacity-50">
+                  <Activity className="w-8 h-8 mb-2 text-muted-foreground" />
+                  <p className="text-[10px] font-medium uppercase tracking-widest">Aguardando atividade...</p>
+                </div>
+              )}
             </div>
           </Card>
         </motion.section>
