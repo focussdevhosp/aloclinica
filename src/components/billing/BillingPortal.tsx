@@ -3,7 +3,7 @@
  *
  * 3 abas:
  *  1. Assinaturas — ativas/canceladas + cancelar/trocar cartão
- *  2. Cartões salvos — vault PagBank
+ *  2. Cartões salvos — vault Mercado Pago
  *  3. Histórico — todas transações (paid/refunded/pending)
  */
 import { useEffect, useMemo, useState } from "react";
