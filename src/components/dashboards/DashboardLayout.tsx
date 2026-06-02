@@ -339,9 +339,9 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
 
     return (
       <Link to={item.href} onClick={onClick}
-        className={`nav-item group flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-all duration-200 relative ${
+        className={`nav-item group flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[14px] transition-all duration-300 relative ${
           item.active
-            ? "bg-primary text-primary-foreground font-semibold shadow-[0_2px_8px_rgba(0,0,0,.15),inset_0_0_0_1px_rgba(255,255,255,.06)]"
+            ? "bg-primary text-primary-foreground font-bold shadow-[0_4px_12px_rgba(0,0,0,.12),inset_0_0_0_1px_rgba(255,255,255,.1)]"
             : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
         }`}
       >
