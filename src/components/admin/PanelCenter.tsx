@@ -175,6 +175,17 @@ const PanelCenter = () => {
         route: "/dashboard/admin/live?role=admin"
       },
       {
+        label: "Leads",
+        sublabel: "Novos contatos",
+        value: "18",
+        icon: UserPlus,
+        gradient: "from-blue-400 via-blue-500 to-indigo-600",
+        ring: "ring-blue-500/30",
+        glow: "shadow-blue-500/20",
+        sparkColor: "stroke-blue-500",
+        route: "/dashboard/admin/leads?role=admin"
+      },
+      {
         label: "WhatsApp API",
         sublabel: "Automações & Bots",
         value: "Ativo",
