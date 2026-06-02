@@ -3,8 +3,8 @@
 // Anthropic's Messages API, plus a streaming pass-through that emits
 // OpenAI-shaped Server-Sent Events so existing client/SSE parsers keep working.
 
-export const DEFAULT_CLAUDE_MODEL = "claude-3-5-sonnet-20241022";
-export const FAST_CLAUDE_MODEL = "claude-3-5-haiku-20241022";
+export const DEFAULT_CLAUDE_MODEL = "claude-3-5-sonnet-latest";
+export const FAST_CLAUDE_MODEL = "claude-3-5-haiku-latest";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
