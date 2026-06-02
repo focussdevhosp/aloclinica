@@ -186,15 +186,15 @@ const PanelCenter = () => {
         route: "/dashboard/admin/whatsapp?role=admin"
       },
       {
-        label: "Faturamento",
-        sublabel: "Receita (7d)",
-        value: "R$ 12.4k",
-        icon: TrendingUp,
-        gradient: "from-blue-400 via-blue-500 to-indigo-600",
-        ring: "ring-blue-500/30",
-        glow: "shadow-blue-500/20",
-        sparkColor: "stroke-blue-500",
-        route: "/dashboard/admin/financial?role=admin"
+        label: "Aprovações",
+        sublabel: "Médicos pendentes",
+        value: panels.find(p => p.id === "doctor")?.totalUsers ?? 0,
+        icon: UserCheck,
+        gradient: "from-orange-400 via-orange-500 to-red-600",
+        ring: "ring-orange-500/30",
+        glow: "shadow-orange-500/20",
+        sparkColor: "stroke-orange-500",
+        route: "/dashboard/admin/approvals?role=admin"
       },
       {
         label: "Consultas",
