@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { streamClaudeAsOpenAI, FAST_CLAUDE_MODEL } from "../_shared/anthropic.ts";
+import { streamClaudeAsOpenAI, DEFAULT_CLAUDE_MODEL } from "../_shared/anthropic.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -94,7 +94,7 @@ ${context ? `\n--- CONTEXTO DO PACIENTE LOGADO ---\n${context}\n---\nUse essas i
     let sseResponse: Response;
     try {
       sseResponse = await streamClaudeAsOpenAI({
-        model: FAST_CLAUDE_MODEL,
+        model: DEFAULT_CLAUDE_MODEL,
         system: systemContent,
         messages,
         temperature: 0.3,
