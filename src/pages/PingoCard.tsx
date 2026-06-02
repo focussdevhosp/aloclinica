@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Heart, Star, Shield, Check, X, ArrowRight, QrCode, Sparkle, MapPin, Storefront, Flask, Eyeglasses, Quotes, Lightning, Users, Clock, Buildings, ShieldCheck, CurrencyCircleDollar, CaretRight } from "@phosphor-icons/react";
+import { Heart, Star, Shield, Check, X, ArrowRight, QrCode, Sparkle, MapPin, Storefront, Flask, Eyeglasses, Quotes, Lightning, Users, Clock, Buildings, ShieldCheck, CurrencyCircleDollar, CaretRight, ShieldStar, Umbrella, Gift } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,10 +10,19 @@ import SEOHead from "@/components/SEOHead";
 import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { PingoSubscribeDialog } from "@/components/patient/PingoSubscribeDialog";
-import pingoCardHero from "@/assets/pingo-card-hero.png";
-import pingoFamily from "@/assets/hero-pingo-family.png";
-import pingoConfianca from "@/assets/pingo-confianca.png";
-import pingoDepoimentos from "@/assets/pingo-depoimentos.png";
+
+const PINGO_ASSETS = {
+  hero: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417543/ChatGPT_Image_2_de_jun._de_2026_13_17_09_1_vteboe.png",
+  telemedicina: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417543/ChatGPT_Image_2_de_jun._de_2026_13_17_09_2_xlpk3y.png",
+  seguro: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417543/ChatGPT_Image_2_de_jun._de_2026_13_17_09_3_khgobs.png",
+  funeral: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417543/ChatGPT_Image_2_de_jun._de_2026_13_17_10_4_ud4fn8.png",
+  sorteio: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417540/ChatGPT_Image_2_de_jun._de_2026_13_17_11_5_mhx48l.png",
+  economia: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417540/ChatGPT_Image_2_de_jun._de_2026_13_17_12_6_b0579j.png",
+  fases: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417540/ChatGPT_Image_2_de_jun._de_2026_13_17_13_7_tmjaau.png",
+  acesso: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417539/ChatGPT_Image_2_de_jun._de_2026_13_17_14_8_jgy1vq.png",
+  tudoEmUm: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417539/ChatGPT_Image_2_de_jun._de_2026_13_17_16_9_n9hcqp.png",
+  cuidado: "https://res.cloudinary.com/dvdyiyvpo/image/upload/v1780417539/ChatGPT_Image_2_de_jun._de_2026_13_17_20_10_qrm1hi.png",
+};
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
 
