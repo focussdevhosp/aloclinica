@@ -354,8 +354,9 @@ const AdminReports = () => {
                 </div>
                 <p className="text-2xl font-extrabold text-foreground">{summaryStats.churnRate.toFixed(1)}%</p>
                 <p className="text-[11px] text-muted-foreground">
-                  {summaryStats.churnRate > 10 ? "🚨 Ação urgente — analise causas" : "Saudável (< 10%/mês)"}
+                  {summaryStats.churnRate > 10 ? "🚨 Ação urgente — analise causas" : summaryStats.churnRate > 0 ? "Saudável (< 10%/mês)" : "Nenhum cancelamento"}
                 </p>
+
               </div>
             </div>
 

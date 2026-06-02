@@ -328,6 +328,10 @@ const AdminFinancial = () => {
     { name: "Cancelados", value: cancelledPayments },
   ].filter(d => d.value > 0);
 
+  // Simulated daily average for trend
+  const avgDailyRevenue = confirmedPayments > 0 ? totalRevenue / confirmedPayments : 0;
+
+
   // Specialties revenue
   const specialtyRevenueData = useMemo(() => {
     const map = new Map<string, number>();
