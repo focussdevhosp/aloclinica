@@ -164,14 +164,14 @@ export function HeroBanner({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
                     className={cn(
-                      "flex flex-1 flex-col items-center px-4 py-4 flex-shrink-0 min-w-[78px] md:min-w-0 transition-colors hover:bg-white/10",
+                      "flex flex-1 flex-col items-center px-4 py-5 flex-shrink-0 min-w-[78px] md:min-w-0 transition-colors hover:bg-white/10 group/kpi",
                       i < kpis.length - 1 && "border-r border-white/20"
                     )}
                   >
-                    <p className="text-[22px] font-black leading-none tabular-nums text-white tracking-[-0.02em] md:text-[26px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+                    <p className="text-[22px] font-black leading-none tabular-nums text-white tracking-[-0.02em] md:text-[28px] drop-shadow-[0_2px_12px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover/kpi:scale-110">
                       {k.value}
                     </p>
-                    <p className="mt-2 text-[9px] font-extrabold uppercase tracking-[0.22em] text-white/75 md:text-[9.5px]">
+                    <p className="mt-2 text-[9px] font-extrabold uppercase tracking-[0.22em] text-white/75 md:text-[10px]">
                       {k.label}
                     </p>
                   </motion.div>
