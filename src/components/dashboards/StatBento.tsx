@@ -42,10 +42,10 @@ export function StatBento({ stats, loading = false }: { stats: BentoItem[]; load
           whileHover={{ y: -3, scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           className={cn(
-            "group relative overflow-hidden rounded-2xl border border-border/15 bg-card",
-            "transition-all duration-250 cursor-default",
-            "hover:shadow-[0_8px_30px_rgba(0,0,0,.08)] hover:border-border/30",
-            "dark:hover:shadow-[0_8px_30px_rgba(0,0,0,.25)]",
+            "group relative overflow-hidden rounded-[28px] border border-border/15 bg-card",
+            "transition-all duration-300 cursor-default",
+            "hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,.1)] hover:border-border/40",
+            "dark:hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,.3)]",
             s.wide && "col-span-2"
           )}
         >
@@ -61,7 +61,7 @@ export function StatBento({ stats, loading = false }: { stats: BentoItem[]; load
           <div className="p-3.5 md:p-4">
             <div className="flex items-start justify-between">
               <div className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-[11px] text-[16px] md:h-10 md:w-10 md:text-[18px]",
+                "flex h-9 w-9 items-center justify-center rounded-[14px] text-[16px] md:h-11 md:w-11 md:text-[20px]",
                 "transition-all duration-300 group-hover:scale-110 group-hover:shadow-sm",
                 s.iconBg
               )}>

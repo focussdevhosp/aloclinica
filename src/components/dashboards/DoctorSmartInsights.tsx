@@ -95,7 +95,7 @@ const DoctorSmartInsights = memo(({ waitingCount, todayTotal, done, inProgress, 
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: i * 0.06, duration: 0.3 }}
           className={cn(
-            "flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11.5px] font-semibold",
+            "flex items-center gap-2 rounded-2xl border px-3.5 py-2 text-[11.5px] font-bold shadow-sm",
             styleByType[ins.type]
           )}
         >

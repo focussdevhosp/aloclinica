@@ -30,10 +30,10 @@ export function ActionPills({ actions, title }: ActionPillsProps) {
             whileTap={{ scale: 0.9 }}
             whileHover={{ y: -2, scale: 1.03 }}
             onClick={() => navigate(a.path)}
-            className="relative flex shrink-0 items-center gap-2.5 rounded-[20px] border border-border/20 bg-card px-3.5 py-2.5 shadow-[0_1px_8px_rgba(0,0,0,.05)] transition-all duration-250 hover:shadow-[0_4px_16px_rgba(0,0,0,.08)] hover:border-border/40 active:scale-95 dark:hover:shadow-[0_4px_16px_rgba(0,0,0,.2)]"
+            className="relative flex shrink-0 items-center gap-2.5 rounded-[24px] border border-border/20 bg-card px-3.5 py-3 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-lg hover:border-border/40 active:scale-95 dark:hover:shadow-[0_4px_16px_rgba(0,0,0,.2)]"
           >
             <div className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-[9px] text-[15px] flex-shrink-0 transition-transform duration-200 group-hover:scale-110",
+              "flex h-8 w-8 items-center justify-center rounded-[12px] text-[15px] flex-shrink-0 transition-transform duration-200 group-hover:scale-110",
               a.iconBg
             )}>
               {a.icon}

@@ -13,7 +13,7 @@ interface GoalProgressCardProps {
 export function GoalProgressCard({ done, total, inProgress = 0, waiting = 0, accentColor = "bg-emerald-500", accentBg = "bg-emerald-50 dark:bg-emerald-900/20" }: GoalProgressCardProps) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   return (
-    <div className="rounded-2xl border border-border/25 bg-card p-4" style={{ boxShadow: "0 2px 12px rgba(0,0,0,.04)" }}>
+    <div className="rounded-[28px] border border-border/25 bg-card p-5" style={{ boxShadow: "0 8px 32px -8px rgba(0,0,0,.08)" }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl text-[17px]", accentBg)}>🎯</div>

@@ -39,7 +39,7 @@ const DoctorCommandCenter = memo(({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 shadow-[0_12px_36px_-12px_rgba(15,23,42,0.5)] text-white"
+      className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 shadow-[0_24px_50px_-12px_rgba(15,23,42,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] text-white"
     >
       {/* Animated mesh background */}
       <div className="pointer-events-none absolute inset-0">

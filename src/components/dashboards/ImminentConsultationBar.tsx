@@ -101,7 +101,7 @@ const ImminentConsultationBar = ({ appt, role, thresholdMin = 60 }: Props) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -12 }}
         className={cn(
-          "sticky top-0 z-40 -mx-4 md:-mx-6 lg:-mx-8 mb-4 md:mb-5 rounded-none md:rounded-2xl px-4 py-3 md:px-5 md:py-3.5 shadow-lg backdrop-blur-sm flex items-center gap-3",
+          "sticky top-0 z-40 -mx-4 md:-mx-6 lg:-mx-8 mb-4 md:mb-5 rounded-none md:rounded-[28px] px-4 py-3 md:px-5 md:py-4 shadow-[0_12px_36px_-10px_rgba(0,0,0,0.15)] backdrop-blur-md flex items-center gap-3 border-b md:border border-white/10",
           palette.bg,
           palette.text,
         )}

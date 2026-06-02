@@ -40,7 +40,7 @@ export function HeroBanner({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-b-[36px] md:rounded-[40px] bg-gradient-to-br ring-1 ring-white/10",
+        "relative overflow-hidden rounded-b-[42px] md:rounded-[48px] bg-gradient-to-br ring-1 ring-white/10",
         gradient, className
       )}
       style={{ boxShadow: "0 30px 80px -24px rgba(15, 42, 90, 0.45), inset 0 1px 0 rgba(255,255,255,.22)" }}
@@ -85,7 +85,7 @@ export function HeroBanner({
                 initial={{ opacity: 0, y: -12, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="relative mb-5 inline-block rounded-[24px] rounded-bl-[8px] border border-white/30 bg-white/95 dark:bg-white/95 backdrop-blur-xl px-6 py-4 shadow-[0_16px_40px_rgba(0,0,0,.22)]"
+                className="relative mb-5 inline-block rounded-[28px] rounded-bl-[8px] border border-white/40 bg-white/95 dark:bg-white/95 backdrop-blur-xl px-6 py-4 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)]"
                 style={{ maxWidth: "min(280px, 72vw)" }}
               >
                 {bubble.greeting && (
@@ -99,7 +99,7 @@ export function HeroBanner({
                   </p>
                 )}
                 {bubble.sub && (
-                  <p className="mt-2 flex items-center gap-1.5 text-[11.5px] text-slate-600/90 font-semibold">
+                  <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-slate-600/90 font-bold">
                     {liveDot && <LiveDotEl />}
                     {bubble.sub}
                   </p>
@@ -144,10 +144,10 @@ export function HeroBanner({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-3 -mx-1 flex overflow-x-auto rounded-3xl border border-white/30 bg-white/[0.18] backdrop-blur-2xl scrollbar-none md:grid md:overflow-visible"
+            className="mt-4 -mx-1 flex overflow-x-auto rounded-[28px] border border-white/30 bg-white/[0.15] backdrop-blur-2xl scrollbar-none md:grid md:overflow-visible"
             style={{
               gridTemplateColumns: kpis.length > 3 ? `repeat(${kpis.length}, 1fr)` : undefined,
-              boxShadow: "0 16px 36px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.42), inset 0 -1px 0 rgba(0,0,0,.06)"
+              boxShadow: "0 20px 48px -12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.05)"
             }}
           >
             {loading
@@ -164,14 +164,14 @@ export function HeroBanner({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
                     className={cn(
-                      "flex flex-1 flex-col items-center px-4 py-4 flex-shrink-0 min-w-[78px] md:min-w-0 transition-colors hover:bg-white/10",
+                      "flex flex-1 flex-col items-center px-4 py-5 flex-shrink-0 min-w-[78px] md:min-w-0 transition-colors hover:bg-white/10 group/kpi",
                       i < kpis.length - 1 && "border-r border-white/20"
                     )}
                   >
-                    <p className="text-[22px] font-black leading-none tabular-nums text-white tracking-[-0.02em] md:text-[26px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+                    <p className="text-[22px] font-black leading-none tabular-nums text-white tracking-[-0.02em] md:text-[28px] drop-shadow-[0_2px_12px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover/kpi:scale-110">
                       {k.value}
                     </p>
-                    <p className="mt-2 text-[9px] font-extrabold uppercase tracking-[0.22em] text-white/75 md:text-[9.5px]">
+                    <p className="mt-2 text-[9px] font-extrabold uppercase tracking-[0.22em] text-white/75 md:text-[10px]">
                       {k.label}
                     </p>
                   </motion.div>

@@ -58,7 +58,7 @@ export function LiveQueue({ items, title, linkLabel, onLinkClick }: {
           )}
         </div>
       )}
-      <div className="relative overflow-hidden rounded-3xl border border-border/30 bg-gradient-to-br from-card via-card to-card/60 backdrop-blur-xl shadow-[0_8px_28px_-12px_rgba(0,0,0,0.12)]">
+      <div className="relative overflow-hidden rounded-[32px] border border-border/30 bg-gradient-to-br from-card via-card to-card/60 backdrop-blur-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)]">
         {/* ambient mesh glow */}
         <div className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-emerald-400/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-blue-400/8 blur-3xl" />
@@ -79,7 +79,7 @@ export function LiveQueue({ items, title, linkLabel, onLinkClick }: {
                 )} />
                 <div className="relative shrink-0">
                   <div className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-2xl text-[11.5px] font-extrabold transition-transform duration-300 group-hover/item:scale-110 ring-2",
+                    "flex h-10 w-10 items-center justify-center rounded-[14px] text-[11.5px] font-extrabold transition-transform duration-300 group-hover/item:scale-110 ring-2",
                     qi.avatarBg, qi.avatarColor, sc.ring
                   )}>
                     {qi.initials}

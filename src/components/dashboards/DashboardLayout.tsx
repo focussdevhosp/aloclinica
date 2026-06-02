@@ -339,9 +339,9 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
 
     return (
       <Link to={item.href} onClick={onClick}
-        className={`nav-item group flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-all duration-200 relative ${
+        className={`nav-item group flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[14px] transition-all duration-300 relative ${
           item.active
-            ? "bg-primary text-primary-foreground font-semibold shadow-[0_2px_8px_rgba(0,0,0,.15),inset_0_0_0_1px_rgba(255,255,255,.06)]"
+            ? "bg-primary text-primary-foreground font-bold shadow-[0_4px_12px_rgba(0,0,0,.12),inset_0_0_0_1px_rgba(255,255,255,.1)]"
             : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
         }`}
       >
@@ -737,25 +737,33 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
              {/* Glossy overlay effect */}
              <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent pointer-events-none" />
              
-             <div className="flex items-center justify-around h-[72px] px-2">
-               {bottomNav.map(item => {
-                 const activeColor = ROLE_ACTIVE_COLOR[role] ?? ROLE_ACTIVE_COLOR.patient;
-                 return (
-                   <Link key={item.href} to={item.href}
-                     aria-label={item.label}
-                     aria-current={item.active ? "page" : undefined}
-                     className={`relative flex flex-col items-center justify-center flex-1 h-full select-none transition-all duration-300 ${
-                       item.active ? activeColor : "text-muted-foreground/40 hover:text-muted-foreground/60"
-                     }`}
-                   >
+              <div className="flex items-center justify-around h-[72px] px-2 relative">
+                {bottomNav.map(item => {
+                  const activeColor = ROLE_ACTIVE_COLOR[role] ?? ROLE_ACTIVE_COLOR.patient;
+                  const activeBg = ROLE_ACTIVE_BG[role] ?? ROLE_ACTIVE_BG.patient;
+                  return (
+                    <Link key={item.href} to={item.href}
+                      aria-label={item.label}
+                      aria-current={item.active ? "page" : undefined}
+                      className={`relative flex flex-col items-center justify-center flex-1 h-full select-none transition-all duration-300 ${
+                        item.active ? activeColor : "text-muted-foreground/30 hover:text-muted-foreground/60"
+                      }`}
+                    >
                      {/* Active Glow Effect */}
-                     {item.active && (
-                       <motion.div
-                         layoutId="navGlow"
-                         className="absolute inset-0 bg-primary/10 blur-xl rounded-full"
-                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                       />
-                     )}
+                      {item.active && (
+                        <>
+                          <motion.div
+                            layoutId="navGlow"
+                            className="absolute inset-x-2 inset-y-3 bg-primary/20 blur-2xl rounded-full"
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          />
+                          <motion.div 
+                            layoutId="navPill"
+                            className="absolute inset-x-2 inset-y-2 rounded-2xl bg-primary/5"
+                            transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                          />
+                        </>
+                      )}
  
                      <div className="relative flex flex-col items-center">
                        {/* Icon Container with animation */}
