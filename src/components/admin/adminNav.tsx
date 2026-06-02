@@ -5,7 +5,7 @@ import {
    Key, Tag, ClockCounterClockwise, WhatsappLogo, Sliders, Pulse,
     PaintBrush, Image as ImageIcon, Heart, CreditCard
     , TestTube, Handshake, Layout, Browser, Shield, Graph,
-    Database, Activity, FileText
+    Database, FileText
  } from "@phosphor-icons/react";
 import { NavIcon } from "@/components/ui/nav-icon";
 
