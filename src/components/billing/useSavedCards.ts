@@ -26,7 +26,7 @@ export type SavedCard = {
   expiry_year: string;
   is_default: boolean;
   status: "active" | "expired" | "removed";
-  gateway?: "mercadopago" | "pagbank";
+  gateway?: "mercadopago";
   created_at: string;
 };
 
