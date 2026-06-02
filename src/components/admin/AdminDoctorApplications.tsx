@@ -120,12 +120,11 @@ const AdminDoctorApplications = () => {
       // Notify by email
       await db.functions.invoke("send-email", {
         body: {
-          type: "welcome",
+          type: "doctor_rejected",
           to: selectedApp.email,
           data: {
             name: selectedApp.full_name,
-            subject: "Atualização do seu cadastro — AloClinica",
-            message: `Olá Dr(a). ${selectedApp.full_name},\n\nInfelizmente não foi possível aprovar seu cadastro neste momento.${adminNotes ? `\n\nMotivo: ${adminNotes}` : ""}\n\nCaso tenha dúvidas, entre em contato pelo nosso WhatsApp.\n\nEquipe AloClinica`,
+            reason: adminNotes || "Não atende aos requisitos mínimos da plataforma no momento.",
           },
         },
       });
