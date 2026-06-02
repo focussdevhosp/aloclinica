@@ -373,7 +373,8 @@ const PingoCard = () => {
               ))}
             </div>
           </div>
-      {/* ============ VANTAGENS EXCLUSIVAS ============ */}
+        </div>
+      </section>
       <section className="py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-16">
