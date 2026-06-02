@@ -13,7 +13,8 @@ import {
   Activity, RefreshCw, Monitor, Sparkles, LayoutGrid,
   UserPlus, Layers, TrendingUp, Zap, Settings2,
   FileText, PieChart, ShieldAlert, Database, 
-  CreditCard, ClipboardList, CheckCircle, AlertCircle
+  CreditCard, ClipboardList, CheckCircle, AlertCircle,
+  Eye, Heart, Phone
 } from "lucide-react";
  import { SquaresFour, WhatsappLogo, ShieldStar, Tag } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
@@ -21,7 +22,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import pingoAdmin from "@/assets/pingo-admin.png";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartTooltip, Cell, LineChart, Line, AreaChart, Area } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartTooltip, Cell, AreaChart, Area } from "recharts";
 
 interface RecentUser { name: string; page: string; lastSeen: string }
 interface PanelInfo {
@@ -40,14 +41,11 @@ interface PanelInfo {
 
 const PANELS: Omit<PanelInfo, "onlineCount" | "totalUsers" | "recentUsers">[] = [
   { id: "admin",        label: "Administração", description: "Controle total do sistema, permissões e auditoria", icon: ShieldCheck,  gradient: "from-primary to-blue-700",       glow: "shadow-primary/25",       route: "/dashboard?role=admin",        roleKey: "admin" },
-  { id: "clinic",       label: "Clínica",       description: "Gestão de médicos, afiliações e unidades",    icon: Building2,    gradient: "from-violet-500 to-purple-600",  glow: "shadow-violet-500/25",    route: "/dashboard?role=clinic",       roleKey: "clinic" },
   { id: "doctor",       label: "Médico",        description: "Consultas, prontuários, receitas e telemedicina", icon: Stethoscope,  gradient: "from-emerald-500 to-teal-600",   glow: "shadow-emerald-500/25",   route: "/dashboard?role=doctor",       roleKey: "doctor" },
   { id: "patient",      label: "Paciente",      description: "Agendamentos, histórico e jornada de saúde",   icon: Users,        gradient: "from-blue-500 to-blue-600",      glow: "shadow-blue-500/25",      route: "/dashboard?role=patient",      roleKey: "patient" },
-  { id: "cartao_beneficios", label: "Cartão Benefícios", description: "Carteirinha digital, rede credenciada e descontos", icon: CreditCard, gradient: "from-rose-500 to-pink-600", glow: "shadow-rose-500/25", route: "/dashboard?role=cartao_beneficios", roleKey: "cartao_beneficios" },
-  { id: "receptionist", label: "Recepção",      description: "Agendas, check-in, faturamento e cobranças",     icon: Monitor,      gradient: "from-amber-500 to-orange-600",   glow: "shadow-amber-500/25",     route: "/dashboard?role=receptionist", roleKey: "receptionist" },
-  { id: "support",      label: "Suporte",       description: "Tickets, logs, monitoramento e auxílio",     icon: Headphones,   gradient: "from-rose-500 to-pink-600",      glow: "shadow-rose-500/25",      route: "/dashboard?role=support",      roleKey: "support" },
-  { id: "partner",      label: "Parceiro",      description: "Validações, integrações e API",          icon: Handshake,    gradient: "from-teal-500 to-emerald-600",   glow: "shadow-teal-500/25",      route: "/dashboard?role=partner",      roleKey: "partner" },
-  { id: "ai-assistant", label: "Assistente IA", description: "Chat, triagem inteligente e processamento",        icon: Bot,          gradient: "from-purple-500 to-fuchsia-600", glow: "shadow-purple-500/25",    route: "/dashboard/ai-assistant",      roleKey: "ai-assistant" },
+  { id: "cartao_beneficios", label: "Benefícios", description: "Carteirinha digital e descontos", icon: Heart, gradient: "from-rose-500 to-pink-600", glow: "shadow-rose-500/25", route: "/dashboard?role=cartao_beneficios", roleKey: "cartao_beneficios" },
+  { id: "support",      label: "Suporte",       description: "Tickets e monitoramento", icon: Headphones,   gradient: "from-amber-500 to-orange-600",      glow: "shadow-amber-500/25",      route: "/dashboard?role=support",      roleKey: "support" },
+  { id: "ai-assistant", label: "Assistente IA", description: "Chat e triagem inteligente",        icon: Bot,          gradient: "from-purple-500 to-fuchsia-600", glow: "shadow-purple-500/25",    route: "/dashboard/ai-assistant",      roleKey: "ai-assistant" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
