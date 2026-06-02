@@ -187,9 +187,9 @@ const PanelCenter = () => {
        sparkColor: "stroke-green-500",
        route: "/dashboard/admin/whatsapp?role=admin"
      },
-     {
-       label: "PagBank",
-       sublabel: "Status Pagamentos",
+      {
+        label: "Mercado Pago",
+        sublabel: "Status Pagamentos",
        value: "Operando",
        icon: CreditCard,
        gradient: "from-blue-400 via-blue-500 to-indigo-600",
