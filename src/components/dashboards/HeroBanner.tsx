@@ -99,7 +99,7 @@ export function HeroBanner({
                   </p>
                 )}
                 {bubble.sub && (
-                  <p className="mt-2 flex items-center gap-1.5 text-[11.5px] text-slate-600/90 font-semibold">
+                  <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-slate-600/90 font-bold">
                     {liveDot && <LiveDotEl />}
                     {bubble.sub}
                   </p>
