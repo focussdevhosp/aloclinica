@@ -5,6 +5,7 @@ import { Check, ArrowRight, Heart, Eye, Target, Users, Lightning, Lock, Star, Sh
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
+import PublicPageEnhancer from "@/components/landing/PublicPageEnhancer";
 
 import heroDoctor from "@/assets/hero-doctor.png";
 import heroTeleconsulta from "@/assets/hero-teleconsulta.png";
@@ -28,7 +29,8 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
 
   return (
-    <div ref={ref} className="relative min-h-screen bg-background">
+    <div ref={ref} className="public-page public-about-page relative min-h-screen bg-background">
+      <PublicPageEnhancer accent="#2563eb" />
       <div className="absolute inset-0 -z-10 bg-[image:var(--landing-bg)] pointer-events-none" />
 
       <SEOHead
@@ -40,15 +42,16 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
       <Header />
 
       {/* ═══════════════ HERO ═══════════════ */}
-      <section id="quem-somos" className="pt-32 pb-16 md:pb-24 px-4">
+      <section id="quem-somos" className="relative overflow-hidden pt-32 pb-16 md:pb-24 px-4">
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_14%_22%,hsl(var(--primary)/0.12),transparent_32%),radial-gradient(circle_at_90%_8%,hsl(var(--secondary)/0.10),transparent_30%)]" />
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-[1.03fr_0.97fr] gap-12 items-center">
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
               <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full mb-5">
                 <Heart className="w-3.5 h-3.5" weight="fill" />
                 Quem Somos
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-foreground leading-[1.08] mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-[4rem] font-extrabold text-foreground leading-[1.02] mb-6 tracking-tight">
                 Cuidando da saúde de{" "}
                 <span className="text-gradient">milhares de brasileiros</span>
               </h1>
@@ -57,6 +60,18 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
                 Conectamos pacientes e médicos através de tecnologia segura, acessível e humanizada — 
                 porque acreditamos que todo brasileiro merece atendimento de excelência.
               </p>
+              <div className="grid grid-cols-3 gap-3 mb-8 max-w-xl">
+                {[
+                  { value: "24h", label: "cuidado online" },
+                  { value: "30+", label: "especialidades" },
+                  { value: "LGPD", label: "dados protegidos" },
+                ].map((item) => (
+                  <div key={item.label} className="public-card overflow-hidden rounded-2xl border border-white/70 bg-white/75 p-4 shadow-[0_16px_50px_-32px_rgba(15,23,42,0.45)] backdrop-blur">
+                    <p className="text-2xl font-black text-primary leading-none">{item.value}</p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{item.label}</p>
+                  </div>
+                ))}
+              </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   size="lg"
@@ -78,20 +93,27 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
             </motion.div>
 
             <motion.div
-              className="relative flex justify-center"
+              className="public-media-card relative flex min-h-[420px] justify-center overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 shadow-[0_30px_90px_-46px_rgba(15,23,42,0.5)] backdrop-blur"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              {/* Soft gradient behind image */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] to-secondary/[0.05] blur-[80px] rounded-full scale-90 -z-10" />
+              <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_24%_22%,hsl(var(--secondary)/0.18),transparent_30%),linear-gradient(145deg,white,hsl(var(--primary)/0.08))]" />
+              <div aria-hidden className="absolute right-6 top-6 rounded-2xl border border-white/80 bg-white/80 px-4 py-3 shadow-xl backdrop-blur">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Modelo de cuidado</p>
+                <p className="text-sm font-extrabold text-primary">Digital + humano</p>
+              </div>
+              <div aria-hidden className="absolute bottom-6 left-6 rounded-2xl border border-white/80 bg-white/85 px-4 py-3 shadow-xl backdrop-blur">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confianca</p>
+                <p className="text-sm font-extrabold text-foreground">Medicos verificados</p>
+              </div>
               
               <img 
                 src={heroDoctor} 
                 alt="Médico AloClínica" 
                 width={500} 
                 height={500} 
-                className="w-full max-w-[420px] lg:max-w-[480px] drop-shadow-2xl relative z-10" 
+                className="public-image-depth w-full max-w-[420px] lg:max-w-[480px] drop-shadow-2xl relative z-10 object-contain" 
               />
             </motion.div>
           </div>
@@ -107,7 +129,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
               { label: "Visão", icon: Eye, color: "text-primary", text: "Ser a plataforma de saúde digital mais confiável e utilizada no Brasil, referência em inovação e cuidado humanizado." },
               { label: "Compromisso", icon: Heart, color: "text-primary", text: "Colocar o paciente no centro de cada decisão, com ética, transparência e excelência médica." },
             ].map((item, i) => (
-              <motion.div key={i} variants={staggerItem} className="relative p-8 rounded-2xl border border-border bg-background hover:border-primary/30 transition-all group overflow-hidden">
+              <motion.div key={i} variants={staggerItem} className="public-card relative p-8 rounded-2xl border border-border bg-background hover:border-primary/30 transition-all group overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/[0.03] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/[0.06] transition-colors" />
                 <div className="relative">
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
@@ -134,7 +156,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
                 loading="lazy" 
                 width={512} 
                 height={512} 
-                className="w-full max-w-[400px] lg:max-w-[450px] drop-shadow-xl relative z-10" 
+                className="public-image-depth w-full max-w-[400px] lg:max-w-[450px] drop-shadow-xl relative z-10" 
               />
             </motion.div>
 
@@ -160,7 +182,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
                 ].map((item, i) => (
                   <motion.div
                     key={i}
-                    className="flex items-start gap-4 p-4 rounded-2xl bg-card/80 border border-border/40 hover:border-primary/20 hover:shadow-md transition-all"
+                    className="public-card flex items-start gap-4 overflow-hidden p-4 rounded-2xl bg-card/80 border border-border/40 hover:border-primary/20 hover:shadow-md transition-all"
                     {...fadeUp}
                     transition={{ delay: 0.2 + i * 0.1 }}
                   >
@@ -204,7 +226,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
               <motion.div
                 key={i}
                 variants={staggerItem}
-                className="p-6 rounded-2xl border border-border bg-background hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 group"
+                className="public-card overflow-hidden p-6 rounded-2xl border border-border bg-background hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 group"
               >
                 <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <item.icon className="w-6 h-6" weight="fill" />
@@ -242,7 +264,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
                 ].map((t, i) => (
                   <motion.div
                     key={i}
-                    className="p-5 rounded-2xl border border-border bg-card/80 hover:shadow-md transition-all"
+                    className="public-card overflow-hidden p-5 rounded-2xl border border-border bg-card/80 hover:shadow-md transition-all"
                     {...fadeUp}
                     transition={{ delay: 0.15 + i * 0.1 }}
                   >
@@ -274,7 +296,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
                 loading="lazy" 
                 width={512} 
                 height={512} 
-                className="w-full max-w-[420px] lg:max-w-[480px] rounded-3xl shadow-2xl relative z-10" 
+                className="public-image-depth w-full max-w-[420px] lg:max-w-[480px] rounded-3xl shadow-2xl relative z-10" 
               />
             </motion.div>
           </div>
@@ -302,7 +324,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                className="text-center p-6 rounded-2xl border border-border bg-background hover:border-primary/30 transition-all"
+                className="public-card overflow-hidden text-center p-6 rounded-2xl border border-border bg-background hover:border-primary/30 transition-all"
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -331,7 +353,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
                 loading="lazy" 
                 width={512} 
                 height={512} 
-                className="w-full max-w-[380px] lg:max-w-[420px] drop-shadow-xl relative z-10" 
+                className="public-image-depth w-full max-w-[380px] lg:max-w-[420px] drop-shadow-xl relative z-10" 
               />
             </motion.div>
 
@@ -400,7 +422,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
               <motion.div
                 key={i}
                 variants={staggerItem}
-                className="p-6 rounded-2xl border border-border bg-background hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+                className="public-card overflow-hidden p-6 rounded-2xl border border-border bg-background hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
               >
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   <item.icon className="w-6 h-6 text-primary" weight="fill" />
@@ -418,7 +440,7 @@ const Sobre = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="max-w-7xl mx-auto">
           <motion.div
             {...fadeUp}
-            className="relative rounded-3xl overflow-hidden bg-gradient-hero shadow-elevated"
+            className="public-card relative rounded-3xl overflow-hidden bg-gradient-hero shadow-elevated"
           >
             <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary-foreground)/0.22),transparent_38%),radial-gradient(circle_at_bottom_right,hsl(var(--primary-foreground)/0.14),transparent_34%)]" />
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 px-8 sm:px-12 py-14 sm:py-16">

@@ -47,7 +47,7 @@ const HeroSection = memo(
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="lg:col-span-7 lg:row-span-4 bg-white/95 backdrop-blur-sm rounded-[28px] p-8 md:p-12 flex flex-col justify-center border border-white shadow-[0_20px_60px_-20px_rgba(2,132,199,0.15)] relative overflow-hidden"
+              className="public-card lg:col-span-7 lg:row-span-4 bg-white/95 backdrop-blur-sm rounded-[28px] p-8 md:p-12 flex flex-col justify-center border border-white shadow-[0_20px_60px_-20px_rgba(2,132,199,0.15)] relative overflow-hidden"
             >
               <div aria-hidden className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-[#e0f2fe] to-transparent rounded-full blur-2xl" />
               <div aria-hidden className="absolute -bottom-16 -left-10 w-40 h-40 bg-gradient-to-tr from-sky-100/60 to-transparent rounded-full blur-2xl" />
@@ -110,7 +110,7 @@ const HeroSection = memo(
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-              className="lg:col-span-5 lg:row-span-6 bg-gradient-to-br from-[#e0f2fe] to-[#f0f9ff] rounded-3xl overflow-hidden relative group min-h-[440px] border border-white shadow-sm"
+              className="public-media-card lg:col-span-5 lg:row-span-6 bg-gradient-to-br from-[#e0f2fe] to-[#f0f9ff] rounded-3xl overflow-hidden relative group min-h-[440px] border border-white shadow-sm"
             >
               <motion.div
                 animate={{ y: [0, -10, 0] }}
@@ -120,7 +120,7 @@ const HeroSection = memo(
                 <OptimizedImage
                   src={heroPingoFamily}
                   alt="Pingo, mascote da AloClínica, junto a pacientes"
-                  className="w-full h-auto max-h-full object-contain mix-blend-multiply"
+                  className="public-image-depth w-full h-auto max-h-full object-contain mix-blend-multiply"
                 />
               </motion.div>
 
@@ -181,7 +181,7 @@ const HeroSection = memo(
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="lg:col-span-4 lg:row-span-2 text-left rounded-3xl p-6 flex flex-col justify-between group cursor-pointer overflow-hidden relative border border-sky-300/60 shadow-[0_18px_50px_-20px_rgba(2,132,199,0.45)] hover:shadow-[0_24px_60px_-18px_rgba(2,132,199,0.55)] transition-all duration-500"
+                className="public-card lg:col-span-4 lg:row-span-2 text-left rounded-3xl p-6 flex flex-col justify-between group cursor-pointer overflow-hidden relative border border-sky-300/60 shadow-[0_18px_50px_-20px_rgba(2,132,199,0.45)] hover:shadow-[0_24px_60px_-18px_rgba(2,132,199,0.55)] transition-all duration-500"
                 style={{
                   background:
                     "linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 45%,#bae6fd 100%)",
@@ -292,7 +292,7 @@ const HeroSection = memo(
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className={`${showPingo ? "lg:col-span-3" : "lg:col-span-7"} lg:row-span-2 bg-white/95 backdrop-blur-sm rounded-3xl p-6 border border-white shadow-[0_12px_40px_-16px_rgba(2,132,199,0.18)] flex flex-col gap-3 justify-center`}
+              className={`public-card ${showPingo ? "lg:col-span-3" : "lg:col-span-7"} lg:row-span-2 bg-white/95 backdrop-blur-sm rounded-3xl p-6 border border-white shadow-[0_12px_40px_-16px_rgba(2,132,199,0.18)] flex flex-col gap-3 justify-center`}
             >
               {highlights.map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-3 group">

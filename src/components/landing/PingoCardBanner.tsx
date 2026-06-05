@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShieldCheck, Clock, Users, Pill, ArrowRight, Sparkles } from "lucide-react";
-import pingoCartao from "@/assets/pingo-cartao.png";
-import logoPingo from "@/assets/logo-pingo.png";
+import generatedBenefitsCardImage from "@/assets/pingo-generated/generated-benefits-card.png";
+import generatedEconomyCardImage from "@/assets/pingo-generated/generated-economy-card.png";
 
 const benefits = [
   { icon: Clock, label: "Consultas 24h", hint: "Atendimento imediato" },
@@ -20,7 +20,7 @@ const PingoCardBanner = () => {
       className="relative w-full px-4 sm:px-6 lg:px-8 py-16"
     >
       <div
-        className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/10 shadow-2xl"
+        className="relative mx-auto max-w-7xl overflow-hidden rounded-lg border border-white/10 shadow-2xl"
         style={{
           background:
             "linear-gradient(135deg, hsl(220, 85%, 18%) 0%, hsl(215, 80%, 28%) 35%, hsl(210, 75%, 38%) 70%, hsl(200, 85%, 48%) 100%)",
@@ -28,6 +28,15 @@ const PingoCardBanner = () => {
             "0 40px 80px -30px hsl(215, 90%, 30% / 0.6), 0 0 0 1px hsl(215, 80%, 60% / 0.15)",
         }}
       >
+        <img
+          src={generatedBenefitsCardImage}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[54%] object-cover object-right opacity-70 lg:block"
+        />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#06245f] via-[#0b3c8f]/95 to-[#0b3c8f]/35" />
         {/* Atmospheric glows — blue brand */}
         <div
           aria-hidden
@@ -263,10 +272,11 @@ const PingoCardBanner = () => {
                   }}
                 />
                 <img
-                  src={pingoCartao}
-                  alt="Pingo segurando o Pingo Card"
+                  src={generatedEconomyCardImage}
+                  alt="Pingo segurando o Pingo Card ao lado de uma família"
                   loading="lazy"
-                  className="relative w-full h-auto select-none"
+                  decoding="async"
+                  className="relative aspect-[4/3] w-full object-cover object-[68%_center] select-none"
                   draggable={false}
                 />
               </motion.div>

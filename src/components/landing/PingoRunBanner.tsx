@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import pingoPhone from "@/assets/pingo-videocall.png";
 import { Stethoscope, HeartPulse, Pill, Video, Calendar, ShieldCheck, ArrowRight, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import appHealthImage from "@/assets/pingo-generated/generated-telemedicine.png";
 
 /**
  * Banner premium com gradiente mesh, chips de vidro no marquee
@@ -26,23 +26,22 @@ const PingoRunBanner = () => {
       className="relative w-full px-4 sm:px-6 lg:px-8 py-6 md:py-8"
     >
       <div
-        className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] md:rounded-[2.5rem] shadow-2xl flex flex-col justify-between min-h-[260px]"
+        className="relative mx-auto max-w-7xl overflow-hidden rounded-lg shadow-2xl flex flex-col justify-between min-h-[320px] md:min-h-[360px]"
         style={{
           background:
-            "linear-gradient(135deg, hsl(215, 75%, 32%) 0%, hsl(265, 55%, 45%) 45%, hsl(168, 50%, 40%) 100%)",
+            "linear-gradient(135deg, hsl(218, 86%, 18%) 0%, hsl(213, 86%, 35%) 48%, hsl(204, 94%, 58%) 100%)",
         }}
       >
-        {/* Orbs decorativos */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-12 -left-12 w-64 h-64 rounded-full blur-3xl animate-pulse"
-          style={{ background: "hsl(190, 90%, 60% / 0.20)" }}
+        <img
+          src={appHealthImage}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[58%] object-cover object-right opacity-95 md:block"
         />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 -right-12 w-80 h-80 rounded-full blur-3xl"
-          style={{ background: "hsl(168, 70%, 55% / 0.15)" }}
-        />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#06245f] via-[#06439d]/95 to-[#06439d]/20" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#04173d]/70 to-transparent" />
 
         {/* Pontilhado */}
         <div
@@ -57,7 +56,7 @@ const PingoRunBanner = () => {
 
         {/* Conteúdo */}
         <div className="relative z-10 flex flex-1 items-center px-6 md:px-12 py-8 md:py-10 gap-6">
-          <div className="flex-1 flex flex-col gap-4 max-w-2xl">
+          <div className="flex-1 flex flex-col gap-4 max-w-xl">
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -90,7 +89,7 @@ const PingoRunBanner = () => {
               <button
                 type="button"
                 onClick={() => navigate("/agendar")}
-                className="group px-6 md:px-7 py-3 bg-white text-[hsl(215,75%,32%)] font-bold rounded-2xl shadow-xl hover:shadow-cyan-500/30 hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm md:text-base"
+                className="group px-6 md:px-7 py-3 bg-white text-[hsl(215,75%,32%)] font-bold rounded-lg shadow-xl hover:shadow-cyan-500/30 hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm md:text-base"
               >
                 Agendar agora
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
@@ -111,28 +110,7 @@ const PingoRunBanner = () => {
             </motion.div>
           </div>
 
-          {/* Pingo */}
-          <motion.div
-            aria-hidden="true"
-            className="relative shrink-0 hidden sm:block"
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div
-              aria-hidden
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-6 bg-black/30 blur-xl rounded-[100%]"
-            />
-            <motion.img
-              src={pingoPhone}
-              alt=""
-              loading="lazy"
-              className="relative h-32 md:h-44 lg:h-52 w-auto drop-shadow-[0_18px_32px_rgba(0,0,0,0.4)] select-none"
-              animate={{ y: [0, -10, 0], rotate: [-1, 1, -1] }}
-              transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
-              style={{ transformOrigin: "center bottom" }}
-            />
-          </motion.div>
+          <div className="hidden md:block flex-1" />
         </div>
 
         {/* Marquee com chips de vidro */}

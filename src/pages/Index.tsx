@@ -17,8 +17,10 @@ import TrustBanner from "@/components/landing/TrustBanner";
 import PingoCardBanner from "@/components/landing/PingoCardBanner";
 import FAQSection from "@/components/landing/FAQSection";
 import TestimonialsMarquee from "@/components/landing/TestimonialsMarquee";
+import PingoCampaignShowcase from "@/components/landing/PingoCampaignShowcase";
+import PublicPageEnhancer from "@/components/landing/PublicPageEnhancer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Video, Star, Quote } from "lucide-react";
+import { ArrowRight, Building2, CalendarCheck, CreditCard, Star, Stethoscope, Video } from "lucide-react";
 import { useSiteSections } from "@/lib/site-sections";
 import { motion } from "framer-motion";
 import doctorTeleconsulta from "@/assets/doctor-phone-teleconsulta.png";
@@ -51,7 +53,8 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-background" ref={ref}>
+    <div className="public-page public-home-page relative min-h-screen bg-background" ref={ref}>
+      <PublicPageEnhancer accent="#0b63f6" />
       <div className="absolute inset-0 -z-10 bg-[image:var(--landing-bg)] pointer-events-none" />
       <SEOHead
         title="Consultas Médicas Online por Vídeo 24h | AloClínica"
@@ -61,6 +64,43 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
       
       {isOn("header") && <Header config={sectionData.header} />}
       {isOn("hero") && <HeroSection config={sectionData.hero} />}
+      <section className="relative z-20 -mt-8 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="public-card grid gap-3 overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/86 p-3 shadow-[0_24px_80px_-36px_rgba(11,47,115,0.42)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {[
+              { icon: CalendarCheck, title: "Agendar consulta", desc: "Escolha horario e especialidade", href: "/agendar", tone: "from-blue-500 to-cyan-500" },
+              { icon: Video, title: "Teleconsulta 24h", desc: "Atendimento online seguro", href: "/teleconsulta", tone: "from-emerald-500 to-teal-500" },
+              { icon: CreditCard, title: "Pingo Card", desc: "Beneficios para a familia", href: "/pingo-card", tone: "from-amber-400 to-orange-500" },
+              { icon: Building2, title: "Empresas", desc: "Saude corporativa simples", href: "/para-empresas", tone: "from-indigo-500 to-violet-500" },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={() => navigate(item.href)}
+                  className="group flex items-center gap-4 rounded-2xl p-4 text-left transition hover:bg-slate-50"
+                >
+                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${item.tone} text-white shadow-lg shadow-slate-900/10 transition group-hover:scale-105`}>
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-extrabold text-slate-950">{item.title}</span>
+                    <span className="mt-0.5 block text-xs font-medium leading-snug text-slate-500">{item.desc}</span>
+                  </span>
+                  <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-600" />
+                </button>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+      <PingoCampaignShowcase />
       <SpecialtiesSection config={sectionData.specialties} />
       <PingoRunBanner />
 
@@ -77,7 +117,7 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
               transition={{ duration: 0.5 }}
             >
               <div className="absolute inset-0 bg-primary/10 rounded-full blur-[80px] scale-75 animate-pulse" />
-              <img src={doctorTeleconsulta} alt="Médico Teleconsulta" className="relative z-10 w-[380px] lg:w-[540px] h-auto drop-shadow-2xl" />
+              <img src={doctorTeleconsulta} alt="Médico Teleconsulta" className="public-image-depth relative z-10 w-[380px] lg:w-[540px] h-auto drop-shadow-2xl" />
             </motion.div>
 
             <motion.div
@@ -100,8 +140,8 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
                   { img: pingoVideocall, title: "Consulta por vídeo HD", desc: "Atendimento humano e seguro por vídeo" },
                   { img: pingoPrescription, title: "Receita digital", desc: "Válida em todas as farmácias do país" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-5 p-5 rounded-2xl bg-card/40 border border-border/50 shadow-sm backdrop-blur-sm transition-all hover:bg-card/60">
-                    <img src={item.img} alt={item.title} className="w-14 h-14 object-contain" />
+                  <div key={i} className="public-card flex items-center gap-5 overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:bg-card hover:shadow-xl">
+                    <img src={item.img} alt={item.title} className="public-image-depth w-14 h-14 object-contain" />
                     <div>
                       <p className="font-extrabold text-foreground text-lg">{item.title}</p>
                       <p className="text-sm text-muted-foreground font-medium">{item.desc}</p>
@@ -113,6 +153,10 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="rounded-2xl h-[60px] px-12 text-lg font-bold shadow-2xl shadow-primary/25 transition-transform hover:scale-105" onClick={() => navigate("/agendar")}>
                   Agendar consulta <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Button size="lg" variant="outline" className="rounded-2xl h-[60px] px-8 text-base font-bold border-2" onClick={() => navigate("/especialidades")}>
+                  <Stethoscope className="w-5 h-5 mr-2" />
+                  Ver especialidades
                 </Button>
               </div>
             </motion.div>
