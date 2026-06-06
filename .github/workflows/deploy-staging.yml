@@ -43,6 +43,8 @@ jobs:
           source: "dist/,nginx.conf,Dockerfile.ci,docker-compose.yml"
           target: "/opt/aloclinica-staging/"
           strip_components: 0
+          timeout: 120s
+          command_timeout: 20m
 
       - name: Build and restart staging container
         uses: appleboy/ssh-action@v1.0.3
@@ -50,6 +52,8 @@ jobs:
           host: ${{ secrets.STAGING_VPS_HOST }}
           username: ${{ secrets.STAGING_VPS_USER }}
           key: ${{ secrets.STAGING_VPS_SSH_PRIVATE_KEY }}
+          timeout: 120s
+          command_timeout: 20m
           script: |
             set -e
             cd /opt/aloclinica-staging
