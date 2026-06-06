@@ -229,8 +229,8 @@ const CancelRescheduleDialog = ({ appointmentId, doctorId, currentDate, schedule
       notifyAppointmentCancelled(appointmentId, "Paciente", finalReason).catch(err => logError("notifyAppointmentCancelled failed", err));
 
       // Cria solicitação de reembolso quando elegível (full/partial)
-      let refundStatus: "pending" | "approved" | "refunded" | "rejected" | null = null;
-      let refundAmountCents: number | null = null;
+      const refundStatus: "pending" | "approved" | "refunded" | "rejected" | null = null;
+      const refundAmountCents: number | null = null;
       if (refundTier !== "none" && user) {
         try {
           // Note: Automatic refund request logic based on payment_transactions was removed.
