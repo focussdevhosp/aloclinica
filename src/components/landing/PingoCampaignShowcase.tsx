@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, FlaskConical, Headphones, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import telemedicineImage from "@/assets/banner-teleconsulta-patient.jpg";
-import examsImage from "@/assets/pingo-generated/generated-exams.png";
+import examsImage from "@/assets/pingo-generated/generated-exams.jpg";
 import supportImage from "@/assets/clinic-patient-chat.png";
 
 const campaignCards = [

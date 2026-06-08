@@ -10,20 +10,20 @@ import SEOHead from "@/components/SEOHead";
 import { db } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/contexts/AuthContext";
 import { PingoSubscribeDialog } from "@/components/patient/PingoSubscribeDialog";
-import campaignAccidentInsuranceImage from "@/assets/pingo-campaign/accident-insurance.png";
-import campaignAllInOneCardImage from "@/assets/pingo-campaign/all-in-one-card.png";
-import campaignAppHealthImage from "@/assets/pingo-campaign/app-health.png";
-import campaignCardCareProtectionImage from "@/assets/pingo-campaign/card-care-protection.png";
-import campaignEconomyCardImage from "@/assets/pingo-campaign/economy-card.png";
-import campaignExamsConfidenceImage from "@/assets/pingo-campaign/exams-confidence.png";
-import campaignFuneralSupportImage from "@/assets/pingo-campaign/funeral-support.png";
-import campaignLifeStagesImage from "@/assets/pingo-campaign/life-stages.png";
-import campaignPingoCardFamilyImage from "@/assets/pingo-campaign/pingo-card-family.png";
-import campaignPreventionCheckupImage from "@/assets/pingo-campaign/prevention-checkup.png";
-import campaignPrizeDrawImage from "@/assets/pingo-campaign/prize-draw.png";
-import campaignSimpleAccessImage from "@/assets/pingo-campaign/simple-access.png";
-import campaignSpecialistsImage from "@/assets/pingo-campaign/specialists.png";
-import campaignTelemedicinePhoneImage from "@/assets/pingo-campaign/telemedicine-phone.png";
+import campaignAccidentInsuranceImage from "@/assets/pingo-campaign/accident-insurance.jpg";
+import campaignAllInOneCardImage from "@/assets/pingo-campaign/all-in-one-card.jpg";
+import campaignAppHealthImage from "@/assets/pingo-campaign/app-health.jpg";
+import campaignCardCareProtectionImage from "@/assets/pingo-campaign/card-care-protection.jpg";
+import campaignEconomyCardImage from "@/assets/pingo-campaign/economy-card.jpg";
+import campaignExamsConfidenceImage from "@/assets/pingo-campaign/exams-confidence.jpg";
+import campaignFuneralSupportImage from "@/assets/pingo-campaign/funeral-support.jpg";
+import campaignLifeStagesImage from "@/assets/pingo-campaign/life-stages.jpg";
+import campaignPingoCardFamilyImage from "@/assets/pingo-campaign/pingo-card-family.jpg";
+import campaignPreventionCheckupImage from "@/assets/pingo-campaign/prevention-checkup.jpg";
+import campaignPrizeDrawImage from "@/assets/pingo-campaign/prize-draw.jpg";
+import campaignSimpleAccessImage from "@/assets/pingo-campaign/simple-access.jpg";
+import campaignSpecialistsImage from "@/assets/pingo-campaign/specialists.jpg";
+import campaignTelemedicinePhoneImage from "@/assets/pingo-campaign/telemedicine-phone.jpg";
 
 const PINGO_ASSETS = {
   hero: campaignPingoCardFamilyImage,

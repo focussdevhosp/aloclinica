@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShieldCheck, Clock, Users, Pill, ArrowRight, Sparkles } from "lucide-react";
-import generatedBenefitsCardImage from "@/assets/pingo-generated/generated-benefits-card.png";
-import generatedEconomyCardImage from "@/assets/pingo-generated/generated-economy-card.png";
+import generatedBenefitsCardImage from "@/assets/pingo-generated/generated-benefits-card.jpg";
+import generatedEconomyCardImage from "@/assets/pingo-generated/generated-economy-card.jpg";
 
 const benefits = [
   { icon: Clock, label: "Consultas 24h", hint: "Atendimento imediato" },

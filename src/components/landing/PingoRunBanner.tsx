@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Stethoscope, HeartPulse, Pill, Video, Calendar, ShieldCheck, ArrowRight, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import appHealthImage from "@/assets/pingo-generated/generated-telemedicine.png";
+import appHealthImage from "@/assets/pingo-generated/generated-telemedicine.jpg";
 
 /**
  * Banner premium com gradiente mesh, chips de vidro no marquee
