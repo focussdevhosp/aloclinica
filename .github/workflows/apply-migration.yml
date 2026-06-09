@@ -12,14 +12,13 @@ on:
         type: string
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SUPABASE_PROJECT_REF: pwxvvimdtmvziynbspgx
 
 jobs:
   apply:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Aplicar migration
         env:
