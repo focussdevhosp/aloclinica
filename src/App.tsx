@@ -31,8 +31,8 @@ const CookieBanner = lazy(() => import("./components/CookieBanner"));
 const PWAInstallPrompt = lazy(() => import("./components/PWAInstallPrompt"));
 
 // Lazy-loaded pages
-import AuthPaciente from "./pages/AuthPaciente";
-import AuthMedico from "./pages/AuthMedico";
+const AuthPaciente = lazy(() => import("./pages/AuthPaciente"));
+const AuthMedico = lazy(() => import("./pages/AuthMedico"));
 const AuthAdmin = lazy(() => import("./pages/AuthAdmin"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));

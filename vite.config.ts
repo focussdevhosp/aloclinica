@@ -184,6 +184,28 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("react-hook-form") || id.includes("@hookform")) return "vendor-forms";
           if (id.includes("zod")) return "vendor-zod";
           if (id.includes("@supabase") || id.includes("@tanstack/react-query")) return "vendor-data";
+          if (id.includes("@radix-ui")) return "vendor-radix";
+          if (
+            id.includes("react-markdown") ||
+            id.includes("remark-") ||
+            id.includes("micromark") ||
+            id.includes("mdast-util") ||
+            id.includes("hast-util")
+          ) return "vendor-markdown";
+          if (
+            id.includes("sonner") ||
+            id.includes("next-themes") ||
+            id.includes("cmdk") ||
+            id.includes("react-resizable-panels")
+          ) return "vendor-app-ui";
+          if (
+            id.includes("class-variance-authority") ||
+            id.includes("clsx") ||
+            id.includes("tailwind-merge")
+          ) return "vendor-ui-utils";
+          if (id.includes("zustand")) return "vendor-state";
+          if (id.includes("@capacitor")) return "vendor-capacitor";
+          if (id.includes("workbox-")) return "vendor-pwa";
           // Icons agrupados pra reaproveitar entre páginas (tree-shaking ainda
           // mantém só os ícones usados em algum lugar do app)
           if (id.includes("lucide-react") || id.includes("@phosphor-icons")) return "vendor-icons";
