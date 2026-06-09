@@ -6,9 +6,9 @@ import { motion } from "framer-motion";
 import { UserPlus, MagnifyingGlass, VideoCamera, FileText, Clock } from "@phosphor-icons/react";
 import { useSiteConfig } from "@/lib/site-config";
 import stepSignup from "@/assets/pingo-cartao.png";
-import stepSearch from "@/assets/pingo-calendar.png";
+import stepSearch from "@/assets/pingo-calendar.jpg";
 import stepVideocall from "@/assets/pingo-videocall.png";
-import stepPrescription from "@/assets/pingo-prescription.png";
+import stepPrescription from "@/assets/pingo-prescription.jpg";
 
 const steps = [
   { icon: UserPlus, title: "Cadastre-se", description: "Crie sua conta em menos de 2 minutos.", image: stepSignup, time: "2 min", accent: "from-primary/20 to-secondary/10" },

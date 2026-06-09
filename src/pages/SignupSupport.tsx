@@ -19,7 +19,7 @@ import {
   validarNome, validarEmail, validarTelefone, validarCPF, validarSenha,
 } from "@/lib/form-validators";
 import { toastError } from "@/lib/errorMessages";
-import pingoSupport from "@/assets/pingo-support.png";
+import pingoSupport from "@/assets/pingo-support.jpg";
 
 interface FormData {
   full_name: string;

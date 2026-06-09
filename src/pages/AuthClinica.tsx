@@ -10,7 +10,7 @@ import {
 import TermsConsentCheckbox from "@/components/auth/TermsConsentCheckbox";
 import { registerConsent } from "@/lib/consent";
 import PasswordStrength from "@/components/ui/password-strength";
-import pingoReception from "@/assets/pingo-reception.png";
+import pingoReception from "@/assets/pingo-reception.jpg";
 import AuthShell from "@/components/auth/AuthShell";
 import { AuthField, AuthPasswordField, AuthSubmitButton, AuthHeading } from "@/components/auth/AuthFields";
 import { translateAuthError } from "@/lib/authErrors";

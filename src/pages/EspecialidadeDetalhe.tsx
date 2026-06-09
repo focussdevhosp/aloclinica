@@ -16,7 +16,7 @@ import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { PINGO_SPECIALTIES } from "@/constants/specialties-assets";
-import pingoFallback from "@/assets/pingo-clinico-geral.png";
+import pingoFallback from "@/assets/pingo-clinico-geral.jpg";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
 

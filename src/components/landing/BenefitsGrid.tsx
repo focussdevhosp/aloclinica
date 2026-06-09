@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import { ShieldCheck, Lightning, Receipt, UsersFour, SealCheck, ArrowRight } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
-import familyImg from "@/assets/pingo-king-familia.png";
+import familyImg from "@/assets/pingo-king-familia.jpg";
 import doctorAppImg from "@/assets/doctor-phone-teleconsulta.png";
-import multiplatformImg from "@/assets/devices-mascot.png";
+import multiplatformImg from "@/assets/devices-mascot.jpg";
 import familyPlanImg from "@/assets/pingo-mini-familia.png";
-import medicalRecordsImg from "@/assets/pingo-medico-ferramentas.png";
+import medicalRecordsImg from "@/assets/pingo-medico-ferramentas.jpg";
 
 const sideBenefits = [
   {

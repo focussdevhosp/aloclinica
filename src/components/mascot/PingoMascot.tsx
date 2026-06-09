@@ -6,11 +6,11 @@ import mascotThumbsup from "@/assets/mascot-thumbsup.png";
 import mascotReading  from "@/assets/mascot-reading.png";
 import mascotDefault  from "@/assets/mascot.png";
 import pingoAdmin     from "@/assets/pingo-admin.png";
-import pingoReception from "@/assets/pingo-reception.png";
-import pingoPartner   from "@/assets/pingo-partner.png";
-import pingoSupport   from "@/assets/pingo-support.png";
+import pingoReception from "@/assets/pingo-reception.jpg";
+import pingoPartner   from "@/assets/pingo-partner.jpg";
+import pingoSupport   from "@/assets/pingo-support.jpg";
 
-import pingoSolitario from "@/assets/pingo-solitario.png";
+import pingoSolitario from "@/assets/pingo-solitario.jpg";
 import { PINGO_LOGO_URL } from "@/lib/constants";
 const logo = PINGO_LOGO_URL;
 

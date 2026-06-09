@@ -24,9 +24,9 @@ import { ArrowRight, Building2, CalendarCheck, CreditCard, Star, Stethoscope, Vi
 import { useSiteSections } from "@/lib/site-sections";
 import { motion } from "framer-motion";
 import doctorTeleconsulta from "@/assets/doctor-phone-teleconsulta.png";
-import pingoCalendar from "@/assets/pingo-calendar.png";
+import pingoCalendar from "@/assets/pingo-calendar.jpg";
 import pingoVideocall from "@/assets/pingo-videocall.png";
-import pingoPrescription from "@/assets/pingo-prescription.png";
+import pingoPrescription from "@/assets/pingo-prescription.jpg";
 import pingoDepoimentos from "@/assets/pingo-depoimentos.png";
 
 const Index = forwardRef<HTMLDivElement>((_, ref) => {

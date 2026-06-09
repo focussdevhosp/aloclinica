@@ -1,6 +1,6 @@
 import AuthSimpleRole from "./AuthSimpleRole";
 import { HeadphonesIcon } from "lucide-react";
-import pingoSupport from "@/assets/pingo-support.png";
+import pingoSupport from "@/assets/pingo-support.jpg";
 
 const AuthSuporte = () => (
   <AuthSimpleRole

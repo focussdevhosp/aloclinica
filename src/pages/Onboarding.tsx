@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, Video, Stethoscope, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import pingoHello from "@/assets/logo-pingo.png";
-import pingoCalendar from "@/assets/pingo-calendar.png";
+import pingoCalendar from "@/assets/pingo-calendar.jpg";
 import pingoVideo from "@/assets/pingo-videocall.png";
 
 const STORAGE_KEY = "alo_onboarding_v1_done";

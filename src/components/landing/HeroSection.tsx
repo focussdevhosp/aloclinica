@@ -120,6 +120,7 @@ const HeroSection = memo(
                 <OptimizedImage
                   src={heroPingoFamily}
                   alt="Pingo, mascote da AloClínica, junto a pacientes"
+                  priority
                   className="public-image-depth w-full h-auto max-h-full object-contain mix-blend-multiply"
                 />
               </motion.div>

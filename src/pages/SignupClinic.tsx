@@ -20,7 +20,7 @@ import {
   validarSenha, validarNome,
 } from "@/lib/form-validators";
 import { toastError } from "@/lib/errorMessages";
-import pingoClinic from "@/assets/pingo-clinica-medica.png";
+import pingoClinic from "@/assets/pingo-clinica-medica.jpg";
 
 interface FormData {
   company_name: string;

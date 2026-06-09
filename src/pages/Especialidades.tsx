@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/landing/Header";
 import SEOHead from "@/components/SEOHead";
 import { PINGO_SPECIALTIES } from "@/constants/specialties-assets";
+import pingoMedicoTeleconsulta from "@/assets/pingo-medico-teleconsulta.jpg";
 
 const Footer = lazy(() => import("@/components/landing/Footer"));
 
@@ -128,7 +129,7 @@ const Especialidades = forwardRef<HTMLDivElement>((_, ref) => {
               animate={{ opacity: 1, x: 0 }}
               className="absolute -right-20 -top-20 hidden 2xl:block pointer-events-none"
             >
-              <img src="/src/assets/pingo-medico-teleconsulta.png" alt="Pingo Médico" className="w-32 h-32 object-contain pingo-float drop-shadow-xl" />
+              <img src={pingoMedicoTeleconsulta} alt="Pingo Médico" className="w-32 h-32 object-contain pingo-float drop-shadow-xl" />
             </motion.div>
             
             <div className="relative mb-8 shadow-sm">
