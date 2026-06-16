@@ -20,6 +20,7 @@ import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { drawSafeText, safeQrBox } from "@/lib/pdf-layout";
+import { drawBrandFooter } from "@/lib/pdf-brand";
 import { TemplateControls } from "@/components/consultation/DoctorTemplates";
 
 const MedicalCertificate = () => {
