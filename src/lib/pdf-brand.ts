@@ -14,6 +14,14 @@
 import type jsPDF from "jspdf";
 import logoBrand from "@/assets/logo-receita.png";
 
+/** Convert millimeters to the document's current unit (works for mm AND pt). */
+const mm = (doc: jsPDF, value: number) => {
+  // internal.scaleFactor = points per current-unit.
+  // 1 mm = 2.8346456693 pt → in current units: that / scaleFactor.
+  const sf = (doc as any).internal?.scaleFactor ?? 2.8346456693;
+  return (value * 2.8346456693) / sf;
+};
+
 // ── Corporate identity (oficial) ──────────────────────────────────────────────
 export const BRAND = {
   name: "AloClínica",
@@ -70,7 +78,9 @@ export const drawBrandHeader = (doc: jsPDF, opts: HeaderOpts): number => {
   const { title, subtitle = "Documento Médico Digital", documentId, date = new Date() } = opts;
   const accent = opts.accent ?? BRAND.colors.primary;
   const W = doc.internal.pageSize.getWidth();
-  const HEADER_H = 28;
+  const HEADER_H = mm(doc, 28);
+  const PAD = mm(doc, 12);
+  const LOGO = mm(doc, 20);
 
   // Solid primary strip
   doc.setFillColor(...accent);
@@ -78,7 +88,7 @@ export const drawBrandHeader = (doc: jsPDF, opts: HeaderOpts): number => {
 
   // Logo (Pingo) — optional, swallow errors
   try {
-    doc.addImage(logoBrand, "PNG", 12, 4, 20, 20);
+    doc.addImage(logoBrand, "PNG", PAD, mm(doc, 4), LOGO, LOGO);
   } catch {
     /* logo opcional */
   }
@@ -87,28 +97,28 @@ export const drawBrandHeader = (doc: jsPDF, opts: HeaderOpts): number => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(255, 255, 255);
-  doc.text(BRAND.name, 36, 13);
+  doc.text(BRAND.name, PAD + LOGO + mm(doc, 4), mm(doc, 13));
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(220, 230, 245);
-  doc.text(subtitle, 36, 19);
-  doc.text(`CNPJ ${BRAND.cnpj} · RT ${BRAND.rt.crm}`, 36, 24);
+  doc.text(subtitle, PAD + LOGO + mm(doc, 4), mm(doc, 19));
+  doc.text(`CNPJ ${BRAND.cnpj} · RT ${BRAND.rt.crm}`, PAD + LOGO + mm(doc, 4), mm(doc, 24));
 
   // Right side — title + doc id + date
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.setTextColor(255, 255, 255);
-  doc.text(title.toUpperCase(), W - 12, 13, { align: "right" });
+  doc.text(title.toUpperCase(), W - PAD, mm(doc, 13), { align: "right" });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(220, 230, 245);
   if (documentId) {
-    doc.text(documentId, W - 12, 19, { align: "right" });
+    doc.text(documentId, W - PAD, mm(doc, 19), { align: "right" });
   }
   const dt = date.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
-  doc.text(dt, W - 12, 24, { align: "right" });
+  doc.text(dt, W - PAD, mm(doc, 24), { align: "right" });
 
   // Thin gold accent below
   doc.setDrawColor(...BRAND.colors.gold);
@@ -118,7 +128,7 @@ export const drawBrandHeader = (doc: jsPDF, opts: HeaderOpts): number => {
 
   // Reset text color for downstream content
   doc.setTextColor(...BRAND.colors.text);
-  return HEADER_H + 6;
+  return HEADER_H + mm(doc, 6);
 };
 
 interface FooterOpts {
@@ -137,6 +147,11 @@ export const drawBrandFooter = (doc: jsPDF, opts: FooterOpts = {}) => {
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
   const totalPages = doc.getNumberOfPages();
+  const PAD = mm(doc, 12);
+  const Y_LINE = H - mm(doc, 16);
+  const Y_NOTE = H - mm(doc, 11);
+  const Y_CORP = H - mm(doc, 7);
+  const Y_PAGE = H - mm(doc, 3);
 
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
@@ -144,7 +159,7 @@ export const drawBrandFooter = (doc: jsPDF, opts: FooterOpts = {}) => {
     // Hairline
     doc.setDrawColor(...BRAND.colors.line);
     doc.setLineWidth(0.2);
-    doc.line(12, H - 16, W - 12, H - 16);
+    doc.line(PAD, Y_LINE, W - PAD, Y_LINE);
 
     // Compliance + corporate line
     doc.setFont("helvetica", "bold");
@@ -153,7 +168,7 @@ export const drawBrandFooter = (doc: jsPDF, opts: FooterOpts = {}) => {
     doc.text(
       complianceNote ?? "Documento emitido via telemedicina · Resolução CFM 2.314/2022 · Lei 14.510/2022",
       W / 2,
-      H - 11,
+      Y_NOTE,
       { align: "center" },
     );
 
@@ -163,12 +178,12 @@ export const drawBrandFooter = (doc: jsPDF, opts: FooterOpts = {}) => {
     doc.text(
       `${BRAND.legalName} · CNPJ ${BRAND.cnpj} · RT ${BRAND.rt.name} (${BRAND.rt.crm}) · ${BRAND.website}`,
       W / 2,
-      H - 7,
+      Y_CORP,
       { align: "center" },
     );
 
     if (pageNumbers && totalPages > 1) {
-      doc.text(`Página ${i} de ${totalPages}`, W - 12, H - 3, { align: "right" });
+      doc.text(`Página ${i} de ${totalPages}`, W - PAD, Y_PAGE, { align: "right" });
     }
     doc.setTextColor(...BRAND.colors.text);
   }

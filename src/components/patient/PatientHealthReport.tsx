@@ -8,6 +8,7 @@ import { FileText, Download } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { logError } from "@/lib/logger";
+import { applyBrandDefaults, drawBrandHeader, drawBrandFooter, BRAND } from "@/lib/pdf-brand";
 
 interface PatientHealthReportProps {
   variant?: "default" | "outline" | "ghost";
@@ -15,8 +16,6 @@ interface PatientHealthReportProps {
   className?: string;
   label?: string;
 }
-
-const BRAND = { r: 0, g: 52, b: 127 }; // AloClínica primary
 
 /**
  * Botão que gera um relatório consolidado em PDF para o paciente:
@@ -91,23 +90,13 @@ const PatientHealthReport = ({
       const doc = new jsPDF({ unit: "mm", format: "a4" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
-      let y = 0;
-
-      // Header band
-      doc.setFillColor(BRAND.r, BRAND.g, BRAND.b);
-      doc.rect(0, 0, pageW, 28, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("AloClínica", 14, 14);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.text("Relatório consolidado de saúde", 14, 21);
-      doc.setFontSize(9);
-      doc.text(format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR }), pageW - 14, 21, { align: "right" });
-
-      y = 38;
-      doc.setTextColor(20, 20, 20);
+      applyBrandDefaults(doc);
+      let y = drawBrandHeader(doc, {
+        title: "Relatório de Saúde",
+        subtitle: "Relatório consolidado do paciente",
+        documentId: `RS-${format(new Date(), "yyyyMMdd-HHmm")}`,
+      });
+      const PRIMARY = BRAND.colors.primary;
 
       // Patient block
       doc.setFillColor(245, 248, 252);
@@ -135,7 +124,7 @@ const PatientHealthReport = ({
 
       const sectionTitle = (title: string, count: number) => {
         ensureSpace(12);
-        doc.setFillColor(BRAND.r, BRAND.g, BRAND.b);
+        doc.setFillColor(...PRIMARY);
         doc.rect(10, y, 4, 6, "F");
         doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
@@ -168,7 +157,7 @@ const PatientHealthReport = ({
           doc.setFont("helvetica", "normal");
           doc.setTextColor(80, 80, 80);
           doc.text(med, 50, y + 4);
-          doc.setTextColor(BRAND.r, BRAND.g, BRAND.b);
+          doc.setTextColor(...PRIMARY);
           doc.text(status, pageW - 14, y + 4, { align: "right" });
           doc.setTextColor(20, 20, 20);
           y += 7;
@@ -234,20 +223,11 @@ const PatientHealthReport = ({
         });
       }
 
-      // Footer on every page
-      const pages = (doc as any).getNumberOfPages?.() ?? 1;
-      for (let i = 1; i <= pages; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(140, 140, 140);
-        doc.text(
-          "Documento gerado pela plataforma AloClínica · uso pessoal do paciente",
-          pageW / 2,
-          pageH - 8,
-          { align: "center" }
-        );
-        doc.text(`Página ${i} de ${pages}`, pageW - 14, pageH - 8, { align: "right" });
-      }
+      // Footer corporativo unificado (CNPJ + RT)
+      drawBrandFooter(doc, {
+        complianceNote:
+          "Documento informativo · uso pessoal do paciente · Não substitui prescrição médica",
+      });
 
       const fileName = `aloclinica-relatorio-${fullName.replace(/\s+/g, "-").toLowerCase()}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       doc.save(fileName);
