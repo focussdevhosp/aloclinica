@@ -48,6 +48,7 @@ const PrivacyPortal = lazy(() => import("./pages/PrivacyPortal"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const DoctorTerms = lazy(() => import("./pages/DoctorTerms"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
+const ResponsavelTecnico = lazy(() => import("./pages/ResponsavelTecnico"));
 const AuthSuporte = lazy(() => import("./pages/AuthSuporte"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const LinkRedirect = lazy(() => import("./pages/LinkRedirect"));
