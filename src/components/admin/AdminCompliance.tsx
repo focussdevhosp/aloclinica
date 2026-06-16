@@ -24,9 +24,9 @@ import { toast } from "sonner";
 import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  ShieldCheck, Download, RefreshCw, FileSignature, ClockCounterClockwise,
-  Archive, CheckCircle, Warning,
-} from "@phosphor-icons/react";
+  ShieldCheck, Download, RefreshCw, FileSignature, History,
+  Archive, CheckCircle, AlertTriangle,
+} from "lucide-react";
 
 const adminNav = getAdminNav("compliance");
 
@@ -128,9 +128,9 @@ export default function AdminCompliance() {
   }, [records]);
 
   return (
-    <DashboardLayout title="Compliance" sidebarItems={adminNav}>
+    <DashboardLayout title="Compliance" nav={adminNav}>
       <AdminPageHeader
-        icon={<ShieldCheck size={22} weight="fill" />}
+        icon={ShieldCheck}
         title="Painel de Compliance"
         subtitle="Evidências de TCLE, logs imutáveis e retenção do prontuário (CFM 2.314/2022 · LGPD)"
       />
@@ -161,7 +161,7 @@ export default function AdminCompliance() {
       <Tabs defaultValue="tcle" className="w-full">
         <TabsList>
           <TabsTrigger value="tcle"><FileSignature className="w-4 h-4 mr-1" />TCLE & Consentimentos</TabsTrigger>
-          <TabsTrigger value="logs"><ClockCounterClockwise className="w-4 h-4 mr-1" />Logs Imutáveis</TabsTrigger>
+          <TabsTrigger value="logs"><History className="w-4 h-4 mr-1" />Logs Imutáveis</TabsTrigger>
           <TabsTrigger value="retention"><Archive className="w-4 h-4 mr-1" />Retenção Prontuário</TabsTrigger>
         </TabsList>
 
@@ -322,7 +322,7 @@ export default function AdminCompliance() {
                             {r.retention_until ? (
                               <span className={expired ? "text-rose-600" : ""}>
                                 {format(new Date(r.retention_until), "dd/MM/yyyy")}
-                                {expired && <Warning className="w-3 h-3 inline ml-1" />}
+                                {expired && <AlertTriangle className="w-3 h-3 inline ml-1" />}
                               </span>
                             ) : "—"}
                           </TableCell>
