@@ -39,6 +39,7 @@ import { ThemeEditor } from "@/components/admin/studio/ThemeEditor";
 import { MediaLibrary } from "@/components/admin/studio/MediaLibrary";
 import { invalidateSiteSections } from "@/lib/site-sections";
 import { invalidateSiteConfig } from "@/lib/site-config";
+import { supabase } from "@/integrations/supabase/client";
 
 const VIEWPORTS = {
   desktop: { w: "100%", h: "100%", label: "Desktop", icon: Monitor },
@@ -77,6 +78,8 @@ export default function AdminStudio() {
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [previewSrc, setPreviewSrc] = useState("/");
+  const [liveSync, setLiveSync] = useState(true);
+  const [lastRemoteAt, setLastRemoteAt] = useState<number | null>(null);
 
   const selected = blocks.find((b) => b.id === selectedId) ?? null;
 
@@ -196,6 +199,47 @@ export default function AdminStudio() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [dirty, draft, selected]);
+
+  // ── Wave 8: Realtime sync com outros editores + push pro iframe de preview ──
+  useEffect(() => {
+    if (!liveSync) return;
+    const channel = supabase
+      .channel("studio-site-blocks")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "site_blocks" },
+        (payload: any) => {
+          setLastRemoteAt(Date.now());
+          // Se o bloco selecionado mudou em outro editor, só recarrega se não tiver dirty
+          if (selected && payload.new?.id === selected.id && dirty) {
+            toast.info("Bloco alterado em outro editor — salve seu rascunho antes de recarregar");
+            return;
+          }
+          invalidateBlocksCache();
+          invalidateSiteSections();
+          invalidateSiteConfig();
+          reload();
+          // Atualiza o iframe de preview
+          const f = document.getElementById("studio-preview-iframe") as HTMLIFrameElement | null;
+          if (f) f.contentWindow?.postMessage({ type: "studio:block-updated", blockId: payload.new?.id }, "*");
+        },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [liveSync, selected?.id, dirty, reload]);
+
+  // Debounced live preview: a cada keystroke do draft, sinaliza o iframe pra rerender (sem persistir)
+  useEffect(() => {
+    if (!selected) return;
+    const handle = window.setTimeout(() => {
+      const f = document.getElementById("studio-preview-iframe") as HTMLIFrameElement | null;
+      if (f) f.contentWindow?.postMessage(
+        { type: "studio:live-preview", blockId: selected.id, pageSlug: selected.page_slug, blockKey: selected.block_key, draft, locale },
+        "*",
+      );
+    }, 400);
+    return () => window.clearTimeout(handle);
+  }, [draft, selected?.id, locale]);
 
   return (
     <DashboardLayout title="Studio" nav={nav} role="admin">

@@ -183,7 +183,29 @@ export function usePublishedBlock<T extends Record<string, any>>(
       const data = loc ?? b.published ?? {};
       setState({ ...fallback, ...(data as any), __enabled: b.is_enabled });
     });
-    return () => { mounted = false; };
+
+    // Wave 8: ouvir live-preview vindo do Studio (postMessage)
+    const onMsg = (ev: MessageEvent) => {
+      const data = ev.data;
+      if (!data || typeof data !== "object") return;
+      if (data.type === "studio:live-preview" && data.pageSlug === pageSlug && data.blockKey === blockKey) {
+        const draft = (data.locale && data.locale !== "pt-BR" ? data.draft : data.draft) ?? {};
+        if (!mounted) return;
+        setState((prev) => ({ ...prev, ...draft }));
+      }
+      if (data.type === "studio:block-updated") {
+        invalidateBlocksCache();
+        fetchPublicBlocks().then((blocks) => {
+          if (!mounted) return;
+          const b = blocks.find((x) => x.page_slug === pageSlug && x.block_key === blockKey);
+          if (!b) return;
+          const loc = locale && b.i18n?.[locale] ? b.i18n[locale] : null;
+          setState({ ...fallback, ...((loc ?? b.published ?? {}) as any), __enabled: b.is_enabled });
+        });
+      }
+    };
+    window.addEventListener("message", onMsg);
+    return () => { mounted = false; window.removeEventListener("message", onMsg); };
   }, [pageSlug, blockKey, locale]);
 
   return state;
