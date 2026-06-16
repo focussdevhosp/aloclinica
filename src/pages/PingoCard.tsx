@@ -470,8 +470,8 @@ const PingoCard = () => {
         open={subscribeOpen} 
         onOpenChange={setSubscribeOpen} 
         plan={selectedPlan!} 
-        billing={billing} 
-        onSuccess={handleSubscribed} 
+        billingCycle={billing} 
+        onSubscribed={handleSubscribed} 
       />
     </div>
   );
