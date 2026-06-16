@@ -407,7 +407,7 @@ const PanelCenter = () => {
         {/* ─────── KPI CARDS ─────── */}
         <motion.section
           variants={container}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4"
         >
           {stats.map((s, i) => {
             const Icon = s.icon;
@@ -470,18 +470,18 @@ const PanelCenter = () => {
 
         {/* ─────── PANELS GRID (now primary) ─────── */}
         <motion.section variants={fadeUp} className="space-y-4">
-          <div className="flex items-end justify-between flex-wrap gap-4 px-1">
-            <div className="space-y-1">
-              <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
+          <div className="flex items-start sm:items-end justify-between flex-wrap gap-3 sm:gap-4 px-1">
+            <div className="space-y-1 min-w-0">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tight flex items-center gap-2 flex-wrap">
                 <SquaresFour className="w-6 h-6 text-primary" weight="fill" />
                 Painéis de Controle
               </h2>
-              <p className="text-sm text-muted-foreground font-medium">Gerencie e monitore cada módulo da plataforma</p>
+              <p className="text-xs sm:text-sm text-muted-foreground font-medium">Gerencie e monitore cada módulo da plataforma</p>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="gap-1.5 py-1 px-3 text-[11px] font-bold uppercase tracking-wider bg-primary/5 border-primary/10 text-primary">
                 <Sparkles className="w-3.5 h-3.5" />
-                {PANELS.length} painéis configurados
+                {PANELS.length} painéis
               </Badge>
             </div>
           </div>
