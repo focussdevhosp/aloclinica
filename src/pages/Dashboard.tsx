@@ -419,6 +419,7 @@ const Dashboard = () => {
       
       <Route path="admin/payouts" element={<RoleGuard allowed={[]} roles={roles}><AdminPayouts /></RoleGuard>} />
       <Route path="admin/contratos" element={<RoleGuard allowed={[]} roles={roles}><AdminContratos /></RoleGuard>} />
+      <Route path="admin/legal" element={<RoleGuard allowed={[]} roles={roles}><AdminLegalDocuments /></RoleGuard>} />
 
 
       {/* ─── Cartão Benefícios ─── */}
