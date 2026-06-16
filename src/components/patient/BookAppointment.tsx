@@ -40,6 +40,8 @@ import {
 } from "./BookAppointment.types";
 import { usePixCountdown } from "@/hooks/usePixCountdown";
 import QuickPatientCheckoutDialog, { isProfileComplete } from "./QuickPatientCheckoutDialog";
+import ConsentDialog from "@/components/legal/ConsentDialog";
+import type { LegalKind } from "@/lib/legal-docs";
 
 const patientNav = getPatientNav("schedule");
 
@@ -91,6 +93,11 @@ const BookAppointment = () => {
   // Quick patient checkout dialog (cadastro rápido antes da reserva)
   const [quickOpen, setQuickOpen] = useState(false);
   const [profileReady, setProfileReady] = useState(false);
+
+  // Aceite do termo da consulta (CFM 2.314/2022) — bloqueia o pagamento até confirmar
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [consentDone, setConsentDone] = useState(false);
+  const consentKind: LegalKind = isContratoMode ? "telemed_contract" : "telemed_scheduled";
 
   const currentStep = paymentStep ? 3 : !selectedDate ? 0 : !selectedTime ? 1 : 2;
 
@@ -564,6 +571,8 @@ const BookAppointment = () => {
   const handlePayment = async () => {
     if (processing) return; // Defesa síncrona extra (StrictMode, F5, double-click)
     if (!user || !doctor || !appointmentId) return;
+    // Termo da consulta deve ser aceito antes de qualquer pagamento / bypass de contrato.
+    if (!consentDone) { setConsentOpen(true); return; }
     if (paymentMethod === "card") {
       const cardError = validateCard(cardName, cardNumber, cardExpiry, cardCvv);
       if (cardError) { toast.error(cardError); return; }
@@ -697,6 +706,18 @@ const BookAppointment = () => {
         // continua o fluxo de reserva automaticamente
         setTimeout(() => handleBook(), 0);
       }}
+    />
+  );
+
+  // ── Termo de consentimento da consulta ──
+  const consentDialog = (
+    <ConsentDialog
+      open={consentOpen}
+      onOpenChange={setConsentOpen}
+      kind={consentKind}
+      appointmentId={appointmentId}
+      acceptLabel="Aceitar e prosseguir"
+      onAccepted={() => { setConsentDone(true); setTimeout(() => handlePayment(), 0); }}
     />
   );
 
@@ -1386,6 +1407,7 @@ const BookAppointment = () => {
         </AnimatePresence>
       </div>
       {quickDialog}
+      {consentDialog}
     </DashboardLayout>
   );
 };

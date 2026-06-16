@@ -16,6 +16,7 @@ import { notifyDoctorsNewQueueEntry } from "@/lib/notifications-queue";
 import { logError } from "@/lib/logger";
 import { validateCard } from "@/lib/card-utils";
 import mascotWave from "@/assets/mascot-wave.png";
+import ConsentDialog from "@/components/legal/ConsentDialog";
 
 type PaymentMethod = "pix" | "card" | "boleto";
 
@@ -233,6 +234,14 @@ const UrgentCareQueue = () => {
     : 0;
   const handleStartPayment = () => setShowPayment(true);
 
+  // Aceite do termo de pronto-atendimento — bloqueia o "Entrar na Fila"
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [consentDone, setConsentDone] = useState(false);
+  const handleEnterQueue = () => {
+    if (!consentDone) { setConsentOpen(true); return; }
+    handleStartPayment();
+  };
+
   const handlePayment = async () => {
     if (processing) return; // Guard double-submit
     if (!user || !shiftInfo) return;
@@ -439,7 +448,7 @@ const UrgentCareQueue = () => {
                 )}
                 <Button
                   className="rounded-full bg-white text-[#A32D2D] font-bold shadow-[0_4px_14px_rgba(163,45,45,0.4)] hover:bg-white/90 gap-2"
-                  onClick={handleStartPayment}
+                  onClick={handleEnterQueue}
                 >
                   <Zap className="w-4 h-4" /> Entrar na Fila
                 </Button>
@@ -562,6 +571,13 @@ const UrgentCareQueue = () => {
           </motion.div>
         )}
       </div>
+      <ConsentDialog
+        open={consentOpen}
+        onOpenChange={setConsentOpen}
+        kind="telemed_ondemand"
+        acceptLabel="Aceitar e entrar na fila"
+        onAccepted={() => { setConsentDone(true); setTimeout(() => handleStartPayment(), 0); }}
+      />
     </DashboardLayout>
   );
 };

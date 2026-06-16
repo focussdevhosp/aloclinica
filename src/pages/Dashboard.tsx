@@ -137,6 +137,7 @@ const AdminPageBuilder = lazy(() => import("@/components/admin/AdminPageBuilder"
 
 const AdminPayouts = lazy(() => import("@/components/admin/AdminPayouts"));
 const AdminContratos = lazy(() => import("@/components/admin/AdminContratos"));
+const AdminLegalDocuments = lazy(() => import("@/components/admin/AdminLegalDocuments"));
 const PingoCardPanel = lazy(() => import("@/components/patient/PingoCardPanel"));
 const SupportInbox = lazy(() => import("@/components/support/SupportInbox"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
@@ -418,6 +419,7 @@ const Dashboard = () => {
       
       <Route path="admin/payouts" element={<RoleGuard allowed={[]} roles={roles}><AdminPayouts /></RoleGuard>} />
       <Route path="admin/contratos" element={<RoleGuard allowed={[]} roles={roles}><AdminContratos /></RoleGuard>} />
+      <Route path="admin/legal" element={<RoleGuard allowed={[]} roles={roles}><AdminLegalDocuments /></RoleGuard>} />
 
 
       {/* ─── Cartão Benefícios ─── */}
