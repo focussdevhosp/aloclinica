@@ -186,6 +186,7 @@ const Footer = memo(forwardRef<HTMLElement, { config?: any }>(({ config }, ref) 
               <li><Link to="/termos" className="hover:text-primary transition-colors">Termos de Uso</Link></li>
               <li><Link to="/privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link></li>
               <li><Link to="/lgpd" className="hover:text-primary transition-colors">LGPD</Link></li>
+              <li><Link to="/responsavel-tecnico" className="hover:text-primary transition-colors">Responsável Técnico / CRM-PJ</Link></li>
             </ul>
           </div>
         </div>
