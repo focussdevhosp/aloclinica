@@ -35,6 +35,8 @@ import {
 import { BlockFieldsForm } from "@/components/admin/studio/BlockFieldsForm";
 import { VersionHistoryDrawer } from "@/components/admin/studio/VersionHistoryDrawer";
 import { AuditTrailDrawer } from "@/components/admin/studio/AuditTrailDrawer";
+import { ThemeEditor } from "@/components/admin/studio/ThemeEditor";
+import { MediaLibrary } from "@/components/admin/studio/MediaLibrary";
 import { invalidateSiteSections } from "@/lib/site-sections";
 import { invalidateSiteConfig } from "@/lib/site-config";
 
@@ -69,6 +71,9 @@ export default function AdminStudio() {
   const [viewport, setViewport] = useState<keyof typeof VIEWPORTS>("desktop");
   const [locale, setLocale] = useState<string>("pt-BR");
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const [mediaOpen, setMediaOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [previewSrc, setPreviewSrc] = useState("/");
@@ -266,6 +271,15 @@ export default function AdminStudio() {
                   <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setHistoryOpen(true)}>
                     <History className="w-3.5 h-3.5 mr-1" />Versões
                   </Button>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setMediaOpen(true)}>
+                    <FileText className="w-3.5 h-3.5 mr-1" />Mídia
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setThemeOpen(true)}>
+                    <Palette className="w-3.5 h-3.5 mr-1" />Tema
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setAuditOpen(true)}>
+                    <ClipboardList className="w-3.5 h-3.5 mr-1" />Auditoria
+                  </Button>
                   <div className="ml-auto flex items-center gap-1">
                     {dirty && <span className="text-[10px] text-amber-600">não salvo</span>}
                   </div>
@@ -335,6 +349,9 @@ export default function AdminStudio() {
         onOpenChange={setHistoryOpen}
         onRolledBack={() => { reload(); invalidateSiteSections(); invalidateSiteConfig(); }}
       />
+      <ThemeEditor open={themeOpen} onOpenChange={setThemeOpen} />
+      <MediaLibrary open={mediaOpen} onOpenChange={setMediaOpen} />
+      <AuditTrailDrawer open={auditOpen} onOpenChange={setAuditOpen} blockId={selected?.id ?? null} />
     </DashboardLayout>
   );
 }
