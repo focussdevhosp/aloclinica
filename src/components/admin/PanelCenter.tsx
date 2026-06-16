@@ -742,18 +742,18 @@ const PanelCenter = () => {
         </div>
         
         {/* ─────── ADMIN SYSTEM ACTIONS ─────── */}
-        <motion.section variants={fadeUp} className="space-y-4 pt-4">
-          <div className="flex items-center justify-between px-1 gap-2">
+        <motion.section variants={fadeUp} className="space-y-3 sm:space-y-4 pt-2 sm:pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-1 gap-1.5 sm:gap-2">
             <div className="flex items-center gap-2">
               <Settings2 className="w-4 h-4 text-primary" />
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">Sistema &amp; Auditoria</h2>
             </div>
-            <span className="text-[10px] text-muted-foreground font-mono">
+            <span className="text-[10px] text-muted-foreground font-mono truncate">
               {activePanels}/{PANELS.length} painéis ativos · sync {format(lastRefresh, "HH:mm:ss")}
             </span>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-3">
             {[
               { label: "Logs de Erro", icon: ShieldAlert, color: "text-rose-500", bg: "bg-rose-500/10", route: "/dashboard/admin/logs?role=admin" },
               { label: "Site Config", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10", route: "/dashboard/admin/site-config?role=admin" },
