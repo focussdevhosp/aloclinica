@@ -575,9 +575,9 @@ const PanelCenter = () => {
         </motion.section>
 
         {/* ─────── ACTIVITY FEED ─────── */}
-        <div className="grid lg:grid-cols-3 gap-4">
+        <div className="grid lg:grid-cols-6 gap-3 sm:gap-4">
           {/* Distribution chart (spans 3 cols at top of activity row on mobile, sits beside on lg) */}
-          <motion.div variants={fadeUp} className="lg:col-span-3">
+          <motion.div variants={fadeUp} className="lg:col-span-3 min-w-0">
             <Card className="border-border/40 bg-gradient-to-br from-card via-card to-muted/20 overflow-hidden">
               <div className="h-[2px] bg-gradient-to-r from-primary via-violet-500 to-emerald-500" />
               <CardContent className="p-4 md:p-5">
@@ -593,26 +593,29 @@ const PanelCenter = () => {
                     {totalUsers} totais
                   </Badge>
                 </div>
-                <div className="h-[220px] -mx-2">
+                <div className="h-[220px] -mx-2 min-w-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={panels
                         .filter(p => p.id !== "ai-assistant")
                         .map(p => ({
-                          name: p.label,
+                          name: p.label.length > 10 ? p.label.slice(0, 9) + "…" : p.label,
                           total: p.totalUsers,
                           online: p.onlineCount,
                           gradient: p.gradient,
                         }))}
                       margin={{ top: 8, right: 12, bottom: 0, left: 0 }}
-                      barCategoryGap={14}
+                      barCategoryGap={8}
                     >
                       <XAxis
                         dataKey="name"
-                        tick={{ fontSize: 10.5, fill: "hsl(var(--muted-foreground))" }}
+                        tick={{ fontSize: 9.5, fill: "hsl(var(--muted-foreground))" }}
                         tickLine={false}
                         axisLine={false}
                         interval={0}
+                        angle={-15}
+                        textAnchor="end"
+                        height={42}
                       />
                       <YAxis
                         tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
@@ -667,7 +670,7 @@ const PanelCenter = () => {
             </Card>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="lg:col-span-3">
+          <motion.div variants={fadeUp} className="lg:col-span-3 min-w-0">
             <Card className="h-full border-border/40 bg-gradient-to-br from-card via-card to-muted/20 overflow-hidden">
               <div className="h-[2px] bg-gradient-to-r from-emerald-500 via-primary to-purple-500" />
               <CardContent className="p-4 md:p-5">
