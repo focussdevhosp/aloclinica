@@ -48,6 +48,7 @@ const PrivacyPortal = lazy(() => import("./pages/PrivacyPortal"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const DoctorTerms = lazy(() => import("./pages/DoctorTerms"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
+const ResponsavelTecnico = lazy(() => import("./pages/ResponsavelTecnico"));
 const AuthSuporte = lazy(() => import("./pages/AuthSuporte"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const LinkRedirect = lazy(() => import("./pages/LinkRedirect"));
@@ -189,6 +190,7 @@ const AnimatedRoutes = () => {
       <Route path="/refund" element={<RefundPolicy />} />
       <Route path="/doctor-terms" element={<DoctorTerms />} />
       <Route path="/accessibility" element={<Accessibility />} />
+      <Route path="/responsavel-tecnico" element={<ResponsavelTecnico />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/dr/:slug" element={<DoctorPublicProfilePage />} />
       <Route path="/medicos/:id" element={<MedicoProfile />} />

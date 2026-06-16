@@ -333,7 +333,7 @@ const PrescriptionForm = () => {
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.text("DOCUMENTO ASSINADO DIGITALMENTE - ICP-BRASIL (PAdES)", pageWidth / 2, sigBoxY + 5, { align: "center" });
+    doc.text("DOCUMENTO ASSINADO ELETRONICAMENTE (Lei 14.063/2020)", pageWidth / 2, sigBoxY + 5, { align: "center" });
     
     // QR Code — escaneável para verificação pública (com clamp de bordas)
     const qrPlaced = safeQrBox(doc, { x: 20, y: sigBoxY + 10, size: 28 }, MARGIN - 5);
@@ -369,7 +369,7 @@ const PrescriptionForm = () => {
     sigY = drawSafeText(doc, `CRM: ${doctorInfo?.crm ?? "—"}/${doctorInfo?.crm_state ?? "—"}`, {
       x: infoX, y: sigY, maxWidth: infoWidth, fontSize: 8, minFontSize: 7, maxLines: 1, lineHeight: 4,
     });
-    sigY = drawSafeText(doc, "Tipo de certificado: e-CPF A1 (ICP-Brasil)", {
+    sigY = drawSafeText(doc, "Assinatura eletrônica avançada (hash SHA-256)", {
       x: infoX, y: sigY, maxWidth: infoWidth, fontSize: 8, minFontSize: 7, maxLines: 1, lineHeight: 4,
     });
     sigY = drawSafeText(doc, `Carimbo de tempo: ${format(now, "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}`, {
@@ -387,12 +387,16 @@ const PrescriptionForm = () => {
 
     // Bottom bar — Conformidade legal
     doc.setFillColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
-    doc.rect(0, pageHeight - 12, pageWidth, 12, "F");
+    doc.rect(0, pageHeight - 16, pageWidth, 16, "F");
     doc.setFontSize(7);
     doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    drawSafeText(doc, "DOCUMENTO EMITIDO VIA TELEMEDICINA (Resolucao CFM 2.314/2022)", {
+      x: pageWidth / 2, y: pageHeight - 10, maxWidth: pageWidth - 2 * MARGIN, fontSize: 7, minFontSize: 6, align: "center", maxLines: 1, lineHeight: 3,
+    });
     doc.setFont("helvetica", "normal");
-    drawSafeText(doc, "Conforme Resolução CFM nº 2.299/2021 e MP 2.200-2/2001 (ICP-Brasil) | Escaneie o QR Code para validar a autenticidade", {
-      x: pageWidth / 2, y: pageHeight - 5, maxWidth: pageWidth - 2 * MARGIN, fontSize: 7, minFontSize: 5.5, align: "center", maxLines: 1, lineHeight: 3,
+    drawSafeText(doc, "Assinatura eletronica avancada (Lei 14.063/2020 e CFM 2.299/2021) | Medicamentos controlados requerem certificado ICP-Brasil | Valide pelo QR Code", {
+      x: pageWidth / 2, y: pageHeight - 4, maxWidth: pageWidth - 2 * MARGIN, fontSize: 6.5, minFontSize: 5.5, align: "center", maxLines: 1, lineHeight: 3,
     });
 
       return { doc, prescriptionId };
