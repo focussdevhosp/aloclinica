@@ -122,3 +122,69 @@ export function useBlocks(scope?: BlockScope) {
 
   return { blocks, loading, reload, setBlocks };
 }
+
+// ────────────────────────────────────────────────────────────
+// Public-side helpers (Wave 4): leitura do `published` por (page_slug, block_key)
+// Cache em memória + invalidação via invalidateBlocksCache().
+// ────────────────────────────────────────────────────────────
+
+type PublicBlock = {
+  page_slug: string | null;
+  block_key: string;
+  is_enabled: boolean;
+  published: Record<string, any>;
+  i18n: Record<string, Record<string, any>>;
+};
+
+let _publicCache: PublicBlock[] | null = null;
+let _publicPromise: Promise<PublicBlock[]> | null = null;
+
+async function fetchPublicBlocks(): Promise<PublicBlock[]> {
+  if (_publicCache) return _publicCache;
+  if (_publicPromise) return _publicPromise;
+  _publicPromise = (db as any)
+    .from("site_blocks")
+    .select("page_slug, block_key, is_enabled, published, i18n")
+    .then(({ data, error }: any) => {
+      if (error) { warn("[site-blocks] public fetch", error); return []; }
+      _publicCache = (data ?? []) as PublicBlock[];
+      return _publicCache!;
+    });
+  return _publicPromise!;
+}
+
+export function invalidateBlocksCache() {
+  _publicCache = null;
+  _publicPromise = null;
+}
+
+/**
+ * usePublishedBlock — lê o conteúdo publicado de um bloco para uso público.
+ * Retorna fallback enquanto carrega ou se o bloco não existir.
+ *
+ * @example
+ *   const hero = usePublishedBlock("home", "hero", { title: "Bem-vindo" });
+ */
+export function usePublishedBlock<T extends Record<string, any>>(
+  pageSlug: string | null,
+  blockKey: string,
+  fallback: T,
+  locale?: string,
+): T & { __enabled: boolean } {
+  const [state, setState] = useState<T & { __enabled: boolean }>({ ...fallback, __enabled: true });
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPublicBlocks().then((blocks) => {
+      if (!mounted) return;
+      const b = blocks.find((x) => x.page_slug === pageSlug && x.block_key === blockKey);
+      if (!b) return;
+      const loc = locale && b.i18n?.[locale] ? b.i18n[locale] : null;
+      const data = loc ?? b.published ?? {};
+      setState({ ...fallback, ...(data as any), __enabled: b.is_enabled });
+    });
+    return () => { mounted = false; };
+  }, [pageSlug, blockKey, locale]);
+
+  return state;
+}
