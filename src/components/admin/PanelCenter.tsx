@@ -322,108 +322,84 @@ const PanelCenter = () => {
           </Card>
         </motion.section>
 
-        {/* ─────── QUICK ACTIONS ─────── */}
-        <motion.section variants={fadeUp} className="space-y-4">
-          <div className="flex items-center gap-2 px-1">
-            <Zap className="w-5 h-5 text-amber-500" fill="currentColor" />
-            <h2 className="text-lg font-bold text-foreground">Ações Rápidas</h2>
+        {/* ─────── QUICK ACTIONS + STATUS BAR ─────── */}
+        <motion.section variants={fadeUp} className="space-y-3">
+          <div className="flex items-center justify-between gap-3 px-1 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-500" fill="currentColor" />
+              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">Ações Rápidas</h2>
+            </div>
+            <div className="flex items-center gap-x-4 gap-y-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex-wrap">
+              <span className="flex items-center gap-1.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                </span>
+                WhatsApp
+              </span>
+              <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Pagamentos</span>
+              <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Vídeo HD</span>
+              <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Banco de dados</span>
+            </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-            {quickActions.map((action) => (
-              <Button
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+            {quickActions.map((action, idx) => (
+              <motion.button
                 key={action.label}
-                variant="outline"
-                className="h-auto py-4 px-3 flex flex-col items-center gap-3 bg-card hover:bg-muted/50 border-border/40 rounded-2xl group transition-all"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.03, duration: 0.25 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => navigate(action.route)}
+                className="h-auto py-3.5 px-2 flex flex-col items-center gap-2.5 bg-card hover:bg-muted/40 border border-border/40 hover:border-primary/30 rounded-2xl group transition-colors"
               >
-                <div className={cn("p-2.5 rounded-xl transition-transform group-hover:scale-110", action.bg)}>
+                <div className={cn("p-2 rounded-xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3", action.bg)}>
                   <action.icon className={cn("w-4 h-4", action.color)} />
                 </div>
                 <span className="text-[10px] font-bold text-foreground text-center line-clamp-1">{action.label}</span>
-              </Button>
+              </motion.button>
             ))}
           </div>
         </motion.section>
 
-        {/* ─────── PLATFORM PULSE ─────── */}
-        <motion.section variants={fadeUp} className="grid lg:grid-cols-12 gap-4">
-          <Card className="lg:col-span-12 border-border/40 bg-card/50 overflow-hidden">
-            <div className="p-5 border-b border-border/40 flex items-center justify-between bg-primary/[0.03]">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-bold text-foreground">Status do Ecossistema</h3>
-              </div>
-              <div className="flex items-center gap-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> WhatsApp API</span>
-                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Mercado Pago</span>
-                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Jitsi Video</span>
-                <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Database</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="lg:col-span-8 border-border/40 bg-card/50 overflow-hidden">
-            <div className="p-5 border-b border-border/40 flex items-center justify-between">
+        {/* ─────── FATURAMENTO 7d (real-data placeholder) ─────── */}
+        <motion.section variants={fadeUp}>
+          <Card className="border-border/40 bg-card/50 overflow-hidden">
+            <div className="px-5 py-3 border-b border-border/40 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
-                <h3 className="text-sm font-bold text-foreground">Faturamento Estimado (7d)</h3>
+                <h3 className="text-sm font-bold text-foreground">Faturamento estimado · últimos 7 dias</h3>
               </div>
-              <Badge variant="outline" className="font-mono text-[10px] text-emerald-600 border-emerald-500/20 bg-emerald-500/5">
-                +12% vs última semana
+              <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground border-border/60 bg-muted/30">
+                dados simulados
               </Badge>
             </div>
-            <div className="h-[250px] p-4">
+            <div className="h-[200px] p-3">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
+                <AreaChart data={revenueData} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35}/>
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10}} />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: "hsl(var(--muted-foreground))"}} />
                   <YAxis hide />
-                  <RechartTooltip />
-                  <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                  <RechartTooltip
+                    cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
+                    contentStyle={{
+                      background: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: 12,
+                      fontSize: 12,
+                      boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+                    }}
+                    formatter={(value: number) => [`R$ ${value.toLocaleString("pt-BR")}`, "Faturamento"]}
+                  />
+                  <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRev)" />
                 </AreaChart>
               </ResponsiveContainer>
-            </div>
-          </Card>
-
-          <Card className="lg:col-span-4 border-border/40 bg-card/50 overflow-hidden flex flex-col">
-            <div className="p-5 border-b border-border/40 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-bold text-foreground">Atividade Recente</h3>
-              </div>
-              <Button variant="ghost" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => navigate("/dashboard/admin/logs?role=admin")}>
-                Ver Logs
-              </Button>
-            </div>
-            <div className="flex-1 overflow-y-auto max-h-[250px] scrollbar-hide">
-              {liveActivity.length > 0 ? (
-                <div className="divide-y divide-border/30">
-                  {liveActivity.map((activity, idx) => (
-                    <div key={idx} className="p-3 hover:bg-primary/5 transition-colors group">
-                      <div className="flex items-start gap-3">
-                        <div className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", activity.panel.gradient.split(" ")[0].replace("from-", "bg-"))} />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[11px] font-bold text-foreground truncate">{activity.name}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">{activity.page}</p>
-                        </div>
-                        <span className="text-[9px] text-muted-foreground tabular-nums bg-muted px-1.5 py-0.5 rounded shrink-0">
-                          {format(new Date(activity.lastSeen), "HH:mm")}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full py-12 text-center opacity-50">
-                  <Activity className="w-8 h-8 mb-2 text-muted-foreground" />
-                  <p className="text-[10px] font-medium uppercase tracking-widest">Aguardando atividade...</p>
-                </div>
-              )}
             </div>
           </Card>
         </motion.section>
