@@ -2897,6 +2897,7 @@ export type Database = {
       }
       medical_records: {
         Row: {
+          addendums: Json | null
           appointment_id: string | null
           assessment: string | null
           chief_complaint: string | null
@@ -2906,10 +2907,12 @@ export type Database = {
           icd_codes: string[] | null
           id: string
           is_draft: boolean | null
+          locked_at: string | null
           patient_id: string
           physical_exam: string | null
           plan: string | null
           record_type: string | null
+          retention_until: string | null
           soap_assessment: string | null
           soap_objective: string | null
           soap_plan: string | null
@@ -2918,6 +2921,7 @@ export type Database = {
           vitals: Json | null
         }
         Insert: {
+          addendums?: Json | null
           appointment_id?: string | null
           assessment?: string | null
           chief_complaint?: string | null
@@ -2927,10 +2931,12 @@ export type Database = {
           icd_codes?: string[] | null
           id?: string
           is_draft?: boolean | null
+          locked_at?: string | null
           patient_id: string
           physical_exam?: string | null
           plan?: string | null
           record_type?: string | null
+          retention_until?: string | null
           soap_assessment?: string | null
           soap_objective?: string | null
           soap_plan?: string | null
@@ -2939,6 +2945,7 @@ export type Database = {
           vitals?: Json | null
         }
         Update: {
+          addendums?: Json | null
           appointment_id?: string | null
           assessment?: string | null
           chief_complaint?: string | null
@@ -2948,10 +2955,12 @@ export type Database = {
           icd_codes?: string[] | null
           id?: string
           is_draft?: boolean | null
+          locked_at?: string | null
           patient_id?: string
           physical_exam?: string | null
           plan?: string | null
           record_type?: string | null
+          retention_until?: string | null
           soap_assessment?: string | null
           soap_objective?: string | null
           soap_plan?: string | null
