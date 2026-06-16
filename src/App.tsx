@@ -190,6 +190,7 @@ const AnimatedRoutes = () => {
       <Route path="/refund" element={<RefundPolicy />} />
       <Route path="/doctor-terms" element={<DoctorTerms />} />
       <Route path="/accessibility" element={<Accessibility />} />
+      <Route path="/responsavel-tecnico" element={<ResponsavelTecnico />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/dr/:slug" element={<DoctorPublicProfilePage />} />
       <Route path="/medicos/:id" element={<MedicoProfile />} />
