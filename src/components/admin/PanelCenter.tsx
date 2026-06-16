@@ -667,7 +667,7 @@ const PanelCenter = () => {
             </Card>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="lg:col-span-2">
+          <motion.div variants={fadeUp} className="lg:col-span-3">
             <Card className="h-full border-border/40 bg-gradient-to-br from-card via-card to-muted/20 overflow-hidden">
               <div className="h-[2px] bg-gradient-to-r from-emerald-500 via-primary to-purple-500" />
               <CardContent className="p-4 md:p-5">
@@ -736,52 +736,18 @@ const PanelCenter = () => {
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* Sync card */}
-          <motion.div variants={fadeUp}>
-            <Card className="h-full border-border/40 bg-gradient-to-br from-primary/[0.08] via-card to-card overflow-hidden relative">
-              <div className="absolute -bottom-16 -right-12 w-48 h-48 rounded-full bg-gradient-to-br from-primary/15 to-purple-500/10 blur-3xl pointer-events-none" />
-              <CardContent className="relative p-5 flex flex-col h-full">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-blue-700 flex items-center justify-center mb-3 shadow-md ring-1 ring-white/20">
-                  <RefreshCw className={cn("w-5 h-5 text-white", refreshing && "animate-spin")} strokeWidth={2.2} />
-                </div>
-                <h3 className="text-sm font-bold text-foreground">Sincronização</h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Dados de presença em tempo real via Realtime do Supabase.
-                </p>
-                <div className="mt-4 space-y-2 text-[11px]">
-                  <div className="flex justify-between items-center py-1.5 border-b border-border/40">
-                    <span className="text-muted-foreground">Última atualização</span>
-                    <span className="font-mono font-semibold text-foreground">{format(lastRefresh, "HH:mm:ss")}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-1.5 border-b border-border/40">
-                    <span className="text-muted-foreground">Intervalo</span>
-                    <span className="font-mono font-semibold text-foreground">15s</span>
-                  </div>
-                  <div className="flex justify-between items-center py-1.5">
-                    <span className="text-muted-foreground">Painéis ativos</span>
-                    <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">{activePanels}/{PANELS.length}</span>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={() => fetchPresence(true)}
-                  disabled={refreshing}
-                  className="mt-auto w-full gap-2 text-xs bg-gradient-to-br from-primary to-blue-700 hover:opacity-90 shadow-md shadow-primary/20"
-                >
-                  <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
-                  Atualizar agora
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
         
-        {/* ─────── QUICK SYSTEM ACTIONS ─────── */}
+        {/* ─────── ADMIN SYSTEM ACTIONS ─────── */}
         <motion.section variants={fadeUp} className="space-y-4 pt-4">
-          <div className="flex items-center gap-2 px-1">
-            <Settings2 className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-bold text-foreground tracking-tight">Ações Rápidas do Sistema</h2>
+          <div className="flex items-center justify-between px-1 gap-2">
+            <div className="flex items-center gap-2">
+              <Settings2 className="w-4 h-4 text-primary" />
+              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">Sistema &amp; Auditoria</h2>
+            </div>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              {activePanels}/{PANELS.length} painéis ativos · sync {format(lastRefresh, "HH:mm:ss")}
+            </span>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
