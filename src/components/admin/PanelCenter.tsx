@@ -278,7 +278,7 @@ const PanelCenter = () => {
                     LIVE · {format(lastRefresh, "HH:mm:ss")}
                   </Badge>
                 </div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-br from-foreground via-foreground to-primary bg-clip-text text-transparent">
                   Painéis da Plataforma
                 </h1>
                 <p className="text-sm md:text-base text-muted-foreground mt-2 max-w-xl">
