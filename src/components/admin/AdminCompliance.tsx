@@ -132,7 +132,7 @@ export default function AdminCompliance() {
       <AdminPageHeader
         icon={ShieldCheck}
         title="Painel de Compliance"
-        subtitle="Evidências de TCLE, logs imutáveis e retenção do prontuário (CFM 2.314/2022 · LGPD)"
+        description="Evidências de TCLE, logs imutáveis e retenção do prontuário (CFM 2.314/2022 · LGPD)"
       />
 
       {/* Filtros */}
