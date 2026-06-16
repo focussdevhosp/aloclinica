@@ -348,6 +348,21 @@ const PingoCard = () => {
     { q: "Em quanto tempo o cartão fica ativo?", a: "Imediatamente! Após a confirmação do pagamento (PIX é instantâneo), seu cartão já está disponível para uso." },
   ];
 
+  const comparison = [
+    { feature: "Mensalidade a partir de", pingo: "R$ 19,90", plano: "R$ 250+", pingoOk: true },
+    { feature: "Carência", pingo: "Nenhuma", plano: "Até 180 dias", pingoOk: true },
+    { feature: "Fidelidade / multa", pingo: "Não", plano: "Sim", pingoOk: true },
+    { feature: "Consultas online ilimitadas", pingo: true, plano: false, pingoOk: true },
+    { feature: "Descontos em farmácias", pingo: true, plano: false, pingoOk: true },
+    { feature: "Aceito em todo Brasil", pingo: true, plano: "Regional", pingoOk: true },
+  ];
+
+  const testimonials = [
+    { name: "Mariana C.", role: "Mãe de 2 filhos", text: "Em 3 meses já paguei o cartão de um ano inteiro. Os descontos em laboratório fizeram total diferença.", rating: 5 },
+    { name: "Roberto S.", role: "Aposentado", text: "Eu e minha esposa usamos o Pingo Card para consultas de rotina. Atendimento excelente e preços justíssimos.", rating: 5 },
+    { name: "Juliana M.", role: "Designer", text: "O QR Code no celular é prático demais. Já usei em farmácias e ótica. Recomendo!", rating: 5 },
+  ];
+
   const bentoBenefits = [
     { 
       title: "Telemedicina Ilimitada", 
