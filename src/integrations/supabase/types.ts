@@ -1021,6 +1021,63 @@ export type Database = {
           },
         ]
       }
+      consultation_consents: {
+        Row: {
+          accepted_at: string
+          appointment_id: string | null
+          body_sha256: string
+          body_snapshot: string
+          document_id: string
+          document_version: number
+          id: string
+          ip: string | null
+          kind: Database["public"]["Enums"]["legal_doc_kind"]
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          appointment_id?: string | null
+          body_sha256: string
+          body_snapshot: string
+          document_id: string
+          document_version: number
+          id?: string
+          ip?: string | null
+          kind: Database["public"]["Enums"]["legal_doc_kind"]
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          appointment_id?: string | null
+          body_sha256?: string
+          body_snapshot?: string
+          document_id?: string
+          document_version?: number
+          id?: string
+          ip?: string | null
+          kind?: Database["public"]["Enums"]["legal_doc_kind"]
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_consents_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultation_consents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "legal_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultation_notes: {
         Row: {
           appointment_id: string
@@ -2779,6 +2836,45 @@ export type Database = {
           tipo?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          body_md: string
+          created_at: string
+          created_by: string | null
+          effective_at: string
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["legal_doc_kind"]
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          body_md: string
+          created_at?: string
+          created_by?: string | null
+          effective_at?: string
+          id?: string
+          is_active?: boolean
+          kind: Database["public"]["Enums"]["legal_doc_kind"]
+          title: string
+          updated_at?: string
+          version: number
+        }
+        Update: {
+          body_md?: string
+          created_at?: string
+          created_by?: string | null
+          effective_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["legal_doc_kind"]
+          title?: string
+          updated_at?: string
+          version?: number
         }
         Relationships: []
       }
@@ -6307,6 +6403,11 @@ export type Database = {
         | "CRESS"
         | "CRTR"
         | "OUTRO"
+      legal_doc_kind:
+        | "platform_terms"
+        | "telemed_scheduled"
+        | "telemed_ondemand"
+        | "telemed_contract"
       refund_status: "pending" | "approved" | "refunded" | "rejected"
       refund_tier: "full" | "partial" | "none"
       ticket_priority: "low" | "medium" | "high" | "critical"
@@ -6482,6 +6583,12 @@ export const Constants = {
         "CRESS",
         "CRTR",
         "OUTRO",
+      ],
+      legal_doc_kind: [
+        "platform_terms",
+        "telemed_scheduled",
+        "telemed_ondemand",
+        "telemed_contract",
       ],
       refund_status: ["pending", "approved", "refunded", "rejected"],
       refund_tier: ["full", "partial", "none"],
