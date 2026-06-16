@@ -121,15 +121,152 @@ const categoryIcons: Record<string, React.ReactNode> = {
 const formatBRL = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 
+const HeroSlider = ({ onCtaClick }: { onCtaClick: () => void }) => {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const slideNext = useCallback(() => {
+    setDirection(1);
+    setCurrent((prev) => (prev + 1) % SLIDES.length);
+  }, []);
+
+  const slidePrev = useCallback(() => {
+    setDirection(-1);
+    setCurrent((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(slideNext, 6000);
+    return () => clearInterval(timer);
+  }, [slideNext]);
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
+  return (
+    <div className="relative w-full h-[600px] md:h-[720px] overflow-hidden rounded-[2rem] md:rounded-[3rem] bg-slate-900 shadow-2xl">
+      <AnimatePresence initial={false} custom={direction}>
+        <motion.div
+          key={current}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.2 }
+          }}
+          className="absolute inset-0"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent z-10" />
+          <img
+            src={SLIDES[current].image}
+            alt={SLIDES[current].title}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          
+          <div className="relative z-20 h-full flex flex-col justify-center px-6 md:px-20 max-w-4xl">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-white bg-gradient-to-r ${SLIDES[current].color} mb-6 shadow-lg shadow-black/20 self-start`}
+            >
+              <Sparkle className="w-4 h-4 mr-2 fill-current" />
+              {SLIDES[current].badge}
+            </motion.span>
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-4xl md:text-7xl font-black text-white leading-[1.05] mb-6 drop-shadow-sm"
+            >
+              {SLIDES[current].title}
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl font-medium leading-relaxed"
+            >
+              {SLIDES[current].subtitle}
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-wrap gap-4"
+            >
+              <Button 
+                size="lg" 
+                onClick={onCtaClick}
+                className={`h-14 px-10 rounded-2xl text-lg font-bold bg-gradient-to-r ${SLIDES[current].color} hover:scale-105 transition-all shadow-xl shadow-black/20 border-none`}
+              >
+                {SLIDES[current].cta} <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Navigation Controls */}
+      <div className="absolute bottom-10 right-10 z-30 flex items-center gap-3">
+        <button
+          onClick={slidePrev}
+          className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all"
+        >
+          <CaretLeft size={24} weight="bold" />
+        </button>
+        <button
+          onClick={slideNext}
+          className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all"
+        >
+          <CaretRight size={24} weight="bold" />
+        </button>
+      </div>
+
+      {/* Indicators */}
+      <div className="absolute bottom-10 left-10 md:left-20 z-30 flex items-center gap-2">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setDirection(i > current ? 1 : -1);
+              setCurrent(i);
+            }}
+            className={`h-1.5 rounded-full transition-all duration-500 ${
+              i === current ? "w-10 bg-white" : "w-3 bg-white/30"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const PingoCard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const prefersReducedMotion = useReducedMotion();
   const [scrollProgress, setScrollProgress] = useState(0);
-  const heroMotionAmount = prefersReducedMotion ? 0 : Math.min(scrollProgress * 5, 1);
-  const heroTextY = -24 * heroMotionAmount;
-  const heroImageY = -72 * heroMotionAmount;
-  const heroImageScale = 1 - 0.04 * heroMotionAmount;
   const [plans, setPlans] = useState<PingoPlan[]>([]);
   const [partners, setPartners] = useState<PingoPartner[]>([]);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
@@ -148,7 +285,6 @@ const PingoCard = () => {
   };
 
   const handleSubscribed = () => {
-    // Plano Família/Premium → leva o titular para cadastrar dependentes
     if (selectedPlan && selectedPlan.max_dependents > 0) {
       navigate("/dashboard/cartao/dependentes?role=cartao_beneficios&onboarding=1");
       return;
@@ -160,7 +296,7 @@ const PingoCard = () => {
     const load = async () => {
       const [{ data: planData }, { data: partnerData }] = await Promise.all([
         db.from("pingo_card_plans").select("*").eq("is_active", true).order("display_order"),
-        db.from("pingo_card_partners").select("*").eq("is_active", true).order("display_order").limit(8),
+        db.from("pingo_card_partners").select("*").eq("is_active", true).order("display_order").limit(12),
       ]);
       setPlans((planData ?? []) as PingoPlan[]);
       setPartners((partnerData ?? []) as PingoPartner[]);
@@ -169,89 +305,14 @@ const PingoCard = () => {
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
-
-    let frame = 0;
-    const updateProgress = () => {
-      frame = 0;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(maxScroll > 0 ? Math.min(window.scrollY / maxScroll, 1) : 0);
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = window.scrollY / totalHeight;
+      setScrollProgress(progress);
     };
-    const requestUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(updateProgress);
-    };
-
-    updateProgress();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
-    };
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    const root = document.querySelector(".pingo-card-page");
-    if (!root) return;
-
-    const targets = Array.from(
-      root.querySelectorAll<HTMLElement>(
-        "section, .pc-card, .pc-feature-card, .pc-member-card, .pc-stat-strip, [data-pc-reveal]"
-      )
-    );
-
-    targets.forEach((target, index) => {
-      target.classList.add("pc-reveal");
-      target.style.setProperty("--pc-delay", `${Math.min((index % 6) * 45, 180)}ms`);
-    });
-
-    if (prefersReducedMotion) {
-      targets.forEach((target) => target.classList.add("pc-in"));
-      return;
-    }
-
-    let fallbackFrame = 0;
-    const revealVisibleTargets = () => {
-      fallbackFrame = 0;
-      targets.forEach((target) => {
-        if (target.classList.contains("pc-in")) return;
-        const rect = target.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.88 && rect.bottom > 0) {
-          target.classList.add("pc-in");
-        }
-      });
-    };
-    const requestReveal = () => {
-      if (fallbackFrame) return;
-      fallbackFrame = window.requestAnimationFrame(revealVisibleTargets);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("pc-in");
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-    );
-
-    targets.forEach((target) => observer.observe(target));
-    revealVisibleTargets();
-    window.addEventListener("scroll", requestReveal, { passive: true });
-    window.addEventListener("resize", requestReveal);
-
-    return () => {
-      if (fallbackFrame) window.cancelAnimationFrame(fallbackFrame);
-      observer.disconnect();
-      window.removeEventListener("scroll", requestReveal);
-      window.removeEventListener("resize", requestReveal);
-    };
-  }, [prefersReducedMotion, plans.length, partners.length, partnerCategory]);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const partnerCategories = useMemo(() => {
     const set = new Set<string>(partners.map(p => p.category));
@@ -278,21 +339,6 @@ const PingoCard = () => {
     { icon: <Clock size={24} weight="fill" />, value: "0 dias", label: "De carência" },
   ];
 
-  const comparison = [
-    { feature: "Mensalidade a partir de", pingo: "R$ 19,90", plano: "R$ 250+", pingoOk: true },
-    { feature: "Carência", pingo: "Nenhuma", plano: "Até 180 dias", pingoOk: true },
-    { feature: "Fidelidade / multa", pingo: "Não", plano: "Sim", pingoOk: true },
-    { feature: "Consultas online ilimitadas", pingo: true, plano: false, pingoOk: true },
-    { feature: "Descontos em farmácias", pingo: true, plano: false, pingoOk: true },
-    { feature: "Aceito em todo Brasil", pingo: true, plano: "Regional", pingoOk: true },
-  ];
-
-  const testimonials = [
-    { name: "Mariana C.", role: "Mãe de 2 filhos", text: "Em 3 meses já paguei o cartão de um ano inteiro. Os descontos em laboratório fizeram total diferença.", rating: 5 },
-    { name: "Roberto S.", role: "Aposentado", text: "Eu e minha esposa usamos o Pingo Card para consultas de rotina. Atendimento excelente e preços justíssimos.", rating: 5 },
-    { name: "Juliana M.", role: "Designer", text: "O QR Code no celular é prático demais. Já usei em farmácias e ótica. Recomendo!", rating: 5 },
-  ];
-
   const faqs = [
     { q: "O Pingo Card é um plano de saúde?", a: "Não. O Pingo Card é um cartão de benefícios que oferece descontos em consultas, exames e parceiros — sem carência e sem coparticipação fixa." },
     { q: "Posso incluir minha família?", a: "Sim! Os planos Família e Premium incluem dependentes. Você pode adicionar até o limite definido em cada plano." },
@@ -302,11 +348,50 @@ const PingoCard = () => {
     { q: "Em quanto tempo o cartão fica ativo?", a: "Imediatamente! Após a confirmação do pagamento (PIX é instantâneo), seu cartão já está disponível para uso." },
   ];
 
-  const benefits = [
-    { icon: <CurrencyCircleDollar size={28} weight="fill" />, title: "Economia real", desc: "Até 60% off em consultas, exames e medicamentos." },
-    { icon: <ShieldCheck size={28} weight="fill" />, title: "Sem carência", desc: "Use a partir do primeiro dia, sem burocracia." },
-    { icon: <Star size={28} weight="fill" />, title: "Rede premium", desc: "Centenas de parceiros em todo o Brasil." },
-    { icon: <Heart size={28} weight="fill" />, title: "Família junto", desc: "Inclua dependentes com poucos cliques." },
+  const bentoBenefits = [
+    { 
+      title: "Telemedicina Ilimitada", 
+      desc: "Consultas 24h por dia, 7 dias por semana, sem sair de casa.", 
+      icon: <Video size={32} weight="fill" className="text-blue-600" />,
+      size: "lg",
+      image: PINGO_ASSETS.telemedicina,
+      color: "bg-blue-50"
+    },
+    { 
+      title: "Descontos em Exames", 
+      desc: "Economize até 60% em laboratórios parceiros.", 
+      icon: <Flask size={32} weight="fill" className="text-emerald-600" />,
+      size: "sm",
+      color: "bg-emerald-50"
+    },
+    { 
+      title: "Seguro de Acidentes", 
+      desc: "Proteção financeira para você e sua família.", 
+      icon: <ShieldCheck size={32} weight="fill" className="text-amber-600" />,
+      size: "sm",
+      color: "bg-amber-50"
+    },
+    { 
+      title: "Farmácias Parceiras", 
+      desc: "Descontos exclusivos em medicamentos.", 
+      icon: <Prescription size={32} weight="fill" className="text-purple-600" />,
+      size: "sm",
+      color: "bg-purple-50"
+    },
+    { 
+      title: "Sorteios Mensais", 
+      desc: "Concorra a R$ 10.000 todos os meses.", 
+      icon: <Gift size={32} weight="fill" className="text-pink-600" />,
+      size: "sm",
+      color: "bg-pink-50"
+    },
+    { 
+      title: "Auxílio Funeral", 
+      desc: "Assistência completa em momentos difíceis.", 
+      icon: <Umbrella size={32} weight="fill" className="text-slate-600" />,
+      size: "sm",
+      color: "bg-slate-50"
+    }
   ];
 
   return (
