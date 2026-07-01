@@ -134,17 +134,22 @@ const PanelSettings = () => {
 
   const initials = `${profile?.first_name?.[0] ?? ""}${profile?.last_name?.[0] ?? ""}`.toUpperCase();
   const groups = activeRole === "patient" ? patientGroups : patientGroups;
+  const enabledCount = Object.values(settings).filter(value => value === true).length;
+  const accountName = `${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`.trim() || "Perfil";
 
   return (
     <DashboardLayout title={roleLabels[activeRole] ?? "Configurações"} nav={nav} role={activeRole}>
-      <div className="w-full mx-auto max-w-2xl pb-24 md:pb-6">
+      <div className="w-full mx-auto max-w-5xl pb-24 md:pb-6">
         <button onClick={() => navigate(`/dashboard?role=${activeRole}`)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Voltar
         </button>
         {/* Profile Header */}
-        <div className="flex flex-col items-center mb-8">
+        <div className="relative mb-6 overflow-hidden rounded-[32px] border border-white/60 bg-[linear-gradient(135deg,#eef7ff_0%,#ffffff_52%,#fff4f7_100%)] p-5 text-center shadow-[0_24px_70px_-46px_rgba(15,42,90,.68)] md:p-6">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-400/16 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 left-16 h-40 w-40 rounded-full bg-rose-300/14 blur-3xl" />
+          <div className="relative flex flex-col items-center">
           <div className="relative mb-4">
-            <Avatar className="w-[88px] h-[88px] border-4 border-background shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+            <Avatar className="w-[88px] h-[88px] border-4 border-white shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
               <AvatarImage src={profile?.avatar_url ?? undefined} />
               <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">{initials}</AvatarFallback>
             </Avatar>
@@ -159,6 +164,20 @@ const PanelSettings = () => {
           <p className="text-[13px] text-muted-foreground mt-0.5">Gerencie suas preferências e segurança</p>
         </div>
 
+          <div className="mt-5 grid w-full grid-cols-3 gap-2">
+            {[
+              { label: "Ativas", value: enabledCount },
+              { label: "Perfil", value: roleLabels[activeRole] ?? activeRole },
+              { label: "Idioma", value: String(settings.language ?? "PT").replace(" (Brasil)", "") },
+            ].map(item => (
+              <div key={item.label} className="rounded-2xl border border-white/65 bg-white/72 p-3 text-center shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{item.label}</p>
+                <p className="mt-1 truncate text-sm font-black text-foreground">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {loadingSettings ? (
           <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
         ) : (
@@ -166,7 +185,7 @@ const PanelSettings = () => {
             {groups.map((group, gi) => (
               <div key={group.title}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 px-1">{group.title}</p>
-                <div className="rounded-2xl bg-card border border-border/20 overflow-hidden divide-y divide-border/10 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+                <div className="rounded-[28px] bg-card/95 border border-border/35 overflow-hidden divide-y divide-border/10 shadow-sm">
                   {group.items.map((item, ii) => {
                     const ItemIcon = item.icon ?? group.icon;
                     return (
@@ -175,10 +194,10 @@ const PanelSettings = () => {
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: (gi * group.items.length + ii) * 0.03 }}
-                        className="flex items-center justify-between px-5 py-4"
+                        className="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/25"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-primary/[0.06] flex items-center justify-center shrink-0">
+                          <div className="w-11 h-11 rounded-2xl bg-primary/[0.08] flex items-center justify-center shrink-0">
                             <ItemIcon className="w-4.5 h-4.5 text-primary" />
                           </div>
                           <div>
