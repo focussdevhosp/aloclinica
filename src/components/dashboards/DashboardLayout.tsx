@@ -364,14 +364,16 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
 
     return (
       <Link to={item.href} onClick={onClick}
-        className={`nav-item group flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[14px] transition-all duration-300 relative ${
+        className={`nav-item group relative flex min-h-[48px] items-center gap-3 rounded-[18px] px-3 text-[14px] transition-all duration-300 ${
           item.active
-            ? "bg-primary text-primary-foreground font-bold shadow-[0_4px_12px_rgba(0,0,0,.12),inset_0_0_0_1px_rgba(255,255,255,.1)]"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground font-extrabold shadow-[0_14px_26px_-18px_hsl(var(--primary))]"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/55"
         }`}
       >
-        <span className={`shrink-0 transition-transform duration-200 ${item.active ? "" : "group-hover:scale-110"}`}>{icon}</span>
-        <span className="flex-1 truncate">{item.label}</span>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl transition-transform duration-200 ${
+          item.active ? "bg-white/20 text-white" : "bg-background/70 text-current shadow-sm group-hover:scale-105"
+        }`}>{icon}</span>
+        <span className="flex-1 truncate leading-tight">{item.label}</span>
         {(item.badge ?? 0) > 0 && (
           <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center tabular-nums ${
             item.active ? "bg-white/25 text-white" : "bg-destructive text-white"
@@ -386,19 +388,22 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
   const SidebarContent = ({ onItemClick, collapsed = false }: { onItemClick?: () => void; collapsed?: boolean }) => {
     const service = SERVICE_MAP[role] || SERVICE_MAP.patient;
     return (
-    <div ref={sidebarRef} className="flex flex-col flex-1 min-h-0 w-full">
+    <div ref={sidebarRef} className="flex flex-col flex-1 min-h-0 w-full bg-gradient-to-b from-background via-background to-muted/35">
       {/* Spacer top */}
       <div className="h-4 shrink-0" />
 
       {/* Service Banner */}
       {!collapsed && (
-        <div className="px-3 pb-2 shrink-0">
-          <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-muted/60 to-muted/30 border border-border/40 p-3">
-            <div className="flex items-start gap-2">
-              <span className="text-2xl mt-0.5">{service.emoji}</span>
+        <div className="px-3 pb-3 pr-12 shrink-0">
+          <div className="relative overflow-hidden rounded-[22px] border border-border/45 bg-card/82 p-3.5 shadow-[0_18px_42px_-32px_rgba(15,23,42,.55)] backdrop-blur-xl">
+            <div className={`absolute -right-10 -top-12 h-28 w-28 rounded-full bg-gradient-to-br ${grad} opacity-15 blur-2xl`} />
+            <div className="relative flex items-center gap-3">
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${grad} shadow-lg shadow-primary/10`}>
+                <img src={mascotImg} alt="" className="h-10 w-10 object-contain" />
+              </span>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-bold text-foreground">{service.name}</p>
-                <p className="text-[10px] text-muted-foreground/80 leading-snug">{service.description}</p>
+                <p className="truncate text-[13px] font-black text-foreground">{service.name}</p>
+                <p className="truncate text-[11px] font-medium text-muted-foreground">{service.description}</p>
               </div>
             </div>
           </div>
@@ -412,8 +417,8 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
 
       {/* Role badge */}
       {!collapsed && (
-        <div className="px-3 pb-2 shrink-0">
-          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold ${ROLE_COLORS[role] ?? ROLE_COLORS.patient}`}>
+        <div className="px-4 pb-2 shrink-0">
+          <div className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-extrabold shadow-sm ${ROLE_COLORS[role] ?? ROLE_COLORS.patient}`}>
             <span className="text-xs">{ROLE_ICON[role] ?? "👤"}</span>
             {ROLE_LABELS[role] ?? title}
           </div>
@@ -423,7 +428,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
       {isAdminViewingOtherPanel && !collapsed && (
         <div className="px-3 pb-1 shrink-0">
           <button onClick={() => { navigate("/dashboard"); onItemClick?.(); }}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-destructive bg-destructive/8 hover:bg-destructive/15 transition-all duration-200">
+            className="w-full flex items-center gap-2 rounded-2xl border border-destructive/15 bg-destructive/8 px-3 py-2 text-[11px] font-bold text-destructive transition-all duration-200 hover:bg-destructive/15">
             <ShieldCheckIcon className="w-3 h-3" /> Voltar ao Admin
           </button>
         </div>
@@ -435,16 +440,16 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
             <div key={gi}>
               {group.label && !collapsed && (
                 <div className="flex items-center gap-2 px-2.5 pt-4 pb-2">
-                  <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-[0.12em] flex-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/60">
                     {group.label}
                   </p>
-                  <div className="flex-1 h-px bg-gradient-to-r from-muted-foreground/20 to-transparent" />
+                  <div className="h-px flex-1 bg-gradient-to-r from-muted-foreground/18 to-transparent" />
                 </div>
               )}
               {group.label && collapsed && gi > 0 && (
                 <div className="mx-2 my-2 border-t border-border/10" />
               )}
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {group.items.map(item => (
                   collapsed ? (
                     <Link key={item.href} to={item.href} onClick={onItemClick}
@@ -476,7 +481,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
       )}
 
       {/* User area */}
-      <div className={`mt-auto shrink-0 border-t border-border/10 ${collapsed ? "p-1.5" : "p-2.5"}`}>
+      <div className={`mt-auto shrink-0 border-t border-border/10 bg-background/70 backdrop-blur-xl ${collapsed ? "p-1.5" : "p-3"}`}>
         {collapsed ? (
           <button onClick={() => { navigate("/dashboard/profile"); onItemClick?.(); }}
             title="Meu Perfil"
@@ -492,7 +497,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
           </button>
         ) : (
           <button onClick={() => { navigate("/dashboard/profile"); onItemClick?.(); }}
-            className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-muted/50 transition-all duration-200 text-left group relative">
+            className="group relative flex w-full items-center gap-2.5 rounded-[20px] border border-border/35 bg-card/82 px-2.5 py-2.5 text-left shadow-sm transition-all duration-200 hover:bg-card">
             <div className="relative">
               <Avatar className={`h-8 w-8 ring-2 ${avatarRing} group-hover:ring-primary/25 transition-all`}>
                 {profile?.avatar_url && <AvatarImage src={profile.avatar_url} />}
@@ -551,7 +556,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
                    <List size={20} weight="bold" className="text-foreground/90" />
                  </Button>
                </SheetTrigger>
-               <SheetContent side="left" className="p-0 w-[85vw] max-w-[320px] border-r border-border/10 bg-background flex flex-col h-full shadow-2xl">
+               <SheetContent side="left" className="p-0 w-[min(88vw,330px)] border-r border-white/30 bg-background/95 flex flex-col h-full overflow-hidden rounded-r-[30px] shadow-[24px_0_70px_-34px_rgba(15,23,42,.75)] backdrop-blur-2xl">
                  <SidebarContent onItemClick={() => setSidebarOpen(false)} />
                </SheetContent>
              </Sheet>
@@ -592,7 +597,7 @@ const DashboardLayout = ({ children, title, nav, role: propsRole }: DashboardLay
                   <List className="w-4.5 h-4.5" aria-hidden="true" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-[280px] border-border/20 bg-background flex flex-col h-full">
+              <SheetContent side="left" className="p-0 w-[300px] border-border/20 bg-background/95 flex flex-col h-full overflow-hidden rounded-r-[26px] backdrop-blur-2xl">
                 <SidebarContent onItemClick={() => setSidebarOpen(false)} />
               </SheetContent>
             </Sheet>

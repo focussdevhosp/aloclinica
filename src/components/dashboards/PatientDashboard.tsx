@@ -224,148 +224,6 @@ const PatientDashboard = () => {
           timelineEvents={timelineEvents}
           navigate={navigate}
         />
-        {false && <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-w-0">
-          <div className="lg:col-span-8 space-y-6 min-w-0">
-            <PatientHomeCommandCenter
-              firstName={firstName}
-              stats={stats}
-              nextAppt={nextAppt}
-              upcoming={upcoming}
-              minutesUntilNext={minutesUntilNext}
-              navigate={navigate}
-            />
-            <AppPromotionalBanners role="patient" placement="dashboard" />
-            <DoctorSearchHero navigate={navigate} hasNextAppt={!!nextAppt} />
-            <UrgentAlerts nextAppt={nextAppt} minutesUntilNext={minutesUntilNext} waitingAppt={waitingAppt} sections={sections} navigate={navigate} />
-            {false && <section>
-              <div className="flex items-center justify-between mb-4 px-1">
-                <div className="flex items-center gap-2">
-                  <div className="h-5 w-1 rounded-full bg-gradient-to-b from-primary to-primary/40" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-foreground/70">Ações rápidas</h3>
-                </div>
-                <span className="text-[10px] font-semibold text-muted-foreground">Toque para abrir</span>
-              </div>
-              <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 gap-2.5 sm:gap-4">
-                {getQuickActions(serviceType as any).map((action, i) => (
-                  <motion.button
-                    key={action.label}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.08 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ y: -3 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate(action.path)}
-                    className="group flex flex-col items-center justify-center gap-3 p-4 rounded-[28px] border border-border/50 bg-card shadow-[0_4px_12px_-4px_rgba(0,0,0,0.06)] hover:shadow-lg hover:border-primary/30 transition-all duration-300"
-                  >
-                    <div
-                      className="flex h-12 w-12 items-center justify-center rounded-[18px] transition-transform duration-300 group-hover:scale-110"
-                      style={{ backgroundColor: action.bg, color: action.color }}
-                    >
-                      <action.icon size={24} weight="fill" />
-                    </div>
-                    <span className="text-[12px] font-bold text-foreground tracking-tight">{action.label}</span>
-                  </motion.button>
-                ))}
-              </div>
-            </section>}
-            {sections.kpis && (
-              <section>
-                <div className="flex items-center gap-2 mb-4 px-1">
-                  <div className="h-5 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-emerald-500/40" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-foreground/70">Resumo geral</h3>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {[
-                    { label: "Consultas",    value: stats?.total ?? 0,                                  icon: CalendarCheck, color: "hsl(215,75%,32%)", bg: "bg-[hsl(215,75%,32%,0.08)]" },
-                    { label: "Receitas",     value: stats?.prescriptions ?? 0,                          icon: FileText,      color: "hsl(168,55%,35%)", bg: "bg-[hsl(168,55%,35%,0.08)]" },
-                    { label: "Documentos",   value: stats?.documents ?? 0,                              icon: UploadSimple,  color: "hsl(195,70%,38%)", bg: "bg-[hsl(195,70%,38%,0.10)]" },
-                    { label: "Próx. retorno",value: returnAppts.length > 0 ? "Ativo" : "—",             icon: Clock,         color: "hsl(225,55%,40%)", bg: "bg-[hsl(225,55%,40%,0.08)]" },
-                  ].map((stat, i) => (
-                    <motion.div
-                      key={stat.label}
-                      initial={{ opacity: 0, y: 14 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 + i * 0.05, ease: [0.22, 1, 0.36, 1] }}
-                      whileHover={{ y: -3 }}
-                      className="group relative flex flex-col p-5 rounded-[28px] border border-border/40 bg-gradient-to-br from-card via-card to-card/60 backdrop-blur-xl shadow-[0_8px_24px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.18)] transition-all duration-300 overflow-hidden"
-                    >
-                      <div
-                        className="pointer-events-none absolute -top-10 -right-10 h-24 w-24 rounded-full blur-3xl opacity-30 group-hover:opacity-60 transition-opacity"
-                        style={{ backgroundColor: stat.color }}
-                      />
-                      <div className="relative flex items-start justify-between mb-3">
-                        <div
-                          className={cn("flex h-10 w-10 items-center justify-center rounded-[14px] shadow-sm ring-1 ring-white/40", stat.bg)}
-                          style={{ color: stat.color }}
-                        >
-                          <stat.icon size={20} weight="fill" />
-                        </div>
-                        <span
-                          className="h-1.5 w-1.5 rounded-full opacity-60"
-                          style={{ backgroundColor: stat.color }}
-                        />
-                      </div>
-                      <p className="relative text-2xl font-black text-foreground leading-none tracking-tight">{stat.value}</p>
-                      <p className="relative text-[10.5px] font-bold text-muted-foreground uppercase tracking-wider mt-1.5">{stat.label}</p>
-                    </motion.div>
-                  ))}
-                </div>
-              </section>
-            )}
-            {sections.nextAppt && (
-              <section>
-                <h3 className="text-sm font-bold text-foreground mb-4 px-1">Próxima consulta</h3>
-                {nextAppt ? <NextAppointmentCard appt={nextAppt} navigate={navigate} /> : <EmptyAppointmentCard navigate={navigate} />}
-              </section>
-            )}
-          </div>
-          <div className="lg:col-span-4 space-y-6 min-w-0">
-            {sections.healthTip && (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm relative overflow-hidden">
-                <div className="flex items-center gap-2 mb-4"><div className="w-2 h-6 bg-blue-500 rounded-full" /><span className="text-[11px] font-black uppercase tracking-widest text-blue-500">Dica de saúde</span></div>
-                <h4 className="text-lg font-bold text-foreground mb-2">{todayTip.title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6">{todayTip.body}</p>
-                <div className="flex items-center gap-4 bg-muted/40 p-4 rounded-2xl border border-border/10">
-                  <div className="text-3xl">{todayTip.emoji}</div>
-                  <div className="flex-1"><p className="text-2xl font-black text-foreground leading-none">{todayTip.metric}</p><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{todayTip.metricLabel}</p></div>
-                </div>
-              </motion.div>
-            )}
-            {sections.returnAppts && returnAppts.length > 0 && <ReturnAppointments items={returnAppts} navigate={navigate} />}
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="rounded-3xl border border-border/40 bg-gradient-to-br from-card via-card to-primary/[0.04] p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-2"><div className="w-2 h-6 bg-emerald-500 rounded-full" /><span className="text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Seu histórico</span></div>
-              <h4 className="text-base font-bold text-foreground mb-1">Relatório consolidado</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">Baixe um PDF com consultas, receitas e exames recentes para levar a outros médicos.</p>
-              <PatientHealthReport variant="default" className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90" />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 }}
-              className="rounded-3xl border border-border/40 bg-card p-5 shadow-sm"
-            >
-              <div className="flex items-start gap-3 mb-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 shrink-0">
-                  <Headset size={22} weight="fill" className="text-blue-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-base font-bold text-foreground mb-1">Precisa de ajuda?</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Nossa equipe está pronta para te atender.
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/dashboard/chat?role=patient")}
-                className="w-full rounded-xl border-border/60 font-bold text-sm gap-2"
-              >
-                <ChatCircleDots size={16} weight="fill" className="text-blue-500" />
-                Abrir chat de suporte
-              </Button>
-            </motion.div>
-          </div>
-        </div>
       </div>
     </DashboardLayout>
   );
@@ -492,7 +350,7 @@ const PatientHomeReference = ({ firstName, stats, nextAppt, timelineEvents, navi
                   <p className="truncate text-[11px] text-muted-foreground">{item.subtitle ?? item.description ?? "Atualização recente"}</p>
                 </div>
                 <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-700">{item.status ?? "Ativa"}</span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+                <ArrowRight size={16} weight="bold" className="text-muted-foreground/50" />
               </button>
             );
           })}
@@ -508,7 +366,7 @@ const PatientHomeReference = ({ firstName, stats, nextAppt, timelineEvents, navi
           <p className="text-xs text-muted-foreground">Fale com nossa equipe de suporte</p>
         </div>
         <div className="grid h-9 w-9 place-items-center rounded-full bg-background text-primary">
-          <ChevronRight className="h-4 w-4" />
+          <ArrowRight size={16} weight="bold" />
         </div>
       </button>
     </div>
