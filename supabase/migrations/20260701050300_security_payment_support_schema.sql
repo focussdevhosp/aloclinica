@@ -41,6 +41,16 @@ COMMENT ON COLUMN public.prescription_renewals.price IS
 
 -- 4) Defense-in-depth: ensure mp_payment_id is unique so idempotent upserts in
 --    payment functions cannot create duplicate rows under concurrency.
-CREATE UNIQUE INDEX IF NOT EXISTS uq_payment_transactions_mp_payment_id
-  ON public.payment_transactions (mp_payment_id)
-  WHERE mp_payment_id IS NOT NULL;
+--    Guarded: this project's DB may not have payment_transactions yet (schema
+--    drift — the table is defined in earlier migrations but not applied here).
+--    Skip gracefully instead of aborting the whole migration.
+DO $$
+BEGIN
+  IF to_regclass('public.payment_transactions') IS NOT NULL THEN
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_payment_transactions_mp_payment_id
+      ON public.payment_transactions (mp_payment_id)
+      WHERE mp_payment_id IS NOT NULL;
+  ELSE
+    RAISE NOTICE 'payment_transactions ausente neste banco — indice de idempotencia pulado. Rode o sync completo de schema (supabase db push) para criar payment_transactions/saved_cards.';
+  END IF;
+END $$;
