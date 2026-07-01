@@ -191,19 +191,20 @@ const PatientHealth = () => {
 
   return (
     <DashboardLayout title="Paciente" nav={getPatientNav("health")} role="patient">
-      <div className="w-full mx-auto max-w-4xl pb-24 md:pb-6">
+      <div className="w-full mx-auto max-w-5xl pb-24 md:pb-6">
         {/* Hero Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[hsl(var(--p-primary))]/10 via-[hsl(var(--p-primary))]/5 to-secondary/5 border border-[hsl(var(--p-primary))]/10 p-5">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--p-primary))]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="relative overflow-hidden rounded-[32px] border border-white/60 bg-[linear-gradient(135deg,#eef7ff_0%,#ffffff_52%,#f4fff7_100%)] p-5 shadow-[0_24px_70px_-46px_rgba(15,42,90,.68)] md:p-6">
+            <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-400/16 blur-3xl" />
+            <div className="pointer-events-none absolute bottom-0 left-16 h-40 w-40 rounded-full bg-emerald-300/14 blur-3xl" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-1">
-                <div className="w-10 h-10 rounded-xl bg-[hsl(var(--p-primary))]/15 flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-[hsl(var(--p-primary))]" />
+                <div className="w-12 h-12 rounded-2xl bg-white/80 shadow-sm flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-[hsl(var(--p-primary))]" />
                 </div>
                 <div>
                   <h1 className="text-xl font-extrabold text-foreground font-[Manrope]">Minha Saúde</h1>
@@ -232,7 +233,7 @@ const PatientHealth = () => {
                   transition={{ delay: i * 0.05 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <Card className={`border-0 shadow-[var(--p-shadow-card)] bg-gradient-to-br ${stat.gradient} overflow-hidden rounded-2xl`}>
+                  <Card className={`border border-white/60 shadow-sm bg-gradient-to-br ${stat.gradient} overflow-hidden rounded-[24px] transition-shadow hover:shadow-[var(--p-shadow-card)]`}>
                     <CardContent className="p-3 text-center">
                       <Icon className={`w-5 h-5 ${stat.iconColor} mx-auto mb-1.5`} />
                       <p className="text-2xl font-extrabold text-foreground leading-none font-[Manrope] tabular-nums">{stat.value}</p>
@@ -254,7 +255,7 @@ const PatientHealth = () => {
             </div>
             <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="h-8 text-xs gap-1 rounded-full bg-[hsl(var(--p-primary))] text-white">
+                <Button size="sm" className="h-9 text-xs gap-1 rounded-full bg-[hsl(var(--p-primary))] text-white shadow-[var(--p-shadow-btn)]">
                   <Plus className="w-3.5 h-3.5" /> Registrar
                 </Button>
               </DialogTrigger>
@@ -314,10 +315,10 @@ const PatientHealth = () => {
                   transition={{ delay: i * 0.04 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedMetricType(mt.value)}
-                  className={`relative p-3 rounded-2xl border text-left transition-all overflow-hidden ${
+                  className={`relative p-3 rounded-[24px] border text-left transition-all overflow-hidden ${
                     isSelected
                       ? "border-[hsl(var(--p-primary))]/40 bg-[hsl(var(--p-primary))]/5 shadow-[var(--p-shadow-card)] ring-1 ring-[hsl(var(--p-primary))]/20"
-                      : "border-border/40 bg-card hover:border-[hsl(var(--p-primary))]/20 hover:shadow-[var(--p-shadow-card)]"
+                      : "border-border/40 bg-card/95 hover:border-[hsl(var(--p-primary))]/20 hover:shadow-[var(--p-shadow-card)]"
                   }`}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-[3px] bg-[hsl(var(--p-primary))] rounded-t-2xl ${isSelected ? "opacity-100" : "opacity-0"} transition-opacity`} />
@@ -406,7 +407,7 @@ const PatientHealth = () => {
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-dashed border-border/40 mb-6 rounded-2xl">
+            <Card className="border-dashed border-border/40 mb-6 rounded-[28px] bg-card/80 shadow-sm">
               <CardContent className="py-8 text-center">
                 <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
                   <Activity className="w-6 h-6 text-muted-foreground/40" />
@@ -426,7 +427,7 @@ const PatientHealth = () => {
 
         {/* Tabs for history */}
         <Tabs defaultValue="consultations">
-          <TabsList className="grid w-full grid-cols-4 h-10 rounded-2xl bg-muted/50 p-1">
+          <TabsList className="grid w-full grid-cols-4 h-11 rounded-[22px] bg-muted/50 p-1">
             <TabsTrigger value="consultations" className="text-[11px] rounded-xl data-[state=active]:shadow-[var(--p-shadow-card)] data-[state=active]:bg-card font-semibold">
               Consultas
             </TabsTrigger>
@@ -600,9 +601,10 @@ const PatientHealth = () => {
 };
 
 const EmptyState = ({ img, text }: { img: string; text: string }) => (
-  <div className="text-center py-10 rounded-2xl border border-dashed border-border/40 bg-muted/5">
-    <img src={img} alt="Pingo" className="w-16 h-16 object-contain mx-auto drop-shadow-md mb-3 select-none" loading="lazy" decoding="async" width={64} height={64} />
-    <p className="text-xs font-semibold text-foreground">{text}</p>
+  <div className="relative overflow-hidden rounded-[28px] border border-dashed border-border/45 bg-card px-5 py-10 text-center shadow-sm">
+    <div className="pointer-events-none absolute inset-x-10 top-6 h-24 rounded-full bg-primary/10 blur-3xl" />
+    <img src={img} alt="Pingo" className="relative w-20 h-20 object-contain mx-auto drop-shadow-md mb-3 select-none" loading="lazy" decoding="async" width={80} height={80} />
+    <p className="relative text-sm font-black text-foreground">{text}</p>
     <p className="text-[10px] text-muted-foreground mt-1">Seus dados aparecerão aqui</p>
   </div>
 );
