@@ -101,12 +101,28 @@ Deno.serve(async (req) => {
       return json({ council_type: type, found: false, valid: false, mode: "manual_review", upstream_error: true, message: "Não foi possível validar agora — conferência manual será feita." }, 200);
     }
 
-    // Infosimples v2: code 200 = sucesso. Registros em data[].resultados[] (ou data[]).
-    const ok = apiJson?.code === 200;
+    // Infosimples v2: code 200 = sucesso. Qualquer outro code é ERRO DO PROVEDOR
+    // (ex.: 603 = conta sem saldo / token sem autorização ao serviço). Isso NÃO
+    // é "registro não encontrado" — cai em revisão manual com a mensagem real,
+    // pra o admin não rejeitar um profissional válido por engano.
+    const code = apiJson?.code;
+    if (code !== 200) {
+      return json({
+        council_type: type,
+        found: false,
+        valid: false,
+        mode: "manual_review",
+        upstream_error: true,
+        infosimples_code: code,
+        message: `Validação automática indisponível agora (${apiJson?.code_message ?? "erro do provedor Infosimples"}). Conferência manual pela equipe.`,
+      }, 200);
+    }
+
+    // code === 200 → registros em data[].resultados[] (ou direto em data[]).
     const arr = apiJson?.data?.[0]?.resultados ?? apiJson?.data ?? [];
     const first = Array.isArray(arr) && arr.length > 0 ? arr[0] : null;
     const situacao = String(first?.situacao ?? "").toLowerCase();
-    const found = ok && !!first;
+    const found = !!first;
     const valid = found && /ativ|regular/.test(situacao) && !/inativ|cancel|suspens|baixad|falec|irregular/.test(situacao);
 
     // Se valido + admin + doctor_profile_id → marca crm_verified (registro conferido).
