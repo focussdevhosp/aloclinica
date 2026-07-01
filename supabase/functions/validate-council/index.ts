@@ -51,37 +51,47 @@ serve(async (req) => {
     const cleanNumber = String(number).replace(/\D/g, "");
     const cleanUf = String(uf).toUpperCase();
 
-    // CRM → delega para verify-crm (consultacrm)
+    const projectRef = Deno.env.get("SUPABASE_URL")?.match(/https?:\/\/([^.]+)/)?.[1];
+    const fnBase = `https://${projectRef}.functions.supabase.co`;
+    const fwdAuth = {
+      Authorization: req.headers.get("Authorization") ?? "",
+      apikey: Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    };
+    const respond = (obj: unknown) =>
+      new Response(JSON.stringify(obj), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+    // 1) Provedor unificado (Infosimples) via verify-council — cobre TODOS os
+    //    conselhos habilitados. Se voltar mode:"automatic", usamos o resultado.
+    const info = await fetch(`${fnBase}/verify-council`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...fwdAuth },
+      body: JSON.stringify({ council_type: type, registro: cleanNumber, uf: cleanUf }),
+    }).then((r) => r.json()).catch(() => null);
+
+    if (info && info.mode === "automatic") {
+      return respond({ council_name: COUNCIL_NAMES[type] ?? "Conselho profissional", ...info });
+    }
+
+    // 2) Fallback do CRM → consultacrm (verify-crm), que já está ativo/funcionando.
     if (type === "CRM") {
-      const projectRef = Deno.env.get("SUPABASE_URL")?.match(/https?:\/\/([^.]+)/)?.[1];
-      const verifyUrl = `https://${projectRef}.functions.supabase.co/verify-crm`;
-      const r = await fetch(verifyUrl, {
+      const r = await fetch(`${fnBase}/verify-crm`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: req.headers.get("Authorization") ?? "",
-          apikey: Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-        },
+        headers: { "Content-Type": "application/json", ...fwdAuth },
         body: JSON.stringify({ crm: cleanNumber, uf: cleanUf }),
       });
       const data = await r.json().catch(() => ({}));
-      return new Response(JSON.stringify({
-        council_type: type,
-        council_name: COUNCIL_NAMES[type],
-        ...data,
-        mode: "automatic",
-      }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return respond({ council_type: type, council_name: COUNCIL_NAMES[type], ...data, mode: "automatic" });
     }
 
-    // Outros conselhos → validação manual pela equipe
-    return new Response(JSON.stringify({
+    // 3) Demais conselhos sem provedor automático → revisão manual pela equipe.
+    return respond({
       council_type: type,
       council_name: COUNCIL_NAMES[type] ?? "Conselho profissional",
       found: false,
       valid: false,
       mode: "manual_review",
-      message: `Validação automática indisponível para ${type}. A equipe AloClínica fará a conferência manual em até 24h após o envio dos documentos.`,
-    }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      message: `Validação automática indisponível para ${type}. Configure a Infosimples (INFOSIMPLES_TOKEN) para ativar — enquanto isso a equipe faz a conferência manual em até 24h.`,
+    });
   } catch (err: any) {
     console.error("validate-council error:", err);
     return new Response(

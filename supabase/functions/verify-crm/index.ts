@@ -35,7 +35,7 @@ serve(async (req) => {
       });
     }
 
-    const { crm, uf, doctor_profile_id } = await req.json();
+    const { crm, uf, doctor_profile_id, tipo } = await req.json();
 
     if (!crm || !uf) {
       return new Response(
@@ -52,8 +52,10 @@ serve(async (req) => {
       );
     }
 
-    // Query consultacrm.com.br API
-    const apiUrl = `https://www.consultacrm.com.br/api/index.php?tipo=crm&uf=${encodeURIComponent(uf)}&q=${encodeURIComponent(crm)}&chave=${encodeURIComponent(apiKey)}&destino=json`;
+    // Query consultacrm.com.br API. `tipo` = conselho (crm, cro, crp, crn, crea,
+    // cau, oab). Default crm (médico) para compatibilidade com chamadas antigas.
+    const councilTipo = String(tipo || "crm").toLowerCase();
+    const apiUrl = `https://www.consultacrm.com.br/api/index.php?tipo=${encodeURIComponent(councilTipo)}&uf=${encodeURIComponent(uf)}&q=${encodeURIComponent(crm)}&chave=${encodeURIComponent(apiKey)}&destino=json`;
 
     const apiResponse = await fetch(apiUrl);
     const rawText = await apiResponse.text();
