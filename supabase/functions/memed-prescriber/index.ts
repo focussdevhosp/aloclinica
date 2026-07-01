@@ -77,21 +77,21 @@ serve(async (req) => {
       );
     }
 
-    // Try to get existing user from Memed first
-    const getUrl = `${MEMED_API_URL}/sinapse-prescricao/usuarios?api-key=${MEMED_API_KEY}&secret-key=${MEMED_SECRET_KEY}&filter[external_id]=${userId}`;
-    
+    // Try to get existing user from Memed first.
+    // FIX: the identifier goes in the PATH (/usuarios/{external_id}), NOT a
+    // ?filter[] query — that route/method combo returns 403 "Método inválido
+    // para a rota informada" (per Memed docs, GET /sinapse-prescricao/usuarios/{ID}).
+    // Also only parse JSON on a 2xx: a 404 (new user) returns a non-JSON body.
+    const getUrl = `${MEMED_API_URL}/sinapse-prescricao/usuarios/${encodeURIComponent(userId)}?api-key=${MEMED_API_KEY}&secret-key=${MEMED_SECRET_KEY}`;
+
     const getRes = await fetch(getUrl, {
-      headers: {
-        "Accept": "application/vnd.api+json",
-      },
+      headers: { "Accept": "application/vnd.api+json" },
     });
 
-    const getData = await getRes.json();
-
     // If user exists, return their token
-    if (getRes.ok && getData?.data?.length > 0) {
-      const existingUser = getData.data[0];
-      const memedToken = existingUser.attributes?.token;
+    if (getRes.ok) {
+      const getData = await getRes.json().catch(() => null);
+      const memedToken = getData?.data?.attributes?.token;
       if (memedToken) {
         console.info("Memed user found, returning existing token");
         return new Response(
