@@ -51,7 +51,11 @@ serve(async (req) => {
     const cleanNumber = String(number).replace(/\D/g, "");
     const cleanUf = String(uf).toUpperCase();
 
-    // CRM → delega para verify-crm (consultacrm)
+    // CRM → validação AUTOMÁTICA via verify-crm (consultacrm).
+    // NOTA: a conta atual do consultacrm é CRM-only — o parâmetro `tipo` é
+    // ignorado pela API (testado: tipo=cro/oab retornam registros CRM). Por isso
+    // NÃO delegamos outros conselhos aqui (daria validação errada). Se um dia a
+    // conta consultacrm habilitar multi-conselho, basta adicionar os tipos aqui.
     if (type === "CRM") {
       const projectRef = Deno.env.get("SUPABASE_URL")?.match(/https?:\/\/([^.]+)/)?.[1];
       const verifyUrl = `https://${projectRef}.functions.supabase.co/verify-crm`;
