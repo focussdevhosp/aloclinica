@@ -217,7 +217,14 @@ const PatientDashboard = () => {
           appt={waitingAppt ?? nextAppt}
           role="patient"
         />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-w-0">
+        <PatientHomeReference
+          firstName={firstName}
+          stats={stats}
+          nextAppt={nextAppt}
+          timelineEvents={timelineEvents}
+          navigate={navigate}
+        />
+        {false && <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-w-0">
           <div className="lg:col-span-8 space-y-6 min-w-0">
             <PatientHomeCommandCenter
               firstName={firstName}
@@ -361,6 +368,150 @@ const PatientDashboard = () => {
         </div>
       </div>
     </DashboardLayout>
+  );
+};
+
+const PatientHomeReference = ({ firstName, stats, nextAppt, timelineEvents, navigate }: any) => {
+  const scheduledAt = nextAppt ? new Date(nextAppt.scheduled_at) : null;
+  const activities = (timelineEvents ?? []).slice(0, 2);
+  const actionCards = [
+    { label: "Agendar", sub: "Consulta", icon: CalendarCheck, path: "/dashboard/schedule?role=patient", color: "text-blue-600", bg: "bg-blue-500/10" },
+    { label: "Urgência", sub: "Atendimento", icon: Lightning, path: "/dashboard/urgent-care?role=patient", color: "text-red-500", bg: "bg-red-500/10" },
+    { label: "Receitas", sub: "Ver todas", icon: FileText, path: "/dashboard/history?role=patient", color: "text-teal-600", bg: "bg-teal-500/10" },
+    { label: "Exames", sub: "Meus exames", icon: Pill, path: "/dashboard/patient/documents?role=patient", color: "text-indigo-600", bg: "bg-indigo-500/10" },
+  ];
+
+  const summary = [
+    { label: "Consultas", sub: "realizadas", value: stats?.total ?? 0, icon: ShieldCheck, color: "text-blue-600" },
+    { label: "Receitas", sub: "emitidas", value: stats?.prescriptions ?? 0, icon: FileText, color: "text-teal-600" },
+    { label: "Exames", sub: "realizados", value: stats?.documents ?? 0, icon: Pill, color: "text-indigo-600" },
+    { label: "Bem-estar", sub: "geral", value: "92%", icon: Heartbeat, color: "text-orange-500" },
+  ];
+
+  return (
+    <div className="mx-auto w-full max-w-[430px] space-y-5 md:max-w-3xl">
+      <section className="relative min-h-[118px] overflow-hidden rounded-b-[34px] px-3 pb-4 pt-2 md:rounded-[34px] md:bg-gradient-to-br md:from-blue-50 md:via-white md:to-cyan-50 md:px-6 md:pt-5">
+        <div className="relative z-10 max-w-[260px]">
+          <p className="font-[Manrope] text-[22px] font-extrabold tracking-tight text-foreground">
+            Olá, {firstName} <span className="text-amber-500">👋</span>
+          </p>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">Como está se sentindo hoje?</p>
+        </div>
+        <div className="absolute -right-2 -top-1 flex h-32 w-32 items-center justify-center rounded-full bg-blue-100/70 md:right-5 md:top-3">
+          <PingoMascot variant="doctor" size={112} animate />
+          <span className="absolute right-5 top-4 h-4 w-4 rounded-full border-2 border-white bg-emerald-400" />
+        </div>
+      </section>
+
+      <section className="rounded-[24px] border border-border/55 bg-card p-4 shadow-[0_10px_28px_-18px_rgba(15,42,90,0.55)]">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-extrabold text-foreground">Próxima consulta</h2>
+          {nextAppt && (
+            <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700">Confirmada</span>
+          )}
+        </div>
+        <div className="flex gap-3">
+          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-blue-500/10 text-blue-600">
+            <CalendarCheck size={32} weight="bold" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-extrabold text-foreground">{nextAppt?.doctor_name ?? "Nenhuma consulta marcada"}</p>
+            <p className="text-xs font-medium text-muted-foreground">{nextAppt?.specialty ?? "Escolha um médico para começar"}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-bold text-primary">
+              <span>{scheduledAt ? format(scheduledAt, "dd MMM yyyy", { locale: ptBR }) : "Sem data"}</span>
+              <span>{scheduledAt ? format(scheduledAt, "HH:mm") : "--:--"}</span>
+              <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-emerald-700">Online</span>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border/50 pt-4">
+          <Button variant="ghost" onClick={() => navigate("/dashboard/appointments?role=patient")} className="h-11 rounded-2xl font-bold text-primary">
+            Ver detalhes
+          </Button>
+          <Button onClick={() => navigate(nextAppt ? `/dashboard/consultation/${nextAppt.id}` : "/dashboard/schedule?role=patient")} className="h-11 rounded-2xl font-bold">
+            <VideoCamera size={16} weight="fill" />
+            {nextAppt ? "Entrar" : "Agendar"}
+          </Button>
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-extrabold text-foreground">O que você precisa?</h2>
+          <button onClick={() => navigate("/dashboard/schedule?role=patient")} className="flex items-center gap-1 text-xs font-bold text-primary">
+            Ver todos <ArrowRight size={13} weight="bold" />
+          </button>
+        </div>
+        <div className="grid grid-cols-4 gap-3">
+          {actionCards.map((item) => (
+            <button key={item.label} onClick={() => navigate(item.path)} className="rounded-2xl border border-border/55 bg-card p-3 text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+              <div className={cn("mx-auto mb-2 grid h-11 w-11 place-items-center rounded-2xl", item.bg, item.color)}>
+                <item.icon size={22} weight="fill" />
+              </div>
+              <p className="text-[11px] font-extrabold leading-tight text-foreground">{item.label}</p>
+              <p className="mt-0.5 text-[10px] leading-tight text-muted-foreground">{item.sub}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[22px] border border-border/55 bg-card p-4 shadow-sm">
+        <h2 className="mb-4 text-sm font-extrabold text-foreground">Resumo da sua saúde</h2>
+        <div className="grid grid-cols-4 divide-x divide-border/60">
+          {summary.map((item) => (
+            <div key={item.label} className="px-2 text-center first:pl-0 last:pr-0">
+              <item.icon className={cn("mx-auto mb-2 h-6 w-6", item.color)} />
+              <p className={cn("text-xl font-black leading-none", item.color)}>{item.value}</p>
+              <p className="mt-1 text-[10px] font-bold leading-tight text-muted-foreground">{item.label}</p>
+              <p className="text-[10px] leading-tight text-muted-foreground">{item.sub}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-extrabold text-foreground">Atividade recente</h2>
+          <button onClick={() => navigate("/dashboard/history?role=patient")} className="flex items-center gap-1 text-xs font-bold text-primary">
+            Ver histórico <ArrowRight size={13} weight="bold" />
+          </button>
+        </div>
+        <div className="overflow-hidden rounded-[22px] border border-border/55 bg-card shadow-sm">
+          {(activities.length ? activities : [
+            { title: "Receita emitida", subtitle: "Seu histórico ficará disponível aqui", status: "Ativa", icon: FileText },
+            { title: "Exame de sangue", subtitle: "Documentos recentes aparecem nesta área", status: "Concluído", icon: Pill },
+          ]).map((item: any, index: number) => {
+            const Icon = item.icon ?? (index === 0 ? FileText : Pill);
+            return (
+              <button key={item.id ?? item.title ?? index} onClick={() => navigate("/dashboard/history?role=patient")} className="flex w-full items-center gap-3 border-b border-border/50 p-3 text-left last:border-b-0">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-600">
+                  <Icon size={20} weight="fill" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-extrabold text-foreground">{item.title ?? item.type ?? "Atividade"}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">{item.subtitle ?? item.description ?? "Atualização recente"}</p>
+                </div>
+                <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-700">{item.status ?? "Ativa"}</span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <button onClick={() => navigate("/dashboard/chat?role=patient")} className="flex w-full items-center gap-3 rounded-[22px] border border-blue-500/10 bg-blue-500/8 p-4 text-left shadow-sm">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+          <Headset size={24} weight="fill" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-extrabold text-primary">Precisa de ajuda?</p>
+          <p className="text-xs text-muted-foreground">Fale com nossa equipe de suporte</p>
+        </div>
+        <div className="grid h-9 w-9 place-items-center rounded-full bg-background text-primary">
+          <ChevronRight className="h-4 w-4" />
+        </div>
+      </button>
+    </div>
   );
 };
 
