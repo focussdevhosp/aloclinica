@@ -430,7 +430,7 @@ const PatientHomeReference = ({ firstName, stats, nextAppt, timelineEvents, navi
           <p className="mt-1 text-sm font-medium text-muted-foreground">Como está se sentindo hoje?</p>
         </div>
         <div className="absolute -right-2 -top-1 flex h-32 w-32 items-center justify-center rounded-full bg-blue-100/70 md:right-5 md:top-3">
-          <PingoMascot variant="doctor" size={112} animate />
+          <PingoMascot variant="welcome" size={112} animate />
           <span className="absolute right-5 top-4 h-4 w-4 rounded-full border-2 border-white bg-emerald-400" />
         </div>
       </section>
