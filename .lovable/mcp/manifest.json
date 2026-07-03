@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "aloclinica-mcp",
+      "version": "0.1.0",
+      "title": "AloClínica MCP"
+    },
+    "tools": [
+      {
+        "name": "platform_info",
+        "title": "AloClínica platform info",
+        "description": "Return a short description of the AloClínica telemedicine platform: what it does, main features, and public URLs.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_specialties",
+        "title": "List medical specialties",
+        "description": "List the medical specialties offered on the AloClínica telemedicine platform. Returns each specialty's name, slug, and short description.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "description": "Optional case-insensitive substring to filter specialty names."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_doctors",
+        "title": "Search approved doctors",
+        "description": "Search AloClínica's directory of approved, publicly-listed doctors. Filter by specialty slug and/or a name substring. Returns only public profile fields (never contact info or private data).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "specialty": {
+              "type": "string",
+              "description": "Optional specialty slug (e.g. 'cardiologia'). Use list_specialties to discover valid slugs."
+            },
+            "name": {
+              "type": "string",
+              "description": "Optional case-insensitive substring to match doctor display name."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max results (default 10, max 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
