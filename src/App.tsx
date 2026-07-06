@@ -13,6 +13,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Index from "./pages/Index";
+import NativeHomeGate from "./components/NativeHomeGate";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const ProtectedRoute = lazy(() => import("@/components/auth/ProtectedRoute"));
 import { logError } from "@/lib/logger";
@@ -162,7 +163,7 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <Routes location={location}>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<NativeHomeGate />} />
       <Route path="/p/:slug" element={<Index />} />
       <Route path="/auth" element={<Navigate to="/paciente" replace />} />
       <Route path="/paciente" element={<AuthPaciente />} />
